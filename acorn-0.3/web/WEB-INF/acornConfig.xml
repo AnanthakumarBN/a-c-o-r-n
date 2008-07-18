@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : acornConfig.xml
+    Created on : March 3, 2008, 7:29 PM
+    Author     : kuba
+    Description:
+        Purpose of the document follows.
+-->
+
+<configuration>
+    <pages>
+        <!-- Guest Pages -->
+        <page>
+            <name>/</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/error.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/homepage.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/login.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/register.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/modelList.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/modelDetails.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/taskList.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/taskDetails.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/fbaResults.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/fbaTarget.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/fvaResults.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/kgeneResults.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/kgeneTarget.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/rscanResults.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        <page>
+            <name>/rscanTarget.jsf</name>
+            <securityLevel>guest</securityLevel>
+        </page>
+        
+        <!-- Normal Pages -->
+        <page>
+            <name>/fbaParameters.jsf</name>
+            <securityLevel>normal</securityLevel>
+        </page>
+        <page>
+            <name>/kgeneParameters.jsf</name>
+            <securityLevel>normal</securityLevel>
+        </page>
+        <page>
+            <name>/rscanParameters.jsf</name>
+            <securityLevel>normal</securityLevel>
+        </page>
+        <page>
+            <name>/userDetails.jsf</name>
+            <securityLevel>normal</securityLevel>
+        </page>
+        
+        <!-- Admin Pages -->
+        <page>
+            <name>/addModel.jsf</name>
+            <securityLevel>admin</securityLevel>
+        </page>
+        <page>
+            <name>/userList.jsf</name>
+            <securityLevel>admin</securityLevel>
+        </page>        
+    </pages>
+</configuration>

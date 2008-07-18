@@ -1,0 +1,448 @@
+/* Menu Style from CSSplay */
+
+ul.slant {padding:0; margin-top:8px; list-style:none;}
+ul.slant li {float:left; text-align:center; margin-right:-20px;} 
+ul.slant a {display:block; text-decoration:none;}
+ul.slant a em {font-style:normal; display:block; padding:0 15px; height:25px; background:#8b4513; float:left; cursor:pointer; color:#f0f096; line-height:24px;}
+
+ul.slant a b, a span {cursor:pointer; display:block; width:0; overflow:hidden; float:left; background:#8b4513;}
+
+ul.slant a span {height:0; border-top:25px solid #8b4513; border-right:25px solid #f0f096;}
+
+ul.slant a b.p1,
+ul.slant a b.p2,
+ul.slant a b.p3,
+ul.slant a b.p4,
+ul.slant a b.p5 {border-top:5px solid #f0f096; border-right:5px solid #8b4513;}
+
+ul.slant a b.p1 {height:0; margin-top:20px;}
+ul.slant a b.p2 {height:5px; margin-top:15px;}
+ul.slant a b.p3 {height:10px; margin-top:10px;}
+ul.slant a b.p4 {height:15px; margin-top:5px;}
+ul.slant a b.p5 {height:20px;}
+
+ul.slant a b.p6,
+ul.slant a b.p7,
+ul.slant a b.p8,
+ul.slant a b.p9,
+ul.slant a b.p10 {border-bottom:5px solid #F5F5DC; border-left:5px solid #8b4513;}
+
+ul.slant a b.p6 {height:20px;}
+ul.slant a b.p7 {height:15px;}
+ul.slant a b.p8 {height:10px;}
+ul.slant a b.p9 {height:5px;}
+ul.slant a b.p10 {height:0;}
+
+ul.slant a:hover {background:#c4b762;}
+
+ul.slant a:hover em, ul.slant a.selected em {color:#800000; background:#c4b762;}
+
+ul.slant a:hover b.p1, ul.slant a.selected b.p1,
+ul.slant a:hover b.p2, ul.slant a.selected b.p2,
+ul.slant a:hover b.p3, ul.slant a.selected b.p3,
+ul.slant a:hover b.p4, ul.slant a.selected b.p4,
+ul.slant a:hover b.p5, ul.slant a.selected b.p5 {border-right-color: #c4b762; background: #c4b762;}
+
+ul.slant a:hover b.p6, ul.slant a.selected b.p6,
+ul.slant a:hover b.p7, ul.slant a.selected b.p7,
+ul.slant a:hover b.p8, ul.slant a.selected b.p8,
+ul.slant a:hover b.p9, ul.slant a.selected b.p9,
+ul.slant a:hover b.p10, ul.slant a.selected b.p10 {border-left-color:#c4b762; background: #c4b762;}
+
+ul.slant a:hover span, ul.slant a.selected span {border-top-color:#c4b762;}
+
+ul.slant a.selected:hover b, ul.slant a.selected:hover em, ul.slant a.selected:hover span {cursor:default;}
+
+/* Body */
+
+body.AcornStyle {
+    font-family         :       calibri, tahoma, verdana, arial, sans-serif;
+    text-decoration     :       none; 
+    background-color    :       #f0f096;
+}
+
+/* Logo */
+
+div.logo {
+    position            :       absolute;
+    top                 :       0px;
+    left                :       0px;
+    padding             :       10px;
+    padding-top         :       20px;
+    z-index             :       1;
+    font-size           :       small;
+}
+
+/* Menu */
+
+div.menu {
+    position            :       absolute;
+    top                 :       0px;
+    left                :       245px;
+    padding             :       5px;
+    z-index             :       1;
+    font-size           :       small;
+}
+
+/* Content */
+
+div.content {
+    position            :       relative;
+    top                 :       65px;
+    margin-bottom       :       30px;
+    padding             :       20px; 
+    padding-bottom      :       50px;
+    z-index             :       2;
+    background-color    :       #FFFFFF;
+    border              :       solid 1px #808080;
+}
+
+/* Common styles */
+
+h1, h2, h3, h4, h5, h6 {
+    padding-top         :       10px;
+    padding-bottom      :       10px;
+    font-family         :       calibri, tahoma, verdana, arial, sans-serif;
+}
+
+a, a:active, a:visited, a:hover {
+    font-family         :       calibri, tahoma, verdana, arial, sans-serif; 
+    text-decoration     :       none; 
+    color               :       blue;
+}
+
+/* Table */
+
+div.filterBox {
+    position            :       relative;
+    width               :       30%;
+    margin-top          :       10px;
+    margin-bottom       :       10px;
+    padding             :       5px;
+    border              :       solid 1px #808080;
+    background-color    :       #E5E5BF;
+    font-size           :       small;
+}
+
+div.tableBox {
+    position            :       relative;
+    margin-top          :       10px;
+    margin-bottom       :       10px;
+    border              :       solid 1px #A2A2A2;
+}
+
+div.navigationBox {
+    position            :       relative;
+    margin              :       2px;
+    padding             :       5px;
+    border              :       solid 1px #808080;
+    background-color    :       #E5E5BF;
+    font-size           :       small;
+}
+
+div.navigationElement {
+    position            :       relative;
+    padding             :       1px;
+}
+
+a.navArrow, a.navArow:active, a.navArrow:visited, a.navArrow:hover {
+    color               :       #E5E5BF;
+}
+
+div.tableBox table {
+    margin              :       0px;
+    padding             :       0px;
+}
+
+a.ordArrow, a.ordArow:active, a.ordArrow:visited, a.ordArrow:hover {
+    color               :       #D5D5AF;
+    vertical-align      :       -9%
+}
+
+div.tableBox table th.tableHeader {
+    margin              :       0px;
+    padding             :       0px;
+    border              :       solid 1px #808080;
+    background-color    :       #D5D5AF;
+    font-weight         :       bold;
+}
+
+div.tableBox table tr.tableRow1 {
+    background-color    :       #f0f096;
+}
+
+div.tableBox table tr.tableRow2 {
+    background-color    :       #E5E5BF;
+}
+
+div.mayScroll {
+    padding             :       5px;
+    overflow            :       auto;
+}
+
+/* Model List: */
+
+div.tableBox table .modelName {
+    width               :       40%;
+    text-align          :       center;
+}
+
+div.tableBox table .modelCreationDate {
+    width               :       20%;
+    text-align          :       center;
+}
+
+div.tableBox table .modelLastChange {
+    width               :       20%;
+    text-align          :       center;
+}
+
+div.tableBox table .modelReadOnly {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .modelDelete {
+    width               :       5%;
+    text-align          :       center;
+}
+
+/* Task List: */
+
+div.tableBox table .taskName {
+    width               :       25%;
+    text-align          :       center;
+}
+
+div.tableBox table .taskModel {
+    width               :       25%;
+    text-align          :       center;
+}
+
+div.tableBox table .taskMethod {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .taskSubmissionDate {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .taskStatus {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .taskShared {
+    width               :       5%;
+    text-align          :       center;
+}
+
+div.tableBox table .taskDelete {
+    width               :       5%;
+    text-align          :       center;
+}
+
+/* Model Details: */
+
+div.modelInfo {
+    position            :       relative;
+    width               :       100%;
+    margin-bottom       :       50px;
+}
+
+div.createTask {
+    position            :       relative;
+    width               :       50%;
+    margin-bottom       :       50px;
+    padding             :       5px;
+    border              :       solid 1px #808080;
+    background-color    :       #E5E5BF;
+}
+
+div.tableBox table .modelReaction {
+    width               :       30%;
+    text-align          :       center;
+}
+
+div.tableBox table .modelLower {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .modelUpper {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .modelFormula {
+    width               :       35%;
+    text-align          :       left;
+}
+
+div.tableBox table .modelGenes {
+    width               :       15%;
+    text-align          :       left;
+}
+
+/* Parameters: */
+
+div.RunButton {
+    position            :       fixed;
+    top                 :       6em;
+    right               :       7em; 
+    padding             :       5px;
+    z-index             :       1;
+    border              :       dotted 1px; 
+    background-color    :       #8b4513;
+    font-weight         :       bold;
+}
+
+div.tableBox table .select {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .name {
+    width               :       90%;
+    text-align          :       left;
+}
+
+/* Task Details: */
+
+div.taskInfo {
+    position            :       relative;
+    width               :       100%;
+    margin-bottom       :       30px;
+}
+
+div.taskTarget {
+    position            :       relative;
+    width               :       100%;
+    margin-bottom       :       30px;
+}
+
+div.commonResults {
+    position            :       relative;
+    margin-bottom       :       20px;
+}
+
+div.tableBox table .fbaReactionName {
+    width               :       25%;
+    text-align          :       center;
+}
+
+div.tableBox table .fbaFlux {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .fbaFormula {
+    width               :       45%;
+    text-align          :       left;
+}
+
+div.tableBox table .fbaUpper {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .fbaLower {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .fvaReactionName {
+    width               :       30%;
+    text-align          :       center;
+}
+
+div.tableBox table .fvaMinFlux {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .fvaMaxFlux {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .fvaFormula {
+    width               :       50%;
+    text-align          :       left;
+}
+
+div.tableBox table .rscanReactionName {
+    width               :       25%;
+    text-align          :       center;
+}
+
+div.tableBox table .rscanStatus {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .rscanGrowthRate {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .rscanFormula {
+    width               :       50%;
+    text-align          :       left;
+}
+
+/* User List Bean */
+
+div.tableBox table .userLogin {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .userName {
+    width               :       10%;
+    text-align          :       center;
+}
+
+div.tableBox table .userSurname {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .userEmail {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .userInstitution {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .userDate {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .userStatus {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .userDelete {
+    width               :       5%;
+    text-align          :       center;
+}
+
+/* Error Message */
+
+.error {
+    color               :       red;
+    font-weight         :       normal;
+}
+
+.error input {
+    color               :       red;
+    background-color    :       yellow;
+}

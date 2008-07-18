@@ -1,0 +1,48 @@
+#!/bin/sh
+
+jarfile=$1
+
+
+# Path to amkfba program
+
+amkfbaPath="../amkfba"
+
+# All info is printed to stderr by default, you may specify a file in which log will be stored
+# It is generally not a good idea to redirect log information from multiple workers to a single file
+logFile=""
+
+if [ ! -z $2 ]
+then
+    logFile=$2
+fi
+
+
+# Database credentials
+db_user="acorn"
+db_pass="dilbert"
+
+
+
+# This config works with MySQL database, assuming that the database name is acorn_db
+#db_driver="com.mysql.jdbc.jdbc2.optional.MysqlDataSource"
+#db_url="jdbc:mysql://localhost:3306/acorn_db"
+
+
+# Glassfish JNDI naming port, which defaults to 3700
+iiop_port="3700"
+
+
+if [ -z $jarfile ]
+then
+    echo Usage: $0 '<acorn-worker.jar>'
+    exit 1
+fi
+
+if [ -z $amkfbaPath ]
+then
+    echo You need to set path to amkfba program
+    exit 1
+fi
+
+
+java -jar -Dtoplink.jdbc.user=$db_user -Dtoplink.jdbc.password=$db_pass -Dacorn.worker.logfile="$logFile" -Dacorn.worker.amkfbaPath="$amkfbaPath" -Dorg.omg.CORBA.ORBInitialPort=$iiop_port $jarfile 

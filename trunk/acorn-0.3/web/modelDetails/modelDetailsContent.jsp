@@ -87,22 +87,19 @@
         </div--%>
         
         <div class="createTask">   
-            <h2>Create Task</h2>
+            <h2>Start new simulation for this model</h2>
             
-            Follow these steps to create a new task:
+            Edit reaction bounds in the table below to account for nutrients available
+            in the medium. If the nutrient is not available lower and upper
+            bounds should equal 0. If the nutrient is available the upper bound
+            should be larger than 0. If nutrient is secreted the lower bound should
+            be lower than 0. The table below can be used to exclude any reaction from
+            the model or set its maximal or minimal capacity. Reaction list can be
+            serahced by reaction name using the filter below.
             
-            <ol>
-              <li> Set media conditions in the table below </li>
-              <li> Set task's name </li>
-              <li> Choose method of simulation </li>
-              <br/>
-              On the next page:<br/>
-              <br/>
-              <li> Choose optimisation target </li>
-              <li> Click <em><b>Start The Simulation</b></em> link </li>
-            </ol>
-            
-            <br/>
+            <p>Once media conditions are defined, set the name of your simulation and choose
+            one of the simulation methods. The name will let you identify your simulation
+            on task lists.
             
             <h:panelGrid columns="2">
                 New Task name:
@@ -112,22 +109,31 @@
             <h:commandLink action="#{TaskBean.taskFBA}"
                 value="Single Flux Balance Analysis" >
                 <f:param name="modelID" value="#{param['modelID']}" />
-            </h:commandLink><br/><br/>
+            </h:commandLink><br>Use this method to compute maximal flux towards one of the metabolites
+                    or maximal flux through selected reaction (objective function). Remember that there are many
+                    possible flux distributions that sustain maximal value of the objective function and
+                    you will see only one of them as the solution.<br/><br/>
 
             <h:commandLink action="#{TaskBean.taskFVA}"
                 value="Flux Variability Analysis" >
                 <f:param name="modelID" value="#{param['modelID']}" />
-            </h:commandLink><br/><br/>
+            </h:commandLink><br>Use this method to investigate flux distribution. The program
+            will constraint the growth rate to its maximal value under given conditions. Subsequently, the maximal
+            and minimal flux will be calculated for every reaction by running two FBA simulations with
+            this reaction being set as an objective.<br/><br/>
 
             <h:commandLink action="#{TaskBean.taskRSCAN}"
                 value="Reaction Essentiality Scan" >
                 <f:param name="modelID" value="#{param['modelID']}" />
-            </h:commandLink><br/><br/>
+            </h:commandLink><br>Use this function to identify all reactions essential
+            for the flux towards objective function. After setting objective function the
+            program will inactivate every single reaction and run FBA.<br/><br/>
 
             <h:commandLink action="#{TaskBean.taskKGENE}" 
                 value="Single Gene Knockout" >
                 <f:param name="modelID" value="#{param['modelID']}" />
-            </h:commandLink><br/><br/>
+            </h:commandLink><br>Set objective function and a gene to be inactivated. All reactions
+            that require this gene will be constrined to 0 and single FBA simulation will be run.<br/><br/>
                     
             <!-- IF YOU WANT TO ADD NEW METHOD -> put here commandLink similar to the above ones -->                    
         </div>

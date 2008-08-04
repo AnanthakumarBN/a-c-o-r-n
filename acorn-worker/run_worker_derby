@@ -19,7 +19,7 @@ fi
 
 # Database credentials
 db_user="acorn"
-db_pass="dilbert"
+db_pass="acorn"
 
 
 

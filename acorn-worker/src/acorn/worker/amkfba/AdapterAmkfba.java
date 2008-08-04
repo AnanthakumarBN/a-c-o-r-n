@@ -19,6 +19,7 @@ import acorn.db.ESpecies;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -29,7 +30,6 @@ import java.util.Collection;
  * @author lukasz
  */
 public class AdapterAmkfba {
-
 
     private static String amkfbaPath = null;
     private static final AdapterAmkfba singleton = new AdapterAmkfba();
@@ -146,6 +146,11 @@ public class AdapterAmkfba {
             return ECommonResults.statusNonFeasible;
         } else if (amkfbaStatus.equals("UNBOUNDED")) {
             return ECommonResults.statusUnbounded;
+        } else if (amkfbaStatus.equals("FAILED")) {
+            // Dodane przez Andrzeja Kierzka. Tutaj najlepiej byloby dodac do kodu
+            // obsluge statusu FAILED, ktory wprowadzilem, zeby oznaczyc blad
+            // funkcji simplex w GLPK
+            return ECommonResults.statusUndefined;
         } else {
             return null;
         }
@@ -309,7 +314,20 @@ public class AdapterAmkfba {
         BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
         System.out.println("WRITE");
+
         writeModel(output, model, bounds, useRmodel);
+        
+// Added by Andrzej Kierzek to reproduce amkfba crash
+//        try {
+//            FileWriter tmp = new FileWriter(new File("/tmp/yeast"));
+//            BufferedWriter tmp1 = new BufferedWriter(tmp);
+//            writeModel(tmp1, model, bounds, useRmodel);
+//            tmp1.close();
+//            tmp.close();
+//        } catch (Exception E) {
+//            E.printStackTrace();
+//        }
+
         System.out.println("WRITTEN");
 
 
@@ -320,8 +338,8 @@ public class AdapterAmkfba {
         }
         return parseAmkfbaOutput(p);
     }
-    
-        public static String getAmkfbaPath() {
+
+    public static String getAmkfbaPath() {
         return amkfbaPath;
     }
 

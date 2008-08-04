@@ -8,5 +8,9 @@
 <%@taglib prefix="h" uri="http://java.sun.com/jsf/html"%>
 
 <div id="content" class="content">
-    <h1>Acorn Homepage</h1>
+    <h1>Welcome to Acorn</h1>
+    <p>Click Models tab to see the list of genome scale metabolic reaction networks
+    available in the system. There may be many models for the same organism, each of them
+    representing metabolism under diffrent set of envornmental conditions. To start
+    simulation choose one of the models and follow instructions.
 </div>

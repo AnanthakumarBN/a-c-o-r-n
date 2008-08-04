@@ -513,64 +513,64 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,-do-dist-with-manifest,-do-dist-without-manifest" name="do-dist"/>
     <target depends="init" if="dist.ear.dir" name="library-inclusion-in-manifest">
-        <basename file="${libs.Tiles-API-2.0.5.classpath}" property="included.lib.libs.Tiles-API-2.0.5.classpath"/>
-        <copy-ear-war file="${libs.Tiles-API-2.0.5.classpath}" propname="included.lib.libs.Tiles-API-2.0.5.classpath.X"/>
-        <basename file="${libs.Tiles-Core-2.0.5.classpath}" property="included.lib.libs.Tiles-Core-2.0.5.classpath"/>
-        <copy-ear-war file="${libs.Tiles-Core-2.0.5.classpath}" propname="included.lib.libs.Tiles-Core-2.0.5.classpath.X"/>
-        <basename file="${libs.Tiles-JSP-2.0.5.classpath}" property="included.lib.libs.Tiles-JSP-2.0.5.classpath"/>
-        <copy-ear-war file="${libs.Tiles-JSP-2.0.5.classpath}" propname="included.lib.libs.Tiles-JSP-2.0.5.classpath.X"/>
-        <basename file="${libs.Commons-Logging-1.1.1.classpath}" property="included.lib.libs.Commons-Logging-1.1.1.classpath"/>
-        <copy-ear-war file="${libs.Commons-Logging-1.1.1.classpath}" propname="included.lib.libs.Commons-Logging-1.1.1.classpath.X"/>
-        <basename file="${libs.Commons-Digester-1.8.classpath}" property="included.lib.libs.Commons-Digester-1.8.classpath"/>
-        <copy-ear-war file="${libs.Commons-Digester-1.8.classpath}" propname="included.lib.libs.Commons-Digester-1.8.classpath.X"/>
-        <basename file="${libs.Commons-Beanutils-1.7.classpath}" property="included.lib.libs.Commons-Beanutils-1.7.classpath"/>
-        <copy-ear-war file="${libs.Commons-Beanutils-1.7.classpath}" propname="included.lib.libs.Commons-Beanutils-1.7.classpath.X"/>
-        <basename file="${libs.Commons-Configuration-1.5.classpath}" property="included.lib.libs.Commons-Configuration-1.5.classpath"/>
-        <copy-ear-war file="${libs.Commons-Configuration-1.5.classpath}" propname="included.lib.libs.Commons-Configuration-1.5.classpath.X"/>
-        <basename file="${libs.Commons-Lang-2.3.classpath}" property="included.lib.libs.Commons-Lang-2.3.classpath"/>
-        <copy-ear-war file="${libs.Commons-Lang-2.3.classpath}" propname="included.lib.libs.Commons-Lang-2.3.classpath.X"/>
-        <basename file="${libs.Commons-Collections-3.2.classpath}" property="included.lib.libs.Commons-Collections-3.2.classpath"/>
-        <copy-ear-war file="${libs.Commons-Collections-3.2.classpath}" propname="included.lib.libs.Commons-Collections-3.2.classpath.X"/>
-        <basename file="${libs.JCaptcha-1.0.classpath}" property="included.lib.libs.JCaptcha-1.0.classpath"/>
-        <copy-ear-war file="${libs.JCaptcha-1.0.classpath}" propname="included.lib.libs.JCaptcha-1.0.classpath.X"/>
-        <basename file="${libs.Commons-El-1.0.classpath}" property="included.lib.libs.Commons-El-1.0.classpath"/>
-        <copy-ear-war file="${libs.Commons-El-1.0.classpath}" propname="included.lib.libs.Commons-El-1.0.classpath.X"/>
-        <basename file="${libs.Commons-IO-1.3.2.classpath}" property="included.lib.libs.Commons-IO-1.3.2.classpath"/>
-        <copy-ear-war file="${libs.Commons-IO-1.3.2.classpath}" propname="included.lib.libs.Commons-IO-1.3.2.classpath.X"/>
-        <basename file="${libs.Commons-FileUpload-1.2.1.classpath}" property="included.lib.libs.Commons-FileUpload-1.2.1.classpath"/>
-        <copy-ear-war file="${libs.Commons-FileUpload-1.2.1.classpath}" propname="included.lib.libs.Commons-FileUpload-1.2.1.classpath.X"/>
-        <basename file="${libs.Tomahawk-1.1.6.classpath}" property="included.lib.libs.Tomahawk-1.1.6.classpath"/>
-        <copy-ear-war file="${libs.Tomahawk-1.1.6.classpath}" propname="included.lib.libs.Tomahawk-1.1.6.classpath.X"/>
         <basename file="${reference.acorn-db.jar}" property="included.lib.reference.acorn-db.jar"/>
         <copy-ear-war file="${reference.acorn-db.jar}" propname="included.lib.reference.acorn-db.jar.X"/>
-        <basename file="${libs.Ajax4jsf-1.1.1.classpath}" property="included.lib.libs.Ajax4jsf-1.1.1.classpath"/>
-        <copy-ear-war file="${libs.Ajax4jsf-1.1.1.classpath}" propname="included.lib.libs.Ajax4jsf-1.1.1.classpath.X"/>
         <basename file="${libs.MySQLDriver.classpath}" property="included.lib.libs.MySQLDriver.classpath"/>
         <copy-ear-war file="${libs.MySQLDriver.classpath}" propname="included.lib.libs.MySQLDriver.classpath.X"/>
+        <basename file="${file.reference.ajax4jsf-1.1.1.jar}" property="included.lib.file.reference.ajax4jsf-1.1.1.jar"/>
+        <copy-ear-war file="${file.reference.ajax4jsf-1.1.1.jar}" propname="included.lib.file.reference.ajax4jsf-1.1.1.jar.X"/>
+        <basename file="${file.reference.commons-beanutils.jar}" property="included.lib.file.reference.commons-beanutils.jar"/>
+        <copy-ear-war file="${file.reference.commons-beanutils.jar}" propname="included.lib.file.reference.commons-beanutils.jar.X"/>
+        <basename file="${file.reference.commons-collections-3.2.jar}" property="included.lib.file.reference.commons-collections-3.2.jar"/>
+        <copy-ear-war file="${file.reference.commons-collections-3.2.jar}" propname="included.lib.file.reference.commons-collections-3.2.jar.X"/>
+        <basename file="${file.reference.commons-configuration-1.5.jar}" property="included.lib.file.reference.commons-configuration-1.5.jar"/>
+        <copy-ear-war file="${file.reference.commons-configuration-1.5.jar}" propname="included.lib.file.reference.commons-configuration-1.5.jar.X"/>
+        <basename file="${file.reference.commons-digester-1.8.jar}" property="included.lib.file.reference.commons-digester-1.8.jar"/>
+        <copy-ear-war file="${file.reference.commons-digester-1.8.jar}" propname="included.lib.file.reference.commons-digester-1.8.jar.X"/>
+        <basename file="${file.reference.commons-el.jar}" property="included.lib.file.reference.commons-el.jar"/>
+        <copy-ear-war file="${file.reference.commons-el.jar}" propname="included.lib.file.reference.commons-el.jar.X"/>
+        <basename file="${file.reference.commons-fileupload-1.2.1.jar}" property="included.lib.file.reference.commons-fileupload-1.2.1.jar"/>
+        <copy-ear-war file="${file.reference.commons-fileupload-1.2.1.jar}" propname="included.lib.file.reference.commons-fileupload-1.2.1.jar.X"/>
+        <basename file="${file.reference.commons-io-1.3.2.jar}" property="included.lib.file.reference.commons-io-1.3.2.jar"/>
+        <copy-ear-war file="${file.reference.commons-io-1.3.2.jar}" propname="included.lib.file.reference.commons-io-1.3.2.jar.X"/>
+        <basename file="${file.reference.commons-lang-2.3.jar}" property="included.lib.file.reference.commons-lang-2.3.jar"/>
+        <copy-ear-war file="${file.reference.commons-lang-2.3.jar}" propname="included.lib.file.reference.commons-lang-2.3.jar.X"/>
+        <basename file="${file.reference.commons-logging-1.1.1.jar}" property="included.lib.file.reference.commons-logging-1.1.1.jar"/>
+        <copy-ear-war file="${file.reference.commons-logging-1.1.1.jar}" propname="included.lib.file.reference.commons-logging-1.1.1.jar.X"/>
+        <basename file="${file.reference.jcaptcha-all-1.0-RC6.jar}" property="included.lib.file.reference.jcaptcha-all-1.0-RC6.jar"/>
+        <copy-ear-war file="${file.reference.jcaptcha-all-1.0-RC6.jar}" propname="included.lib.file.reference.jcaptcha-all-1.0-RC6.jar.X"/>
+        <basename file="${file.reference.tiles-api-2.0.5.jar}" property="included.lib.file.reference.tiles-api-2.0.5.jar"/>
+        <copy-ear-war file="${file.reference.tiles-api-2.0.5.jar}" propname="included.lib.file.reference.tiles-api-2.0.5.jar.X"/>
+        <basename file="${file.reference.tiles-core-2.0.5.jar}" property="included.lib.file.reference.tiles-core-2.0.5.jar"/>
+        <copy-ear-war file="${file.reference.tiles-core-2.0.5.jar}" propname="included.lib.file.reference.tiles-core-2.0.5.jar.X"/>
+        <basename file="${file.reference.tiles-jsp-2.0.5.jar}" property="included.lib.file.reference.tiles-jsp-2.0.5.jar"/>
+        <copy-ear-war file="${file.reference.tiles-jsp-2.0.5.jar}" propname="included.lib.file.reference.tiles-jsp-2.0.5.jar.X"/>
+        <basename file="${file.reference.tomahawk-1.1.6.jar}" property="included.lib.file.reference.tomahawk-1.1.6.jar"/>
+        <copy-ear-war file="${file.reference.tomahawk-1.1.6.jar}" propname="included.lib.file.reference.tomahawk-1.1.6.jar.X"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.libs.Tiles-API-2.0.5.classpath} ${included.lib.libs.Tiles-Core-2.0.5.classpath} ${included.lib.libs.Tiles-JSP-2.0.5.classpath} ${included.lib.libs.Commons-Logging-1.1.1.classpath} ${included.lib.libs.Commons-Digester-1.8.classpath} ${included.lib.libs.Commons-Beanutils-1.7.classpath} ${included.lib.libs.Commons-Configuration-1.5.classpath} ${included.lib.libs.Commons-Lang-2.3.classpath} ${included.lib.libs.Commons-Collections-3.2.classpath} ${included.lib.libs.JCaptcha-1.0.classpath} ${included.lib.libs.Commons-El-1.0.classpath} ${included.lib.libs.Commons-IO-1.3.2.classpath} ${included.lib.libs.Commons-FileUpload-1.2.1.classpath} ${included.lib.libs.Tomahawk-1.1.6.classpath} ${included.lib.reference.acorn-db.jar} ${included.lib.libs.Ajax4jsf-1.1.1.classpath} ${included.lib.libs.MySQLDriver.classpath} "/>
+            <attribute name="Class-Path" value="${included.lib.reference.acorn-db.jar} ${included.lib.libs.MySQLDriver.classpath} ${included.lib.file.reference.ajax4jsf-1.1.1.jar} ${included.lib.file.reference.commons-beanutils.jar} ${included.lib.file.reference.commons-collections-3.2.jar} ${included.lib.file.reference.commons-configuration-1.5.jar} ${included.lib.file.reference.commons-digester-1.8.jar} ${included.lib.file.reference.commons-el.jar} ${included.lib.file.reference.commons-fileupload-1.2.1.jar} ${included.lib.file.reference.commons-io-1.3.2.jar} ${included.lib.file.reference.commons-lang-2.3.jar} ${included.lib.file.reference.commons-logging-1.1.1.jar} ${included.lib.file.reference.jcaptcha-all-1.0-RC6.jar} ${included.lib.file.reference.tiles-api-2.0.5.jar} ${included.lib.file.reference.tiles-core-2.0.5.jar} ${included.lib.file.reference.tiles-jsp-2.0.5.jar} ${included.lib.file.reference.tomahawk-1.1.6.jar} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
-        <copy file="${libs.Tiles-API-2.0.5.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Tiles-Core-2.0.5.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Tiles-JSP-2.0.5.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Commons-Logging-1.1.1.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Commons-Digester-1.8.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Commons-Beanutils-1.7.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Commons-Configuration-1.5.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Commons-Lang-2.3.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Commons-Collections-3.2.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.JCaptcha-1.0.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Commons-El-1.0.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Commons-IO-1.3.2.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Commons-FileUpload-1.2.1.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Tomahawk-1.1.6.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${reference.acorn-db.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.Ajax4jsf-1.1.1.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${libs.MySQLDriver.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.ajax4jsf-1.1.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.commons-beanutils.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.commons-collections-3.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.commons-configuration-1.5.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.commons-digester-1.8.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.commons-el.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.commons-fileupload-1.2.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.commons-io-1.3.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.commons-lang-2.3.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.commons-logging-1.1.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.jcaptcha-all-1.0-RC6.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.tiles-api-2.0.5.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.tiles-core-2.0.5.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.tiles-jsp-2.0.5.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copy file="${file.reference.tomahawk-1.1.6.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest" name="do-ear-dist">
         <dirname file="${dist.ear.war}" property="dist.jar.dir"/>

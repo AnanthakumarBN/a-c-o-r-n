@@ -3,6 +3,11 @@
   <persistence-unit name="acorn-dbPU" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <class>acorn.db.EVisualization</class>
+    <class>acorn.db.EVisPlace</class>
+    <class>acorn.db.EVisTransition</class>
+    <class>acorn.db.EVisArcReactant</class>
+    <class>acorn.db.EVisArcpath</class>
+    <class>acorn.db.EVisArc</class>
     <class>acorn.db.EBounds</class>
     <class>acorn.db.ECommonResults</class>
     <class>acorn.db.ECompartment</class>
@@ -23,20 +28,15 @@
     <class>acorn.db.EfvaResultElement</class>
     <class>acorn.db.ErscanResultElement</class>
     <class>acorn.db.EVisArcProduct</class>
-    <class>acorn.db.EVisTransition</class>
-    <class>acorn.db.EVisPlace</class>
-    <class>acorn.db.EVisArcReactant</class>
-    <class>acorn.db.EVisArcpath</class>
-    <class>acorn.db.EVisArc</class>
     <properties>
       <property name="toplink.jdbc.user" value="acorn"/>
-      <property name="toplink.jdbc.password" value="19ay04"/>
-      <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/acorn"/>
-      <property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-      <!-- 
-    <property name="toplink.ddl-generation" value="create-tables"/>
-     -->
-      <property name="toplink.weaving" value="false"/>
+      <property name="toplink.jdbc.password" value="acorn"/>
+      <property name="toplink.jdbc.url" value="jdbc:derby://localhost:1527/acorn-db"/>
+      <property name="toplink.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <!-- </properties>
+    
+   
+    <properties> -->
     </properties>
   </persistence-unit>
 </persistence>

@@ -517,10 +517,6 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
         <copy-ear-war file="${reference.acorn-db.jar}" propname="included.lib.reference.acorn-db.jar.X"/>
         <basename file="${libs.MySQLDriver.classpath}" property="included.lib.libs.MySQLDriver.classpath"/>
         <copy-ear-war file="${libs.MySQLDriver.classpath}" propname="included.lib.libs.MySQLDriver.classpath.X"/>
-        <basename file="${libs.toplink.classpath.libfile.2}" property="included.lib.libs.toplink.classpath.2"/>
-        <basename file="${libs.toplink.classpath.libfile.1}" property="included.lib.libs.toplink.classpath.1"/>
-        <copy-ear-war file="${libs.toplink.classpath.libfile.2}" propname="included.lib.libs.toplink.classpath.2.X"/>
-        <copy-ear-war file="${libs.toplink.classpath.libfile.1}" propname="included.lib.libs.toplink.classpath.1.X"/>
         <basename file="${file.reference.ajax4jsf-1.1.1.jar}" property="included.lib.file.reference.ajax4jsf-1.1.1.jar"/>
         <copy-ear-war file="${file.reference.ajax4jsf-1.1.1.jar}" propname="included.lib.file.reference.ajax4jsf-1.1.1.jar.X"/>
         <basename file="${file.reference.commons-beanutils.jar}" property="included.lib.file.reference.commons-beanutils.jar"/>
@@ -553,15 +549,13 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
         <copy-ear-war file="${file.reference.tomahawk-1.1.6.jar}" propname="included.lib.file.reference.tomahawk-1.1.6.jar.X"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.reference.acorn-db.jar} ${included.lib.libs.MySQLDriver.classpath} ${included.lib.libs.toplink.classpath.1.X} ${included.lib.libs.toplink.classpath.2.X} ${included.lib.file.reference.ajax4jsf-1.1.1.jar} ${included.lib.file.reference.commons-beanutils.jar} ${included.lib.file.reference.commons-collections-3.2.jar} ${included.lib.file.reference.commons-configuration-1.5.jar} ${included.lib.file.reference.commons-digester-1.8.jar} ${included.lib.file.reference.commons-el.jar} ${included.lib.file.reference.commons-fileupload-1.2.1.jar} ${included.lib.file.reference.commons-io-1.3.2.jar} ${included.lib.file.reference.commons-lang-2.3.jar} ${included.lib.file.reference.commons-logging-1.1.1.jar} ${included.lib.file.reference.jcaptcha-all-1.0-RC6.jar} ${included.lib.file.reference.tiles-api-2.0.5.jar} ${included.lib.file.reference.tiles-core-2.0.5.jar} ${included.lib.file.reference.tiles-jsp-2.0.5.jar} ${included.lib.file.reference.tomahawk-1.1.6.jar} "/>
+            <attribute name="Class-Path" value="${included.lib.reference.acorn-db.jar} ${included.lib.libs.MySQLDriver.classpath} ${included.lib.file.reference.ajax4jsf-1.1.1.jar} ${included.lib.file.reference.commons-beanutils.jar} ${included.lib.file.reference.commons-collections-3.2.jar} ${included.lib.file.reference.commons-configuration-1.5.jar} ${included.lib.file.reference.commons-digester-1.8.jar} ${included.lib.file.reference.commons-el.jar} ${included.lib.file.reference.commons-fileupload-1.2.1.jar} ${included.lib.file.reference.commons-io-1.3.2.jar} ${included.lib.file.reference.commons-lang-2.3.jar} ${included.lib.file.reference.commons-logging-1.1.1.jar} ${included.lib.file.reference.jcaptcha-all-1.0-RC6.jar} ${included.lib.file.reference.tiles-api-2.0.5.jar} ${included.lib.file.reference.tiles-core-2.0.5.jar} ${included.lib.file.reference.tiles-jsp-2.0.5.jar} ${included.lib.file.reference.tomahawk-1.1.6.jar} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
         <copy file="${reference.acorn-db.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${libs.MySQLDriver.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.toplink.classpath.libfile.2}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${libs.toplink.classpath.libfile.1}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${file.reference.ajax4jsf-1.1.1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${file.reference.commons-beanutils.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${file.reference.commons-collections-3.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>

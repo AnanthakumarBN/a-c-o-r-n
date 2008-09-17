@@ -93,6 +93,21 @@ public class EModelController extends EntityController {
         }  
     }
     
+        public EModel getModelByName(String name) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            EModel modelx = (EModel) em.createNamedQuery("EModel.findByName").
+                    setParameter("name", name).
+                    setHint("toplink.refresh", true).
+                    getSingleResult();
+            em.getTransaction().commit();
+            return modelx;
+        } finally {
+            em.close();
+        }  
+    }
+        
     /**
      * Adds @model.
      */

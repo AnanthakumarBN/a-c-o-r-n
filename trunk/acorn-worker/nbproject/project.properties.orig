@@ -33,8 +33,12 @@ includes=**
 jar.compress=false
 javac.classpath=\
     ${libs.toplink.classpath}:\
+    ${libs.ApacheDerby-10.3.2.1.classpath}:\
     ${reference.acorn-db.jar}:\
+    ${libs.JMS-1.1.classpath}:\
     ${libs.MySQLDriver.classpath}:\
+    ${file.reference.complib-ApacheDerby-10.3.2.1}:\
+    ${file.reference.complib-JMS-1.1}:\
     ${file.reference.derbyclient.jar}:\
     ${file.reference.appserv-admin.jar}:\
     ${file.reference.appserv-deployment-client.jar}:\
@@ -70,6 +74,9 @@ jnlp.codebase.url=file:/home/kuba/univ/zpp/2007-acron/acorn-worker/dist/
 jnlp.enabled=false
 jnlp.offline-allowed=false
 jnlp.signed=false
+# Property libs.ApacheDerby-10.3.2.1.classpath is set here just to make sharing of project simpler.
+# The library definition has always preference over this property.
+libs.ApacheDerby-10.3.2.1.classpath=external-libs/complib/ApacheDerby-10.3.2.1/classpath/derbyclient.jar
 # Property libs.derby.classpath is set here just to make sharing of project simpler.
 # The library definition has always preference over this property.
 libs.derby.classpath=../../../../../../tmp/db-derby-10.3.2.1-lib/lib/derbyclient.jar

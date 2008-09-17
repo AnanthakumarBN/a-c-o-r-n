@@ -10,12 +10,10 @@ import acorn.errorHandling.ErrorBean;
 import acorn.task.TaskQueue;
 import acorn.userManagement.UserManager;
 import javax.servlet.http.*;
-import java.security.*;
 import java.util.Map;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.TreeMap;
-import java.lang.System;
 import java.util.Date;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,7 +30,7 @@ import java.util.Set;
  * a ogolny timer bedzie usuwal nieuzywane daty)
  */
 public class TaskBean {
-    
+
     /**
      * Checks if model @m is accessible by current user.
      * @return true or flase
@@ -53,14 +51,13 @@ public class TaskBean {
             return m.getOwner().getId().equals(user.getId());
         }
     }
-
     private Map<Integer, TaskBeanData> data;
     private int displayRowMax;
     private int displaySpeciesRowMax;
     private int displayGenesRowMax;
     /* How many TaskBeanData entries can be kept in a data map */
     private int dataCountMax;
-    
+
     /** Creates a new instance of TaskBean */
     public TaskBean() {
         super();
@@ -68,7 +65,7 @@ public class TaskBean {
         displayGenesRowMax = displaySpeciesRowMax = displayRowMax = 50;
         data = new TreeMap();
     }
-    
+
     /** Initializes data for current model before usage
      * @param id
      */
@@ -90,7 +87,7 @@ public class TaskBean {
                         justFetchGenes(data.get(id).getModel());
             }
             data.get(id).touch();
-            
+
             return true;
         }
 
@@ -125,7 +122,7 @@ public class TaskBean {
         if (m == null) {
             return false;
         }
-        
+
         if (!modelSecurityCheck(m)) {
             return false;
         }
@@ -133,15 +130,14 @@ public class TaskBean {
         TaskBeanData d = new TaskBeanData(m);
 
         d.originalConditions = justFetchConditions(m);
-        
+
         d.conditions = copyConditionList(d.originalConditions);
-        
+
         d.filteredConditions = new LinkedList<Condition>();
-        for (Condition c : d.conditions) d.filteredConditions.add(c);
-        
+        for (Condition c : d.conditions) {
+            d.filteredConditions.add(c);
+        }
         d.filteredSpecies = d.species = justFetchSpecies(m);
-        
-        
         d.filteredGenes = d.genes = justFetchGenes(m);
 
         d.reactionsStart = 0;
@@ -152,27 +148,26 @@ public class TaskBean {
 
         return true;
     }
-    
-    public List<Condition> copyConditionList(List<Condition> originalList)
-    {
+
+    public List<Condition> copyConditionList(List<Condition> originalList) {
         List<Condition> newList = new LinkedList<Condition>();
-        if (originalList.size() > 0)
-        {
+        if (originalList.size() > 0) {
             /* each Condition in a list contains a BoundID to EBound Map
              * shared between all elements. It have to be copied (can't be
              * shared between two diffrent lists) but also have to be shared
              * between conditions */
             Map originalBoundsMap = originalList.get(0).getBoundsMap();
             Map newBoundsMap = new HashMap<Integer, EBounds>();
-            
-            Set<Map.Entry<Integer,EBounds>> boundsMapEntrySet = originalBoundsMap.entrySet();
-            
-            for (Map.Entry<Integer, EBounds> mapEntry : boundsMapEntrySet)
-            {
+
+            Set<Map.Entry<Integer, EBounds>> boundsMapEntrySet = originalBoundsMap.entrySet();
+
+            for (Map.Entry<Integer, EBounds> mapEntry : boundsMapEntrySet) {
                 newBoundsMap.put(mapEntry.getKey(), mapEntry.getValue().copy());
             }
 
-            for (Condition c : originalList) newList.add(c.copy(newBoundsMap));
+            for (Condition c : originalList) {
+                newList.add(c.copy(newBoundsMap));
+            }
         }
         return newList;
     }
@@ -276,36 +271,35 @@ public class TaskBean {
     public boolean getSaveAllowed() {
         return true;
     }
-    
+
     /**
      * Creates collection of bounds for @model
      * @param model - model for which collections in prepared
      */
     private void prepareBoundsCollection(EModel model) {
         TaskBeanData d = data.get(getModelID());
-        
+
         model.setEBoundsCollection(new LinkedList<EBounds>());
 
         Collections.sort(d.conditions, new ConditionReactionComparator());
         Collections.sort(d.originalConditions, new ConditionReactionComparator());
-        
+
         ListIterator cit = d.conditions.listIterator();
         ListIterator ocit = d.originalConditions.listIterator();
-        
+
         while (cit.hasNext() && ocit.hasNext()) {
-            
+
             Condition c = (Condition) cit.next();
             Condition oc = (Condition) ocit.next();
-            
+
             /* what if we got two diffrent reactions' bounds?
              * what shall we do? Even if it seems impossible,s
              * one more assertion does not cost that much ;-) */
-            if (!c.getReaction().getId().equals(oc.getReaction().getId()))
-            {
+            if (!c.getReaction().getId().equals(oc.getReaction().getId())) {
                 ErrorBean.printStackTrace(new IllegalArgumentException("Got two diffrent reactions!"));
                 return;
             }
-            
+
             if (!c.equals(oc)) {
                 EBounds b = new EBounds();
 
@@ -317,9 +311,8 @@ public class TaskBean {
                 model.getEBoundsCollection().add(b);
             }
         }
-        
-        if (cit.hasNext() != ocit.hasNext())
-        {
+
+        if (cit.hasNext() != ocit.hasNext()) {
             ErrorBean.printStackTrace(new IllegalArgumentException("Got diffrent number of reactions!"));
             return;
         }
@@ -339,7 +332,7 @@ public class TaskBean {
         modelx.setDate(new Date());
         modelx.setLastChange(new Date());
         if (model.getParent() == null) {
-            modelx.setParent(model); 
+            modelx.setParent(model);
         } else {
             modelx.setParent(model.getParent());
         }
@@ -347,7 +340,7 @@ public class TaskBean {
         modelx.setOwner(UserManager.getCurrentUser()); // We assume that someone is logged in
         modelx.setReadOnly(true);
         modelx.setShared(false);
-        
+
         prepareBoundsCollection(modelx);
 
         return modelx;
@@ -361,12 +354,12 @@ public class TaskBean {
     public String updateModel() {
         EModel model = getCurrentModel();
         TaskBeanData d = data.get(model.getId());
-        
-        try {            
+
+        try {
             EModelController mo = new EModelController();
-          
+
             mo.removeBounds(model);
-          
+
             model.setEBoundsCollection(new LinkedList<EBounds>());
             for (Condition c : d.conditions) {
                 EBounds b = new EBounds();
@@ -378,18 +371,18 @@ public class TaskBean {
 
                 model.getEBoundsCollection().add(b);
             }
-            
+
             EMetabolismController me = new EMetabolismController();
             me.mergeMetabolism(model.getMetabolism());
-            
+
             mo.mergeModel(model);
         } catch (Exception e) {
             ErrorBean.printStackTrace(e);
             return "error";
         }
-        
+
         d.originalConditions = copyConditionList(d.conditions);
-        
+
         return "";
     }
 
@@ -402,10 +395,10 @@ public class TaskBean {
         try {
             EModel modelx = prepareNewModel(getCurrentModel());
             modelx.setReadOnly(false);
-            
+
             EMetabolismController me = new EMetabolismController();
             me.mergeMetabolism(modelx.getMetabolism());
-            
+
             EModelController mo = new EModelController();
             mo.addModel(modelx);
 
@@ -443,12 +436,12 @@ public class TaskBean {
      */
     public String deleteModel() {
         FacesContext fc = FacesContext.getCurrentInstance();
-        
+
         if (fc.getExternalContext().getRequestParameterMap().containsKey("modelID")) {
             Integer modelId = Integer.parseInt((String) fc.getExternalContext().
-                        getRequestParameterMap().
-                        get("modelID"));
-            
+                    getRequestParameterMap().
+                    get("modelID"));
+
             try {
                 EModelController mc = new EModelController();
                 mc.removeModel(modelId);
@@ -472,7 +465,7 @@ public class TaskBean {
         }
         return true;
     }
-    
+
     public Boolean getCanChangeGeneLink() {
         return UserManager.getUserStatus().equals(EUser.statusAdmin);
     }
@@ -499,39 +492,39 @@ public class TaskBean {
         try {
             EBoundsController bc = new EBoundsController();
             List<EBounds> boundsList = bc.getBounds(model);
-                    
+
             List<Condition> list = new LinkedList<Condition>();
             Map<Integer, EBounds> bounds_map = new HashMap<Integer, EBounds>();
-            
+
             for (EBounds b : boundsList) {
                 if (b.getReaction().getEReactantCollection().isEmpty()) {
                     /* Look for reactants */
                     EReactantController rc = new EReactantController();
                     b.getReaction().setEReactantCollection(rc.getReactants(b.getReaction()));
                 }
-                
-                if (b.getReaction().getEProductCollection().isEmpty())  {
+
+                if (b.getReaction().getEProductCollection().isEmpty()) {
                     /* Look for products */
                     EProductController pc = new EProductController();
                     b.getReaction().setEProductCollection(pc.getProducts(b.getReaction()));
                 }
-                
+
                 EReaction reaction = b.getReaction();
                 String reactionFormula = reaction.getDivedReactionFormula();
                 String geneFormula = reaction.getGeneFormula();
-                
+
                 /*  because of structure of a database joints
-                    it is important (we believe it is :D) to leave
-                    each reaction entity with the ProductCollection
-                    and ReactantCollectoin set to null
+                it is important (we believe it is :D) to leave
+                each reaction entity with the ProductCollection
+                and ReactantCollectoin set to null
                 reaction.setEProductCollection(null);
                 reaction.setEReactantCollection(null);
-                */
-                
+                 */
+
                 list.add(new Condition(bounds_map, b.getId(), reaction, reaction.getId(), reactionFormula, geneFormula));
                 bounds_map.put(b.getId(), b);
             }
-            
+
             return list;
         } catch (Exception e) {
             ErrorBean.printStackTrace(e);
@@ -564,7 +557,7 @@ public class TaskBean {
         try {
             ESpeciesController sc = new ESpeciesController();
             List<ESpecies> res = sc.getSpecies(m);
-            
+
             List<Species> list = new LinkedList<Species>();
             int ii = 0;
             for (ESpecies species : res) {
@@ -882,12 +875,12 @@ public class TaskBean {
                 data.get(id).reactionsStart + displayRowMax,
                 data.get(id).filteredConditions.size())));
         Integer total = new Integer(data.get(id).filteredConditions.size());
-        
+
         if (total > 0) {
             return from.toString() +
-                   " .. " +
-                   to.toString() +
-                   " of " + total.toString();
+                    " .. " +
+                    to.toString() +
+                    " of " + total.toString();
         } else {
             return "No results found.";
         }
@@ -899,7 +892,7 @@ public class TaskBean {
      */
     public String getSpeciesResultsString() {
         Integer id = getModelID();
-        
+
         Integer from = new Integer(java.lang.Math.max(0, java.lang.Math.min(
                 data.get(id).speciesStart,
                 data.get(id).filteredSpecies.size())) + 1);
@@ -991,8 +984,9 @@ public class TaskBean {
         Integer id = getModelID();
 
         try {
-            if (Integer.decode(in) > 0)
+            if (Integer.decode(in) > 0) {
                 data.get(id).setSelectedReaction(in);
+            }
         } catch (Exception e) {
             ErrorBean.printStackTrace(e);
             return;
@@ -1008,14 +1002,15 @@ public class TaskBean {
     public void setSelectedSpecies(String in) {
         Integer id = getModelID();
 
-        try { 
-            if (Integer.decode(in) < 0) 
+        try {
+            if (Integer.decode(in) < 0) {
                 data.get(id).setSelectedSpecies(in);
+            }
         } catch (Exception e) {
             ErrorBean.printStackTrace(e);
             return;
         }
-        
+
     }
 
     public String getSelectedGene() {
@@ -1043,8 +1038,9 @@ public class TaskBean {
     }
 
     public String taskFBA() {
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) return "login";
-        
+        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
+            return "login";
+        }
         Integer id = getModelID();
 
         if (data.get(id).parameters == null) {
@@ -1057,8 +1053,9 @@ public class TaskBean {
     }
 
     public String taskFVA() {
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) return "login";
-        
+        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
+            return "login";
+        }
         Integer id = getModelID();
 
         if (data.get(id).parameters == null) {
@@ -1071,8 +1068,9 @@ public class TaskBean {
     }
 
     public String taskRSCAN() {
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) return "login";
-        
+        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
+            return "login";
+        }
         Integer id = getModelID();
 
         if (data.get(id).parameters == null) {
@@ -1085,8 +1083,9 @@ public class TaskBean {
     }
 
     public String taskKGENE() {
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) return "login";
-        
+        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
+            return "login";
+        }
         Integer id = getModelID();
 
         if (data.get(id).parameters == null) {
@@ -1097,9 +1096,8 @@ public class TaskBean {
         data.get(id).errorMessage = "";
         return "KGENE";
     }
-    
-    /* IF YOU WANT TO ADD NEW METHOD -> put here function similar to the above one */
 
+    /* IF YOU WANT TO ADD NEW METHOD -> put here function similar to the above one */
     public Params getParameters() {
         Integer id = getModelID();
 
@@ -1123,239 +1121,230 @@ public class TaskBean {
 
         data.get(id).taskName = name;
     }
-    
-    public EMethod getFBAMethod(){
-        
+
+    public EMethod getFBAMethod() {
+
         List<EMethod> resultMethod;
         EMethod method = new EMethod();
-        
+
         EMethodController mc = new EMethodController();
         resultMethod = mc.findByIdent(EMethod.fba);
-        
-        if (resultMethod.size() == 0){
+
+        if (resultMethod.size() == 0) {
             method.setName("Single Flux Balance Analisys");
             method.setIdent(EMethod.fba);
             method.setDescr("Single Flux Balance Analisys");
-            
-            /* Update database */
-            try{
-                mc.addMethod(method);
-            }
-            catch(Exception e){
-                ErrorBean.printStackTrace(e);
-                return null;
-            }
-        }
-        else{
-            method = resultMethod.get(0);
-        }
-        
-        return method;
-    }
 
-    public EMethod getRSCANMethod(){
-        
-        List<EMethod> resultMethod;
-        EMethod method = new EMethod();
-                
-        EMethodController mc = new EMethodController();
-        resultMethod = mc.findByIdent(EMethod.rscan);
-        
-        if (resultMethod.size() == 0){
-            method.setName("Reaction Essentiality Scan");
-            method.setIdent(EMethod.rscan);
-            method.setDescr("Reaction Essentiality Scan");
-            
-            /* Update database */
-            try{
-                mc.addMethod(method);
-            }
-            catch(Exception e){
-                ErrorBean.printStackTrace(e);
-                return null;
-            }
-        }
-        else{
-            method = resultMethod.get(0);
-        }
-        
-        return method;
-    }
-    
-    public EMethod getKGENEMethod(){
-        
-        List<EMethod> resultMethod;
-        EMethod method = new EMethod();
-                
-        EMethodController mc = new EMethodController();
-        resultMethod = mc.findByIdent(EMethod.kgene);
-        
-        if (resultMethod.size() == 0){
-            method.setName("Single Gene Knockout");
-            method.setIdent(EMethod.kgene);
-            method.setDescr("Single Gene Knockout");
-            
             /* Update database */
             try {
                 mc.addMethod(method);
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 ErrorBean.printStackTrace(e);
                 return null;
             }
-        }
-        else{
+        } else {
             method = resultMethod.get(0);
         }
-        
+
         return method;
     }
-            
-    public EMethod getFVAMethod(){
-        
+
+    public EMethod getRSCANMethod() {
+
         List<EMethod> resultMethod;
         EMethod method = new EMethod();
-                
+
+        EMethodController mc = new EMethodController();
+        resultMethod = mc.findByIdent(EMethod.rscan);
+
+        if (resultMethod.size() == 0) {
+            method.setName("Reaction Essentiality Scan");
+            method.setIdent(EMethod.rscan);
+            method.setDescr("Reaction Essentiality Scan");
+
+            /* Update database */
+            try {
+                mc.addMethod(method);
+            } catch (Exception e) {
+                ErrorBean.printStackTrace(e);
+                return null;
+            }
+        } else {
+            method = resultMethod.get(0);
+        }
+
+        return method;
+    }
+
+    public EMethod getKGENEMethod() {
+
+        List<EMethod> resultMethod;
+        EMethod method = new EMethod();
+
+        EMethodController mc = new EMethodController();
+        resultMethod = mc.findByIdent(EMethod.kgene);
+
+        if (resultMethod.size() == 0) {
+            method.setName("Single Gene Knockout");
+            method.setIdent(EMethod.kgene);
+            method.setDescr("Single Gene Knockout");
+
+            /* Update database */
+            try {
+                mc.addMethod(method);
+            } catch (Exception e) {
+                ErrorBean.printStackTrace(e);
+                return null;
+            }
+        } else {
+            method = resultMethod.get(0);
+        }
+
+        return method;
+    }
+
+    public EMethod getFVAMethod() {
+
+        List<EMethod> resultMethod;
+        EMethod method = new EMethod();
+
         EMethodController mc = new EMethodController();
         resultMethod = mc.findByIdent(EMethod.fva);
-        
-        if (resultMethod.size() == 0){
+
+        if (resultMethod.size() == 0) {
             method.setName("Flux Variability Analysis");
             method.setIdent(EMethod.fva);
             method.setDescr("Flux Variability Analysis");
-            
+
             /* Update database */
-            try{
+            try {
                 mc.addMethod(method);
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 ErrorBean.printStackTrace(e);
                 return null;
             }
-        }
-        else{
+        } else {
             method = resultMethod.get(0);
         }
-        
+
         return method;
     }
-    
+
     /* IF YOU WANT TO ADD NEW METHOD -> put here function similar to the above one */
-    
-    public EFbaData getFBAMethodData(Integer id){
+    public EFbaData getFBAMethodData(Integer id) {
         EFbaData methodData = new EFbaData();
-        if (((FBAParams)(data.get(id).parameters)).isReactionTarget()){
+        if (((FBAParams) (data.get(id).parameters)).isReactionTarget()) {
             EReaction targetReaction = null;
-            String target = ((FBAParams)(data.get(id).parameters)).getTarget();
-            for (Condition c : data.get(id).conditions)
-                if(c.getIndex().equals(target)) 
-                {
+            String target = ((FBAParams) (data.get(id).parameters)).getTarget();
+            for (Condition c : data.get(id).conditions) {
+                if (c.getIndex().equals(target)) {
                     targetReaction = c.getReaction();
                     break;
                 }
+            }
             if (targetReaction == null) {
                 ErrorBean.printStackTrace(new java.lang.IllegalArgumentException("targetReaction is null!"));
                 return null;
-            } 
-            else methodData.setReaction(targetReaction);
-        }
-        else{
+            } else {
+                methodData.setReaction(targetReaction);
+            }
+        } else {
             ESpecies targetSpecies = null;
-            String target = ((FBAParams)(data.get(id).parameters)).getTarget();
-            for (Species s : data.get(id).species)
-                if(s.getIndex().equals(target))
-                {
+            String target = ((FBAParams) (data.get(id).parameters)).getTarget();
+            for (Species s : data.get(id).species) {
+                if (s.getIndex().equals(target)) {
                     targetSpecies = s.getSpecies();
                     break;
                 }
+            }
             if (targetSpecies == null) {
                 ErrorBean.printStackTrace(new java.lang.IllegalArgumentException("targetReaction is null!"));
                 return null;
+            } else {
+                methodData.setSpecies(targetSpecies);
             }
-            else methodData.setSpecies(targetSpecies);
         }
         return methodData;
     }
 
-    public ERscanData getRSCANMethodData(Integer id){
+    public ERscanData getRSCANMethodData(Integer id) {
         ERscanData methodData = new ERscanData();
-        if (((RSCANParams)(data.get(id).parameters)).isReactionTarget()){
+        if (((RSCANParams) (data.get(id).parameters)).isReactionTarget()) {
             EReaction targetReaction = null;
-            String target = ((RSCANParams)(data.get(id).parameters)).getTarget();
-            for (Condition c : data.get(id).conditions)
-                if(c.getIndex().equals(target)) 
-                {
+            String target = ((RSCANParams) (data.get(id).parameters)).getTarget();
+            for (Condition c : data.get(id).conditions) {
+                if (c.getIndex().equals(target)) {
                     targetReaction = c.getReaction();
                     break;
                 }
-            if (targetReaction == null) 
-            {
+            }
+            if (targetReaction == null) {
                 ErrorBean.printStackTrace(new java.lang.IllegalArgumentException("targetReaction is null!"));
                 return null;
+            } else {
+                methodData.setReaction(targetReaction);
             }
-            else methodData.setReaction(targetReaction);
-        }
-        else{
+        } else {
             ESpecies targetSpecies = null;
-            String target = ((RSCANParams)(data.get(id).parameters)).getTarget();
-            for (Species s : data.get(id).species)
-                if(s.getIndex().equals(target))
-                {
+            String target = ((RSCANParams) (data.get(id).parameters)).getTarget();
+            for (Species s : data.get(id).species) {
+                if (s.getIndex().equals(target)) {
                     targetSpecies = s.getSpecies();
                     break;
                 }
+            }
             if (targetSpecies == null) {
                 ErrorBean.printStackTrace(new java.lang.IllegalArgumentException("targetReaction is null!"));
                 return null;
+            } else {
+                methodData.setSpecies(targetSpecies);
             }
-            else methodData.setSpecies(targetSpecies);
         }
         return methodData;
     }
-    
-    public EKgeneData getKGENEMethodData(Integer id){
+
+    public EKgeneData getKGENEMethodData(Integer id) {
         EKgeneData methodData = new EKgeneData();
-        if (((KGENEParams)(data.get(id).parameters)).isReactionTarget()){
+        if (((KGENEParams) (data.get(id).parameters)).isReactionTarget()) {
             EReaction targetReaction = null;
-            String target = ((KGENEParams)(data.get(id).parameters)).getTarget();
-            for (Condition c : data.get(id).conditions)
-                if(c.getIndex().equals(target)) 
-                {
+            String target = ((KGENEParams) (data.get(id).parameters)).getTarget();
+            for (Condition c : data.get(id).conditions) {
+                if (c.getIndex().equals(target)) {
                     targetReaction = c.getReaction();
                     break;
                 }
-            if (targetReaction == null) { 
+            }
+            if (targetReaction == null) {
                 ErrorBean.printStackTrace(new java.lang.IllegalArgumentException("targetReaction is null!"));
                 return null;
+            } else {
+                methodData.setReaction(targetReaction);
             }
-            else methodData.setReaction(targetReaction);
-        }
-        else{
+        } else {
             ESpecies targetSpecies = null;
-            String target = ((KGENEParams)(data.get(id).parameters)).getTarget();
-            for (Species s : data.get(id).species)
-                if(s.getIndex().equals(target))
-                {
+            String target = ((KGENEParams) (data.get(id).parameters)).getTarget();
+            for (Species s : data.get(id).species) {
+                if (s.getIndex().equals(target)) {
                     targetSpecies = s.getSpecies();
                     break;
                 }
-            if (targetSpecies == null)
-            {
+            }
+            if (targetSpecies == null) {
                 ErrorBean.printStackTrace(new java.lang.IllegalArgumentException("targetReaction is null!"));
                 return null;
+            } else {
+                methodData.setSpecies(targetSpecies);
             }
-            else methodData.setSpecies(targetSpecies);
         }
-        methodData.setGene(((KGENEParams)(data.get(id).parameters)).gene);
+        methodData.setGene(((KGENEParams) (data.get(id).parameters)).gene);
         return methodData;
     }
-    
-    /* IF YOU WANT TO ADD NEW METHOD (with parameters) -> put here function similar to the above one */
 
+    /* IF YOU WANT TO ADD NEW METHOD (with parameters) -> put here function similar to the above one */
     public boolean isTaskReady() {
         Integer id = getModelID();
-        
-        float lower, upper;
+
+        float lower,  upper;
 
         //funkcja sprawdzajaca czy zadanie jest juz gotowe, tzn czy mozemy je zlecic
         //do wykonania. (nie mozemy jesli nie wszystkie parametry zostaly ustalone poprawnie)
@@ -1370,33 +1359,32 @@ public class TaskBean {
             data.get(id).errorMessage = "Conditions are null. Try again to make new task";
             return false;
         }
-        for (int i=0; i < data.get(id).conditions.size(); i++){
+        for (int i = 0; i < data.get(id).conditions.size(); i++) {
             lower = data.get(id).conditions.get(id).getBounds().getLowerBound();
             upper = data.get(id).conditions.get(id).getBounds().getUpperBound();
-            if ((lower < -999999) || (upper > 999999) || (lower > upper)){
+            if ((lower < -999999) || (upper > 999999) || (lower > upper)) {
                 data.get(id).errorMessage = "Conditions aren't correct";
                 return false;
             }
         }
-        
+
         data.get(id).errorMessage = "";
         return true;
     }
-    
-    public boolean isError(){
+
+    public boolean isError() {
         Integer id = getModelID();
-        
-        if (data.get(id).errorMessage.isEmpty()){
+
+        if (data.get(id).errorMessage.isEmpty()) {
             return false;
-        }
-        else{
+        } else {
             return true;
-        }        
+        }
     }
-    
-    public String getErrorMessage(){
+
+    public String getErrorMessage() {
         Integer id = getModelID();
-        
+
         return data.get(id).errorMessage;
     }
 
@@ -1404,13 +1392,13 @@ public class TaskBean {
     public String calcTask() {
         if (this.isTaskReady()) {
             Integer id = getModelID();
-            
+
             try {
                 /* Set task name */
                 if (data.get(id).taskName.contentEquals("")) {
                     data.get(id).taskName = "[" + data.get(id).model.getName() + " - TASK]";
                 }
-                
+
                 /* Create new model */
                 EModel model = prepareNewModel(getCurrentModel());
                 model.setName(data.get(id).taskName + " task's model");
@@ -1433,28 +1421,22 @@ public class TaskBean {
                 if (data.get(id).parameters instanceof FBAParams) {
                     method = getFBAMethod();
                     methodData = getFBAMethodData(id);
-                }
-                else
-                if (data.get(id).parameters instanceof RSCANParams){
+                } else if (data.get(id).parameters instanceof RSCANParams) {
                     method = getRSCANMethod();
                     methodData = getRSCANMethodData(id);
-                }
-                else
-                if (data.get(id).parameters instanceof KGENEParams){
+                } else if (data.get(id).parameters instanceof KGENEParams) {
                     method = getKGENEMethod();
-                    methodData = getKGENEMethodData(id);                    
-                }
-                else
-                if (data.get(id).parameters instanceof FVAParams){
+                    methodData = getKGENEMethodData(id);
+                } else if (data.get(id).parameters instanceof FVAParams) {
                     method = getFVAMethod();
                 }
 
                 /* IF YOU WANT TO ADD NEW METHOD -> put here another "else if" condition and piece of code similar to the above one */
-                
+
                 task.setMethod(method);
 
                 if (!(data.get(id).parameters instanceof FVAParams)) {
-                /* IF YOU WANT TO ADD NEW METHOD (without parameters) -> put "& !(data.get(id).parameters instanceof MYMETHODParams) into conditon (where MYMETHOD is a name of method) */
+                    /* IF YOU WANT TO ADD NEW METHOD (without parameters) -> put "& !(data.get(id).parameters instanceof MYMETHODParams) into conditon (where MYMETHOD is a name of method) */
                     task.setMethodData(methodData);
                     methodData.setTask(task);
                 }
@@ -1465,14 +1447,14 @@ public class TaskBean {
 
                 /* Extremly required! */
                 data.get(id).model = mc.getModel(id);
-                
+
                 mc.addModel(model);
 
                 TaskQueue.getInstance().enqueueTask(task);
-                
+
                 //discardChanges is necessary!!! - next time this model will be choosen original data appear in the table
                 discardChanges();
-                
+
             } catch (Exception e) {
                 ErrorBean.printStackTrace(e);
                 return null;

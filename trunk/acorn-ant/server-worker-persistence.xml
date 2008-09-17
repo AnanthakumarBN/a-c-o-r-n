@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
-  <persistence-unit name="acorn-dbPU" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="acorn-workerPU" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <class>acorn.db.EVisualization</class>
     <class>acorn.db.EBounds</class>
@@ -29,14 +29,13 @@
     <class>acorn.db.EVisArcpath</class>
     <class>acorn.db.EVisArc</class>
     <properties>
-      <property name="toplink.jdbc.user" value="acorn"/>
-      <property name="toplink.jdbc.password" value="19ay04"/>
+      <property name="toplink.jdbc.user" value="root"/>
+      <property name="toplink.jdbc.password" value="we76095"/>
       <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/acorn"/>
       <property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <!-- 
     <property name="toplink.ddl-generation" value="create-tables"/>
      -->
-      <property name="toplink.weaving" value="false"/>
     </properties>
   </persistence-unit>
 </persistence>

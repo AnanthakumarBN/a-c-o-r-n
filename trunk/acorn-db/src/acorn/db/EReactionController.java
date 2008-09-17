@@ -1,6 +1,10 @@
 package acorn.db;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import javax.persistence.EntityManager;
+import java.util.List;
 
 /**
  * EReactionController
@@ -19,6 +23,61 @@ public class EReactionController extends EntityController {
             em.getTransaction().commit();
         } finally {
             em.close();
-        }  
+        }
+    }
+
+    /*
+     * @params reactionSid - sid of reaction for which list of reactants sids is computed
+     * @returns - list of sid of Species for reaction with reactionSid
+     */
+    public ArrayList<String> getReactantsSpeciesList(String reactionSid) {
+        EntityManager em = getEntityManager();
+        ArrayList<String> al = new ArrayList();
+        List<EReactant> reactColl;
+        EReactantController rc = new EReactantController();
+        EReaction r;
+
+        //finds reaction by Sid - reaction parameter 
+        try {
+            em.getTransaction().begin();
+            r = (EReaction) em.createNamedQuery("EReaction.findBySid").setParameter("sid", reactionSid).getSingleResult();
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        //gets reactants from reaction and gets sid of species
+        reactColl = rc.getReactants(r);
+        for (EReactant reactant : reactColl) {
+            ESpecies species = (ESpecies) reactant.getSpecies();
+            al.add(species.getSid());
+        }
+        return al;
+    }
+
+    /*
+     * @params reactionSid - sid of reaction for which list of products sids is computed
+     * @returns - list of sid of Species for reaction with reactionSid
+     */
+    public ArrayList<String> getProductsSpeciesList(String reactionSid) {
+        EntityManager em = getEntityManager();
+        ArrayList<String> al = new ArrayList();
+        List<EProduct> prodColl;
+        EProductController pc = new EProductController();
+        EReaction r;
+
+        //finds reaction by Sid - reaction parameter 
+        try {
+            em.getTransaction().begin();
+            r = (EReaction) em.createNamedQuery("EReaction.findBySid").setParameter("sid", reactionSid).getSingleResult();
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        prodColl = pc.getProducts(r);
+        for (EProduct product : prodColl) {
+            ESpecies species = (ESpecies) product.getSpecies();
+            al.add(species.getSid());
+        }
+        return al;
     }
 }

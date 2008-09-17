@@ -30,7 +30,11 @@
         <managed-bean-class>acorn.userManagement.UserListBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    
+    <managed-bean>
+        <managed-bean-name>AddVisualizationBean</managed-bean-name>
+        <managed-bean-class>acorn.visualizationParser.AddVisualizationBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
     <managed-bean>
         <managed-bean-name>UserDetailsBean</managed-bean-name>
         <managed-bean-class>acorn.userManagement.UserDetailsBean</managed-bean-class>

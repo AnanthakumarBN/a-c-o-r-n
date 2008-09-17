@@ -23,6 +23,7 @@
     <property name="local-domain-dir" value="${local-glassfish-home}/domains/${local-domain-name}" />
     <property name="local-db-persistence" value="local-db-persistence.xml" />
     <property name="local-worker-persistence" value="local-worker-persistence.xml" />
+    <property name="local-worker-properties" value="local-worker-project.properties" />
     <property name="local-acornConfig" value="local-acornConfig.xml" />
     <property name="local-db-password" value="acorn" />
     <property name="local-db-username" value="acorn" />
@@ -44,6 +45,7 @@
     <property name="server-worker-dir" value="${server-root-dir}/acorn-worker" />
     <property name="server-worker-name" value="acorn-worker.jar" />
     <property name="server-worker-file" value="${server-worker-dir}/${server-worker-name}" />
+    <property name="server-worker-properties" value="server-worker-project.properties" />
     <property name="server-acornConfig" value="server-acornConfig.xml" />
     <property name="server-amkfba-dir" value="${server-root-dir}/amkfba" />
     <property name="server-amkfba-run" value="${server-amkfba-dir}/amkfba" />
@@ -212,12 +214,14 @@
         <copy overwrite="true" file="${local-db-persistence}" tofile="${local-db-dir}/src/META-INF/persistence.xml"/>
     </target>
     <target name="swap-to-local-worker">
+        <copy overwrite="true" file="${local-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
         <copy overwrite="true" file="${local-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
     </target>
     <target name="swap-to-server-db">
         <copy overwrite="true" file="${server-db-persistence}" tofile="${local-db-dir}/src/META-INF/persistence.xml"/>
     </target>
     <target name="swap-to-server-worker">
+        <copy overwrite="true" file="${server-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
         <copy overwrite="true" file="${server-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
     </target>
     <target name="server-worker-compile" depends="local-worker-clean">

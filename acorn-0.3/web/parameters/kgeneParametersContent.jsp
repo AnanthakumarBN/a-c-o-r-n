@@ -8,6 +8,7 @@
 
 <tiles:insertTemplate template="/parameters/parametersTemplate.jsp">
     <tiles:putAttribute name="methodTitle" value="Single Gene Knockout Parameters" />
+    <tiles:putAttribute name="visualizationTable" value="/parameters/paramsVisualizationsTable.jsp" />
     <tiles:putAttribute name="reactionTable" value="/parameters/paramsReactionTable.jsp" />
     <tiles:putAttribute name="speciesTable" value="/parameters/paramsSpeciesTable.jsp" />
     <tiles:putAttribute name="genesTable" value="/parameters/paramsGenesTable.jsp" />

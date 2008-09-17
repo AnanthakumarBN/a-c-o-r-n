@@ -82,6 +82,9 @@ public class EModel implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "model")
     private Collection<EBounds> eBoundsCollection;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "model")
+    private Collection<EVisualization> eVisualizations;
+    
     public EModel() {
     }
 
@@ -231,4 +234,14 @@ public class EModel implements Serializable {
     public void setShared(boolean shared) {
         this.shared = shared;
     }
+
+    public Collection<EVisualization> getEVisualizations() {
+        return eVisualizations;
+    }
+
+    public void setEVisualizations(Collection<EVisualization> eVisualizations) {
+        this.eVisualizations = eVisualizations;
+    }
+    
+    
 }

@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<project name="acorn-ant" default="default" basedir=".">
+    <description>Ant script</description>
+    <property name="local-root-name" value="trunk" />
+    <property name="local-root-dir" value="../../${local-root-name}" />
+    <property name="local-db-dir" value="${local-root-dir}/acorn-db" />
+    <property name="local-web-dir" value="${local-root-dir}/acorn-0.3" />
+    <property name="local-worker-dir" value="${local-root-dir}/acorn-worker" />
+    <property name="local-amkfba-dir" value="${local-root-dir}/amkfba" />
+    <property name="local-amkfba-run" value="${local-amkfba-dir}/amkfba" />
+    <property name="local-web-name" value="acorn-0.3.war" />
+    <property name="local-web-file" value="${local-web-dir}/dist/${local-web-name}" />
+    <property name="local-worker-name" value="acorn-worker.jar" />
+    <property name="local-worker-file" value="${local-worker-dir}/dist/${local-worker-name}" />
+    <property name="local-db-name" value="acorn-db.jar" />
+    <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />    
+    <property name="local-glassfish-home" value="/usr/local/glassfish-v2ur2/" />
+    <property name="local-glassfish-asadmin" value="${local-glassfish-home}/bin/asadmin" />
+    <property name="local-domain-name" value="domain1" />
+    <property name="local-domain-dir" value="${local-glassfish-home}/domains/${local-domain-name}" />
+    <property name="local-db-persistence" value="local-db-persistence.xml" />
+    <property name="local-worker-persistence" value="local-worker-persistence.xml" />
+    <property name="local-acornConfig" value="local-acornConfig.xml" />
+    <property name="local-db-password" value="acorn" />
+    <property name="local-db-username" value="acorn" />
+    <property name="local-worker-log-file" value="/home/misiek/worker.log" />
+    <property name="local-iiport" value="3700" />
+    <property name="local-java" value="java" />
+    <property name="local-make" value="make" />
+    <property name="local-domain-passwordfile" value="${local-domain-dir}/.aspass" />
+    <property name="server-db-persistence" value="server-db-persistence.xml" />
+    <property name="server-worker-persistence" value="server-worker-persistence.xml" />
+    <property name="server-name" value="sysbio1.sbs.surrey.ac.uk" />
+    <property name="server-password" value="we76095" />
+    <property name="server-username" value="root" />
+    <property name="server-root-name" value="acorn" />
+    <property name="server-root-dir" value="/usr/local/${server-root-name}" />
+    <property name="server-web-dir" value="${server-root-dir}/acorn-1.0" />
+    <property name="server-web-name" value="acorn-0.3.war" />
+    <property name="server-web-file" value="${server-web-dir}/${server-web-name}" />
+    <property name="server-worker-dir" value="${server-root-dir}/acorn-worker" />
+    <property name="server-worker-name" value="acorn-worker.jar" />
+    <property name="server-worker-file" value="${server-worker-dir}/${server-worker-name}" />
+    <property name="server-acornConfig" value="server-acornConfig.xml" />
+    <property name="server-amkfba-dir" value="${server-root-dir}/amkfba" />
+    <property name="server-amkfba-run" value="${server-amkfba-dir}/amkfba" />
+    <property name="server-glassfish-home" value="/usr/local/glassfish" />
+    <!--<property name="server-glassfish-home" value="usr/local/glassfish" /> -->
+    <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin" />
+    <property name="server-domain-name" value="domain1" />
+    <property name="server-domain-dir" value="${server-glassfish-home}/domains/${local-domain-name}" />
+    <property name="server-db-password" value="acorn" />
+    <property name="server-db-username" value="19ay04" />
+    <property name="server-worker-log-file" value="${server-root-dir}/worker.log" />
+    <property name="server-db-driver" value="com.mysql.jdbc.Driver" />
+    <property name="server-db-url" value="jdbc:mysql://localhost:3306/acorn" />
+    <property name="server-iiport" value="3700" />
+    <property name="server-java" value="/opt/SDK/jdk/bin/java" />
+    <property name="server-mysql-connector" value="${server-root-dir}/mysql-connector/mysql-connector-5.0.7-bin.jar" />
+    <target name="archive-project" depends="local-clean-all" >
+        <zip destfile="trunk.zip"
+        basedir="${local-root-dir}"
+        />
+    </target>
+    <target name="local-db-compile" depends="local-db-clean">
+        <antcall target="swap-to-local-db" />
+        <ant antfile="${local-db-dir}/build.xml" target="jar" inheritall="false" />
+    </target>
+    <target name="local-db-clean" >
+        <ant antfile="${local-db-dir}/build.xml" target="clean" inheritall="false" />
+        <antcall target="swap-to-local-db" />
+    </target>
+    <target name="local-web-compile" depends="local-web-clean, local-db-compile">
+        <ant antfile="${local-web-dir}/build.xml" target="dist" inheritall="false" />
+    </target>
+    <target name="local-web-clean" >
+        <ant antfile="${local-web-dir}/build.xml" target="clean" inheritall="false" />
+    </target>
+    <target name="local-web-deploy-all" depends="local-web-compile" description="Deploy acorn on localhost">
+        <ant target="local-web-deploy"/>
+    </target>
+    <target name="local-web-deploy" description="Deploy acorn on localhost">
+        <ant antfile="${local-web-dir}/build.xml" target="run" inheritall="false" />
+    </target>
+    <target name="local-copy-acorn-config" >
+        <copy  overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/domains/${local-domain-name}/config/acornConfig.xml" />
+    </target>
+    <target name="local-start-domain" >
+        <exec command="${local-glassfish-asadmin} start-domain ${local-domain-name}" />
+    </target>
+    <target name="local-stop-domain" >
+        <exec command="${local-glassfish-asadmin} stop-domain ${local-domain-name}" />
+    </target>
+    <target name="server-web-compile" depends="server-db-compile" description="Compile acorn to deploy on server" >
+        <ant antfile="${local-web-dir}/build.xml" target="dist" inheritall="false" />
+    </target>
+    <target name="server-start-domain" >
+        <sshexec password="${server-password}" 
+                username="${server-username}"
+                host="${server-name}"
+                command="${server-glassfish-asadmin} start-domain ${server-domain-name}"
+                verbose="true"/>
+    </target>
+    <target name="server-stop-domain" >
+        <sshexec password="${server-password}" 
+                username="${server-username}"
+                host="${server-name}"
+                command="${server-glassfish-asadmin} stop-domain ${server-domain-name}"
+                verbose="true"/>
+    </target>
+    <target name="local-create-resources">
+        <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.QueueConnectionFactory imqConsumerFlowLimit=1 jms/taskQueueFactory" 
+        failonerror=""/>
+        <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.Queue jms/taskQueue" 
+        failonerror=""/>
+    </target>
+    <target name="local-delete-resources">
+        <exec command="${local-glassfish-asadmin} delete-jms-resource --user admin --passwordfile ${local-domain-passwordfile} jms/taskQueueFactory" 
+        failonerror="">
+        </exec>
+        <exec command="${local-glassfish-asadmin} delete-jms-resource --user admin --passwordfile ${local-domain-passwordfile} jms/taskQueue" 
+        failonerror=""/>
+    </target>
+    <target name="server-web-deploy" description="Deploy acorn on server">
+        <sshexec  
+            password="${server-password}" 
+            username="${server-username}"
+            host="${server-name}"
+            command="${server-glassfish-asadmin} deploy ${server-web-file}" 
+            failonerror=""
+        />
+    </target>
+    <target name="server-web-deploy-all" depends="server-web-compile, copy-web-to-server" description="Do all to deploy acorn on server">
+        <antcall target="server-web-deploy" />
+    </target>
+    <target name="server-web-undeploy">
+        <sshexec  
+            password="${server-password}" 
+            username="${server-username}"
+            host="${server-name}"
+            command="${server-glassfish-asadmin} undeploy ${server-web-name}"
+            failonerror=""
+        />
+    </target>
+    <target name="server-create-resources">
+        <sshexec  
+            password="${server-password}" 
+            username="${server-username}"
+            host="${server-name}"
+            command="${server-glassfish-asadmin} create-jms-resource --restype javax.jms.QueueConnectionFactory --property imqConsumerFlowLimit=1 jms/taskQueueFactory" 
+            failonerror=""
+        />
+        <sshexec 
+            password="${server-password}" 
+            username="${server-username}"
+            host="${server-name}"
+            command="${server-glassfish-asadmin} create-jms-resource --restype javax.jms.Queue jms/taskQueue" 
+            failonerror=""
+        />
+    </target>
+    <target name="server-delete-resources">
+        <sshexec 
+            password="${server-password}" 
+            username="${server-username}"
+            host="${server-name}"
+            command="${server-glassfish-asadmin} delete-jms-resource jms/taskQueueFactory" 
+            failonerror=""/>
+        <esshxec 
+            password="${server-password}" 
+            username="${server-username}"
+            host="${server-name}"
+            command="${server-glassfish-asadmin} delete-jms-resource jms/taskQueue" 
+            failonerror=""
+        />
+    </target>
+    <target name="local-worker-run" description="Run worker on localhost">
+        <java jar="${local-worker-file}"
+              jvmargs="-Dtoplink.jdbc.user=${local-db-username} 
+                -Dtoplink.jdbc.password=${local-db-password}
+                -Dacorn.worker.logfile=${local-worker-log-file}
+                -Dacorn.worker.amkfbaPath=${local-amkfba-run}
+                -Dorg.omg.CORBA.ORBInitialPort=${local-iiport}" 
+        />
+    </target>
+    <target name="local-worker-run-all" depends="local-worker-compile" description="Compile and run worker on localhost">
+        <ant target="local-worker-run" />
+    </target>    
+    <!--
+    <target name="server-copy-acorn-config" >
+        <copy file="${local-acornConfig}" todir="${local-glassfish-home}/domains/${local-domain-name}/config" />
+    </target>    
+    -->
+    <target name="local-create-apass-file">
+        <touch file="${local-domain-dir}/.aspass" />
+        <concat destfile="${local-domain-dir}/.aspass">AS_ADMIN_PASSWORD=adminadmin
+        </concat>
+    </target>
+    <target name="local-worker-compile" depends="local-worker-clean">
+        <antcall target="swap-to-local-worker" />
+        <ant antfile="${local-worker-dir}/build.xml" target="jar" inheritall="false" />
+    </target>
+    <target name="local-worker-clean" >
+        <ant antfile="${local-worker-dir}/build.xml" target="clean" inheritall="false" />
+        <antcall target="swap-to-local-worker" />
+    </target>
+    <target name="local-clean-all" depends="local-web-clean, local-worker-clean, local-db-clean" description="Clean all">
+    </target>
+    <target name="swap-to-local-db">
+        <copy overwrite="true" file="${local-db-persistence}" tofile="${local-db-dir}/src/META-INF/persistence.xml"/>
+    </target>
+    <target name="swap-to-local-worker">
+        <copy overwrite="true" file="${local-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
+    </target>
+    <target name="swap-to-server-db">
+        <copy overwrite="true" file="${server-db-persistence}" tofile="${local-db-dir}/src/META-INF/persistence.xml"/>
+    </target>
+    <target name="swap-to-server-worker">
+        <copy overwrite="true" file="${server-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
+    </target>
+    <target name="server-worker-compile" depends="local-worker-clean">
+        <antcall target="swap-to-server-worker" />
+        <ant antfile="${local-worker-dir}/build.xml" target="jar" inheritall="false" />
+    </target>
+    <target name="server-db-compile" depends="local-db-clean">
+        <antcall target="swap-to-server-db" />
+        <ant antfile="${local-db-dir}/build.xml" target="jar" inheritall="false" />
+    </target>
+    <target name="local-worker-run-nb" depends="local-worker-compile">
+        <ant antfile="${local-worker-dir}/build.xml" target="run" inheritall="false" />
+    </target>
+    <target name="remove-web-from-server">
+        <sshexec password="${server-password}" 
+                username="${server-username}"
+                host="${server-name}"
+                command="rm -f ${server-web-file}"
+                verbose="true"/>
+    </target>
+    <target name="copy-web-to-server">
+        <scp
+            host="${server-name}"
+            username="${server-username}"
+            password="${server-password}"
+            verbose="true"
+            file="${local-web-file}"
+            todir="${server-username}:${server-password}@${server-name}:${server-web-dir}"
+          />
+    </target>
+    <target name="remove-worker-from-server">
+        <sshexec password="${server-password}" 
+                username="${server-username}"
+                host="${server-name}"
+                command="rm -f ${server-worker-file}"
+                verbose="true"/>
+    </target>
+    <target name="copy-worker-to-server">
+        <scp
+            host="${server-name}"
+            username="${server-username}"
+            password="${server-password}"
+            verbose="true"
+            file="${local-worker-file}"
+            todir="${server-username}:${server-password}@${server-name}:${server-worker-dir}"
+          />
+    </target>
+        <target name="copy-db-to-server">
+        <scp
+            host="${server-name}"
+            username="${server-username}"
+            password="${server-password}"
+            verbose="true"
+            file="${local-db-file}"
+            todir="${server-username}:${server-password}@${server-name}:${server-worker-dir}/lib/"
+          />
+    </target>
+    <target name="server-worker-run-all" depends="server-worker-compile, copy-worker-to-server" description="Do all to run worker on server">
+        <antcall target="server-worker-run" />
+    </target>
+    <target name="server-worker-run" description="Run worker on server">
+        <sshexec password="${server-password}" 
+                username="${server-username}"
+                host="${server-name}"
+                command="${server-java} -jar
+                -Dtoplink.jdbc.user=${server-db-username} 
+                -Dtoplink.jdbc.password=${server-db-password}
+                -Dtoplink.jdbc.url=${server-db-url}
+                -Dtoplink.jdbc.driver=${server-db-driver}
+                -Dacorn.worker.logfile=${server-worker-log-file}
+                -Dacorn.worker.amkfbaPath=${server-amkfba-run}
+                -Dorg.omg.CORBA.ORBInitialPort=${local-iiport} ${server-worker-file}"
+                verbose="true">
+                    </sshexec>
+    </target>
+    <target name="local-amkfba-compile">
+        <exec dir="${local-amkfba-dir}" executable="${local-make}">
+            <arg value="Makefile"/>
+            <arg value="all"/>
+        </exec>
+    </target>
+    <target name="local-amkfba-clean">
+        <exec dir="${local-amkfba-dir}" executable="${local-make}">
+            <arg value="Makefile"/>
+            <arg value="clean"/>
+        </exec>
+    </target>
+    
+    <target name="server-kill-all-workers">
+        <sshexec password="${server-password}" 
+                username="${server-username}"
+                host="${server-name}"
+                command="kill -9 `ps -ef | grep Dtoplink.jdbc.url=jdbc:mysql://localhost:3306/acorn | grep -v grep | awk '{print $2}'`"
+                verbose="true">
+                    </sshexec>
+    </target>
+</project>

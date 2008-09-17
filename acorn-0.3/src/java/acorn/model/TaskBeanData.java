@@ -22,12 +22,16 @@ public class TaskBeanData {
     public String reactionNameFilter;
     public String speciesNameFilter;
     public String genesNameFilter;
+    public String visualizationsNameFilter;
     public int reactionsStart;
     public int speciesStart;
     public int genesStart;
+    public int visualizationsStart;
     public List<Condition> conditions;
     public List<Condition> originalConditions;
     public List<Condition> filteredConditions;
+    public List<Visualization> visualizations;
+    public List<Visualization> filteredVisualizations;
     public List<Species> species;
     public List<Species> filteredSpecies;
     public List<String> genes;
@@ -35,6 +39,7 @@ public class TaskBeanData {
     public EModel model;
     private String selectedReaction;
     private String selectedSpecies;
+    private String selectedVisualization;    
     private String selectedGene;
     public String taskName;
     public String method;
@@ -47,6 +52,7 @@ public class TaskBeanData {
         reactionsStart = 0;
         speciesStart = 0;
         genesStart = 0;
+        visualizationsStart = 0;
         errorMessage = "";
         lastUse = new Date();
         this.model = m;
@@ -75,6 +81,15 @@ public class TaskBeanData {
         return model;
     }
 
+    public String getSelectedVisualization() {
+        return selectedVisualization;
+    }
+
+    public void setSelectedVisualization(String selectedVisualization) {
+        this.selectedVisualization = selectedVisualization;
+    }
+
+    
     public String getSelectedReaction() {
         return selectedReaction;
     }

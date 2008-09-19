@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import javax.persistence.EntityManager;
 import java.util.List;
+import javax.persistence.NoResultException;
 
 /**
  * EReactionController
@@ -79,5 +80,23 @@ public class EReactionController extends EntityController {
             al.add(species.getSid());
         }
         return al;
+    }
+    
+        public EReaction getBySid(String reactionSid) {
+        EntityManager em = getEntityManager();
+        ArrayList<String> al = new ArrayList();
+        EReaction r = null;
+
+        //finds reaction by Sid - reaction parameter 
+        try {
+            em.getTransaction().begin();
+            r = (EReaction) em.createNamedQuery("EReaction.findBySid").setParameter("sid", reactionSid).getSingleResult();
+            em.getTransaction().commit();
+        }catch (NoResultException nre){
+            return null;
+        } finally {
+            em.close();
+        }
+        return r;
     }
 }

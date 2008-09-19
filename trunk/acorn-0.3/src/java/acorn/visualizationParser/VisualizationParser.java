@@ -5,6 +5,7 @@
 package acorn.visualizationParser;
 
 import acorn.db.EModelController;
+import acorn.db.EReaction;
 import acorn.db.EReactionController;
 import acorn.db.EVisualizationController;
 import acorn.exception.XmlParseException;
@@ -47,31 +48,33 @@ public class VisualizationParser {
 
     public void runParser() throws XmlParseException {
         isModelNameValid();
-        if (!isVisualizationNameFree()){
+        if (!isVisualizationNameFree()) {
             throw new XmlParseException("Name of visualization is in use. Write another one.");
-        };
+        }
+        ;
         parseDocument();
         vbb.insertToDB();
     }
-    
-    public void isModelNameValid() throws XmlParseException{
+
+    public void isModelNameValid() throws XmlParseException {
         EModelController emc = new EModelController();
-        try{
+        try {
             emc.getModelByName(modelName);
-        } catch (NoResultException e){
-            throw(new XmlParseException("Invalid model's name"));
+        } catch (NoResultException e) {
+            throw (new XmlParseException("Invalid model's name"));
         }
     }
 
-    public boolean isVisualizationNameFree(){
+    public boolean isVisualizationNameFree() {
         EVisualizationController evc = new EVisualizationController();
-        try{
+        try {
             evc.getVisualizationByName(visualizationName);
-        } catch(NoResultException e){
+        } catch (NoResultException e) {
             return true;
         }
         return false;
     }
+
     private void parseXmlFile(UploadedFile file) throws XmlParseException {
         //get the factory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -103,6 +106,7 @@ public class VisualizationParser {
     public void parseDocument() throws XmlParseException {
         //biorę listę wszystkich reakcji dla xmla
         NodeList nl = docEle.getElementsByTagName("transition");
+        EReactionController rc = new EReactionController();
         Element ele;
         for (int i = 0; i < nl.getLength(); i++) {
             ele = (Element) nl.item(i);
@@ -111,10 +115,12 @@ public class VisualizationParser {
             Element nameEle = (Element) ele.getElementsByTagName("name").item(0);
             String name = vbb.getValueOfNode(nameEle, "value");
 
-            if (!validateReactants(id, name) || !validateProducts(id, name)) {
-                XmlParseException xpe = new XmlParseException("Your reactions, reactants or products are not valid for the model you chose.");
-                throw xpe;
+            EReaction r = rc.getBySid(name);
+            if (r == null) {
+                throw new XmlParseException("There is no reaction: " + name + " in the model you chose.");
             }
+            validateReactants(id, name);
+            validateProducts(id, name);
         }
     }
 
@@ -122,30 +128,29 @@ public class VisualizationParser {
      * @params id - atrribute of transition node in xml file
      * @params name - name of reaction in db, name node in xml file
      */
-    public boolean validateReactants(String id, String name) {
+    public void validateReactants(String id, String name) throws XmlParseException {
         ArrayList<String> al = new ArrayList();
         ArrayList<String> dbAl = new ArrayList();
 
+        // list of reactants in XML (pipe2) file
         al = getSpeciesList(id, true);
         Iterator iter = al.iterator();
         while (iter.hasNext()) {
             String s = (String) iter.next();
         }
         EReactionController rc = new EReactionController();
+
         dbAl = rc.getReactantsSpeciesList(name);
-//        System.out.println("REACTANTS");
-//        wypiszListe((List<String>) al);
-//        System.out.println("REACTANTS DB");
-//        wypiszListe((List<String>) dbAl);
-        if (dbAl.size() != al.size()) {
-            return false;
+        for (String sid : al) {
+            if (!dbAl.contains(sid)) {
+                throw new XmlParseException("There is no reactant: "+sid+ " for reaction: "+name+" in model you chose.");
+            }
         }
         for (String sid : dbAl) {
             if (!al.contains(sid)) {
-                return false;
+                throw new XmlParseException("You forgot to add reactant: " +sid+" for reaction: "+name+ " for model you chose.");
             }
         }
-        return true;
     }
 
     public void wypiszListe(List<String> l) {
@@ -159,7 +164,7 @@ public class VisualizationParser {
      * @params name - name of reaction in db, name node in xml file
      */
 
-    public boolean validateProducts(String id, String name) {
+    public void validateProducts(String id, String name) throws XmlParseException {
         ArrayList<String> al = new ArrayList();
         ArrayList<String> dbAl = new ArrayList();
 
@@ -170,21 +175,18 @@ public class VisualizationParser {
         }
         EReactionController rc = new EReactionController();
         dbAl = rc.getProductsSpeciesList(name);
-//        System.out.println("REACTANTS");
-//        wypiszListe((List<String>) al);
-//        System.out.println("REACTANTS DB");
-//        wypiszListe((List<String>) dbAl);
 
-        if (dbAl.size() != al.size()) {
-            return false;
-        }
-        for (String sid : dbAl) {
-            if (!al.contains(sid)) {
-                return false;
+        for (String sid : al) {
+            if (!dbAl.contains(sid)) {
+                throw new XmlParseException("There is no product: "+sid+ " for reaction: "+name+" in model you chose.");
             }
         }
-        return true;
-
+        
+        for (String sid : dbAl) {
+            if (!al.contains(sid)) {
+                throw new XmlParseException("You forgot to add product: " +sid+" for reaction: "+name+ " for model you chose.");
+            }
+        }
     }
 
 

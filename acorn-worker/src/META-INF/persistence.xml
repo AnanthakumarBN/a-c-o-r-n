@@ -28,14 +28,7 @@
     <class>acorn.db.EVisArcReactant</class>
     <class>acorn.db.EVisArcpath</class>
     <class>acorn.db.EVisArc</class>
-    <properties>
-      <property name="toplink.jdbc.user" value="root"/>
-      <property name="toplink.jdbc.password" value="we76095"/>
-      <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/acorn"/>
-      <property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-      <!-- 
-    <property name="toplink.ddl-generation" value="create-tables"/>
-     -->
-    </properties>
+    <!--<properties>
+    </properties>-->
   </persistence-unit>
 </persistence>

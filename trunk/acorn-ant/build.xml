@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- You may freely edit this file. See commented blocks below for -->
-<!-- some examples of how to customize the build. -->
-<!-- (If you delete it and reopen the project it will be recreated.) -->
 <project name="acorn-ant" default="default" basedir=".">
     <description>Ant script</description>
-    <property name="local-root-name" value="trunk" />
+    <property file="local-individual.properties" />
     <property name="local-root-dir" value="../../${local-root-name}" />
     <property name="local-db-dir" value="${local-root-dir}/acorn-db" />
     <property name="local-web-dir" value="${local-root-dir}/acorn-0.3" />
@@ -16,27 +13,15 @@
     <property name="local-worker-name" value="acorn-worker.jar" />
     <property name="local-worker-file" value="${local-worker-dir}/dist/${local-worker-name}" />
     <property name="local-db-name" value="acorn-db.jar" />
-    <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />    
-    <property name="local-glassfish-home" value="/usr/local/glassfish-v2ur2/" />
+    <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />
     <property name="local-glassfish-asadmin" value="${local-glassfish-home}/bin/asadmin" />
-    <property name="local-domain-name" value="domain1" />
-    <property name="local-domain-dir" value="${local-glassfish-home}/domains/${local-domain-name}" />
     <property name="local-db-persistence" value="local-db-persistence.xml" />
     <property name="local-worker-persistence" value="local-worker-persistence.xml" />
     <property name="local-worker-properties" value="local-worker-project.properties" />
     <property name="local-acornConfig" value="local-acornConfig.xml" />
-    <property name="local-db-password" value="acorn" />
-    <property name="local-db-username" value="acorn" />
-    <property name="local-worker-log-file" value="/home/misiek/worker.log" />
-    <property name="local-iiport" value="3700" />
-    <property name="local-java" value="java" />
-    <property name="local-make" value="make" />
-    <property name="local-domain-passwordfile" value="${local-domain-dir}/.aspass" />
     <property name="server-db-persistence" value="server-db-persistence.xml" />
     <property name="server-worker-persistence" value="server-worker-persistence.xml" />
     <property name="server-name" value="sysbio1.sbs.surrey.ac.uk" />
-    <property name="server-password" value="we76095" />
-    <property name="server-username" value="root" />
     <property name="server-root-name" value="acorn" />
     <property name="server-root-dir" value="/usr/local/${server-root-name}" />
     <property name="server-web-dir" value="${server-root-dir}/acorn-1.0" />
@@ -50,18 +35,64 @@
     <property name="server-amkfba-dir" value="${server-root-dir}/amkfba" />
     <property name="server-amkfba-run" value="${server-amkfba-dir}/amkfba" />
     <property name="server-glassfish-home" value="/usr/local/glassfish" />
-    <!--<property name="server-glassfish-home" value="usr/local/glassfish" /> -->
     <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin" />
     <property name="server-domain-name" value="domain1" />
     <property name="server-domain-dir" value="${server-glassfish-home}/domains/${local-domain-name}" />
-    <property name="server-db-password" value="acorn" />
-    <property name="server-db-username" value="19ay04" />
     <property name="server-worker-log-file" value="${server-root-dir}/worker.log" />
     <property name="server-db-driver" value="com.mysql.jdbc.Driver" />
     <property name="server-db-url" value="jdbc:mysql://localhost:3306/acorn" />
     <property name="server-iiport" value="3700" />
     <property name="server-java" value="/opt/SDK/jdk/bin/java" />
     <property name="server-mysql-connector" value="${server-root-dir}/mysql-connector/mysql-connector-5.0.7-bin.jar" />
+    
+    <target name="save-server-db-auth" unless="server-db-password">
+        <input addproperty="server-db-username" message="Enter server database username: " />
+        <input addproperty="server-db-password" message="Enter server database password: " />
+        <echo file="${local-server-db-username-file}" message="${server-username}" />
+        <echo file="${local-server-db-password-file}" message="${server-password}" />
+    </target>
+    <target name="get-server-db-auth" unless="server-db-password" >
+        <loadfile property="server-db-username" srcfile="${local-server-db-username-file}" failonerror="false"/>
+        <loadfile property="server-db-password" srcfile="${local-server-db-password-file}" failonerror="false"/>
+        <antcall target="save-server-db-auth" />
+        <loadfile property="server-db-username" srcfile="${local-server-db-username-file}" failonerror="false"/>
+        <loadfile property="server-db-password" srcfile="${local-server-db-password-file}" failonerror="false" />
+    </target>
+    
+   <!--odkomentuj ponizsze (a zakomentuj odkomentowana o tej samej nazwie)
+   jezeli nie chcesz przechowywac danych o dostepie do bazy na dysku lokalnym
+   wtedy przy kazdym uruchomieniu workera system zapyta Cie o te dane
+   -->
+   <!-- 
+   <target name="get-server-db-auth" unless="server-db-password" >
+        <input addproperty="server-db-username" message="Enter server database username: " />
+        <input addproperty="server-db-password" message="Enter server database password: " />
+   </target>
+   -->
+
+   <!--odkomentuj ponizsze (a zakomentuj odkomentowana o tej samej nazwie) 
+   jezeli nie chcesz przechowywac danych o dostepie do bazy na dysku lokalnym
+   wtedy przy kazdym uruchomieniu workera system zapyta Cie o te dane
+   -->        
+   <!-- 
+   <target name="get-server-auth" unless="server-password" >
+        <input addproperty="server-username" message="Enter server username: " />
+        <input addproperty="server-password" message="Enter server password: " />
+   </target>
+   -->
+    <target name="save-server-auth" unless="server-password">
+        <input addproperty="server-username" message="Enter server username: " />
+        <input addproperty="server-password" message="Enter server password: " />
+        <echo file="${local-server-username-file}" message="${server-username}" />
+        <echo file="${local-server-password-file}" message="${server-password}" />
+    </target>
+    <target name="get-server-auth" unless="server-password" >
+        <loadfile property="server-username" srcfile="${local-server-username-file}" failonerror="false"/>
+        <loadfile property="server-password" srcfile="${local-server-password-file}" failonerror="false"/>
+        <antcall target="save-server-auth" />
+        <loadfile property="server-username" srcfile="${local-server-username-file}" failonerror="false"/>
+        <loadfile property="server-password" srcfile="${local-server-password-file}" failonerror="false" />
+    </target>
     <target name="archive-project" depends="local-clean-all" >
         <zip destfile="trunk.zip"
         basedir="${local-root-dir}"
@@ -96,24 +127,24 @@
     <target name="local-stop-domain" >
         <exec command="${local-glassfish-asadmin} stop-domain ${local-domain-name}" />
     </target>
-    <target name="server-web-compile" depends="server-db-compile" description="Compile acorn to deploy on server" >
+    <target name="server-web-compile" depends="get-server-auth, server-db-compile" description="Compile acorn to deploy on server" >
         <ant antfile="${local-web-dir}/build.xml" target="dist" inheritall="false" />
     </target>
-    <target name="server-start-domain" >
+    <target name="server-start-domain" depends="get-server-auth" >
         <sshexec password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="${server-glassfish-asadmin} start-domain ${server-domain-name}"
                 verbose="true"/>
     </target>
-    <target name="server-stop-domain" >
+    <target name="server-stop-domain" depends="get-server-auth" >
         <sshexec password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="${server-glassfish-asadmin} stop-domain ${server-domain-name}"
                 verbose="true"/>
     </target>
-    <target name="local-create-resources">
+    <target name="local-create-resources" >
         <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.QueueConnectionFactory imqConsumerFlowLimit=1 jms/taskQueueFactory" 
         failonerror=""/>
         <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.Queue jms/taskQueue" 
@@ -126,7 +157,7 @@
         <exec command="${local-glassfish-asadmin} delete-jms-resource --user admin --passwordfile ${local-domain-passwordfile} jms/taskQueue" 
         failonerror=""/>
     </target>
-    <target name="server-web-deploy" description="Deploy acorn on server">
+    <target name="server-web-deploy" description="Deploy acorn on server" depends="get-server-auth">
         <sshexec  
             password="${server-password}" 
             username="${server-username}"
@@ -135,10 +166,10 @@
             failonerror=""
         />
     </target>
-    <target name="server-web-deploy-all" depends="server-web-compile, copy-web-to-server" description="Do all to deploy acorn on server">
+    <target name="server-web-deploy-all" depends="get-server-auth, server-web-compile, copy-web-to-server" description="Do all to deploy acorn on server">
         <antcall target="server-web-deploy" />
     </target>
-    <target name="server-web-undeploy">
+    <target name="server-web-undeploy" depends="get-server-auth">
         <sshexec  
             password="${server-password}" 
             username="${server-username}"
@@ -147,7 +178,7 @@
             failonerror=""
         />
     </target>
-    <target name="server-create-resources">
+    <target name="server-create-resources" depends="get-server-auth">
         <sshexec  
             password="${server-password}" 
             username="${server-username}"
@@ -163,7 +194,7 @@
             failonerror=""
         />
     </target>
-    <target name="server-delete-resources">
+    <target name="server-delete-resources" depends="get-server-auth">
         <sshexec 
             password="${server-password}" 
             username="${server-username}"
@@ -235,14 +266,14 @@
     <target name="local-worker-run-nb" depends="local-worker-compile">
         <ant antfile="${local-worker-dir}/build.xml" target="run" inheritall="false" />
     </target>
-    <target name="remove-web-from-server">
+    <target name="remove-web-from-server" depends="get-server-auth">
         <sshexec password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="rm -f ${server-web-file}"
                 verbose="true"/>
     </target>
-    <target name="copy-web-to-server">
+    <target name="copy-web-to-server" depends="get-server-auth">
         <scp
             host="${server-name}"
             username="${server-username}"
@@ -252,14 +283,14 @@
             todir="${server-username}:${server-password}@${server-name}:${server-web-dir}"
           />
     </target>
-    <target name="remove-worker-from-server">
+    <target name="remove-worker-from-server" depends="get-server-auth">
         <sshexec password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="rm -f ${server-worker-file}"
                 verbose="true"/>
     </target>
-    <target name="copy-worker-to-server">
+    <target name="copy-worker-to-server" depends="get-server-auth">
         <scp
             host="${server-name}"
             username="${server-username}"
@@ -269,7 +300,7 @@
             todir="${server-username}:${server-password}@${server-name}:${server-worker-dir}"
           />
     </target>
-        <target name="copy-db-to-server">
+    <target name="copy-db-to-server" depends="get-server-auth">
         <scp
             host="${server-name}"
             username="${server-username}"
@@ -279,10 +310,10 @@
             todir="${server-username}:${server-password}@${server-name}:${server-worker-dir}/lib/"
           />
     </target>
-    <target name="server-worker-run-all" depends="server-worker-compile, copy-worker-to-server" description="Do all to run worker on server">
+    <target name="server-worker-run-all" depends="get-server-auth, get-server-db-auth, server-worker-compile, copy-worker-to-server" description="Do all to run worker on server">
         <antcall target="server-worker-run" />
     </target>
-    <target name="server-worker-run" description="Run worker on server">
+    <target name="server-worker-run" depends="get-server-auth, get-server-db-auth" description="Run worker on server">
         <sshexec password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
@@ -295,7 +326,7 @@
                 -Dacorn.worker.amkfbaPath=${server-amkfba-run}
                 -Dorg.omg.CORBA.ORBInitialPort=${local-iiport} ${server-worker-file}"
                 verbose="true">
-                    </sshexec>
+        </sshexec>
     </target>
     <target name="local-amkfba-compile">
         <exec dir="${local-amkfba-dir}" executable="${local-make}">
@@ -309,13 +340,12 @@
             <arg value="clean"/>
         </exec>
     </target>
-    
-    <target name="server-kill-all-workers">
+    <target name="server-kill-all-workers" depends="get-server-auth">
         <sshexec password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="kill -9 `ps -ef | grep Dtoplink.jdbc.url=jdbc:mysql://localhost:3306/acorn | grep -v grep | awk '{print $2}'`"
                 verbose="true">
-                    </sshexec>
+        </sshexec>
     </target>
 </project>

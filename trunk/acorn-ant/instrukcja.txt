@@ -1,0 +1,79 @@
+Instrukcja konfiguracji projektu przy użyciu Ant'a.
+1. Struktura rozwiązania
+
+    Założyłem nowy projekt "acorn-ant", który zawiera niezbędną konfigurację
+do uruchomienia projektu lokalnie oraz na serwerze. Ponieważ kompilacja oraz 
+dostęp do bazy danych na serwerze i lokalnie są inne, projekt podmienia pliki 
+konfiguracyjne (persistence.xml, project.properties) przed rozpoczęciem 
+kompilacji. 
+    Uwaga!! Plik local-individual.properties zawiera zmienne, ktore w zasadzie powinny
+zostac zdefiniowane indywidualnie na każdym komputerze.
+    W projekcie nie ma danych dostępu do serwera ani bazy danych, przy pierwszej
+probie polaczenia uzytkownik zostanie poproszony o ich podanie i zostana zapisane 
+w pliku na dysku. W przypadku pomylki mozna usunac pliki.
+    Jezeli rozwiazanie z zapisywaniem danych lokalnie na dysku nie jest eleganckie
+mozna zmienic zakomentowanie, zgodnie z opisem w pliku build.xml
+    Projektem zarzadzamy poprzez "targety". Target to zadanie do wykonania, np 
+uruchomienie workera na serwerze.
+
+2. Uruchamianie targetów
+    Targety można uruchamiać na dwa sposoby: 
+- poprzez środowisko Netbeans - klikamy prawym przyciskiem myszy na pliku 
+"build.xml" i rozwijamy liste "Run Target", to lista targetow, ktore uznalem
+za najczesciej uzywane. Aby zobaczyc pozostałe należy rozwinąć listę "Other Targets"
+
+3. Znaczenie targetów
+    
+get-server-auth - pobiera login i haslo uzytkownika z pliku lub pyta sie o te dane
+save-server-auth - pobiera od uzytkownika i zapisuje w pliku wskzanym przez local-individual.properties login i haslo
+get-server-db-auth - pobiera login i haslo dostepu do bazy na serwerze z pliku lub pyta sie o te dane
+save-server-db-auth - pobiera od uzytkownika i zapisuje w pliku wskzanym przez local-individual.properties login i haslo dostepu do bazy danych na serwerze
+
+archive-project - robi clean i archiwizuje projekt 
+
+local-worker-run-all - kompiluje i uruchamia workera lokalnie
+local-web-deploy - uruchamia projekt lokalnie
+local-amkfba-compile - robi make na amkfbie
+local-create-apass-file - tworzy lokalnie plik z haslem dla glassfisha (u mnie to bylo konieczne)
+local-create-resources - usuwa kolejki jms komunikatow
+local-worker-run-nb - uruchamia workera lokalnie wywolujac skrypt wygenerowany przez netbeans
+local-web-clean - czysci z binarek
+local-stop-domain - zatrzymyje domene lokalnie
+local-worker-run - uruchamia workera lokalnie (pomija kompilacje)
+local-amkfba-clean - robi make clean amkfby
+local-worker-clean - czysci zrodla worker
+local-db-compile - tworzy archiwum jar lokalnie
+local-delete-resources - usuwa kolejki jms zadan lokalnie
+local-web-deploy-all - kompiluje i uruchamia projekt lokalnie
+local-worker-compile - tworzy archiwum .jar
+local-db-clean - czyscie binarki projektu db
+local-clean-all - czysci binarki
+local-web-compile - tworzy archiwum .war projektu
+local-start-domain - uruchamia domene lokalnie
+local-copy-acorn-config - kopiuje lokalnie acornConfig do domeny glassfisha
+
+copy-db-to-server - kopiuje plik jar projektu na serwer
+copy-web-to-server - kopiuje plik *.war na serwer do domyslniej lokalizacji
+copy-worker-to-server - kopije plik .jar na serwer
+
+remove-web-from-server - usuwa plik .war z serwera i domyslej lokalizacji
+remove-worker-from-server - usuwa acorn-worker.jar z serwera z domyślej lokalizacji
+
+server-web-deploy - robi deploy na serwerze, pomija kompilacje i kopiowanie pliku war na serwer
+server-delete-resources - usuwa kolejki jms na serwerze
+server-stop-domain - zatrzymuje domene na serwerze
+server-worker-run - uruchamia workera na serwerze (juz znajdujacy sie tam plik), pomija kompilacje i kopiowanie na serwer
+server-db-compile - tworzy archirum .jar db
+server-create-resources - tworzy kolejki jms zadan na serwerze
+server-web-undeploy - robi undeploy na serwerze
+server-web-deploy-all - kompiluje projekt web, wysyla .war na serwer i robi deploy
+server-start-domain - uruchamia domene na serwerze
+server-kill-all-workers - zabija wszystkich workerow na serwerze, brak odpowiednika lokalnie
+server-web-compile - tworzy archiwum .war
+server-worker-run-all - kompiluje projekt worker, wysyla .jar na serwer i uruchamia
+server-worker-compile - tworzy plik .jar
+
+swap-to-local-db - podmienia pliki konfiguracyjne projektu acorn-db przed kompilacją wersji lokalnej 
+swap-to-local-worker - podmienia pliki konfiguracyjne projektu acorn-worker przed kompilację wersji lokalnej
+swap-to-server-db - podmienia pliki konfiguracyjne projektu acorn-db przed kompilacją wersji serwerowej 
+swap-to-server-worker - podmienia pliki konfiguracyjne projektu acorn-web przed kompilacją wersji serwerowej

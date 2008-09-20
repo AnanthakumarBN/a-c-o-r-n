@@ -131,14 +131,18 @@
         <ant antfile="${local-web-dir}/build.xml" target="dist" inheritall="false" />
     </target>
     <target name="server-start-domain" depends="get-server-auth" >
-        <sshexec password="${server-password}" 
+        <sshexec 
+                trust="true"
+                password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="${server-glassfish-asadmin} start-domain ${server-domain-name}"
                 verbose="true"/>
     </target>
     <target name="server-stop-domain" depends="get-server-auth" >
-        <sshexec password="${server-password}" 
+        <sshexec
+                trust="true"
+                password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="${server-glassfish-asadmin} stop-domain ${server-domain-name}"
@@ -159,6 +163,7 @@
     </target>
     <target name="server-web-deploy" description="Deploy acorn on server" depends="get-server-auth">
         <sshexec  
+            trust="true"
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
@@ -171,6 +176,7 @@
     </target>
     <target name="server-web-undeploy" depends="get-server-auth">
         <sshexec  
+            trust="true"
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
@@ -180,6 +186,7 @@
     </target>
     <target name="server-create-resources" depends="get-server-auth">
         <sshexec  
+            trust="true"
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
@@ -187,6 +194,7 @@
             failonerror=""
         />
         <sshexec 
+            trust="true"
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
@@ -196,6 +204,7 @@
     </target>
     <target name="server-delete-resources" depends="get-server-auth">
         <sshexec 
+            trust="true"
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
@@ -267,7 +276,9 @@
         <ant antfile="${local-worker-dir}/build.xml" target="run" inheritall="false" />
     </target>
     <target name="remove-web-from-server" depends="get-server-auth">
-        <sshexec password="${server-password}" 
+        <sshexec
+                trust="true"
+                password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="rm -f ${server-web-file}"
@@ -275,6 +286,7 @@
     </target>
     <target name="copy-web-to-server" depends="get-server-auth">
         <scp
+            trust="true"
             host="${server-name}"
             username="${server-username}"
             password="${server-password}"
@@ -284,7 +296,9 @@
           />
     </target>
     <target name="remove-worker-from-server" depends="get-server-auth">
-        <sshexec password="${server-password}" 
+        <sshexec 
+                trust="true"
+                password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="rm -f ${server-worker-file}"
@@ -292,6 +306,7 @@
     </target>
     <target name="copy-worker-to-server" depends="get-server-auth">
         <scp
+            trust="true"
             host="${server-name}"
             username="${server-username}"
             password="${server-password}"
@@ -302,6 +317,7 @@
     </target>
     <target name="copy-db-to-server" depends="get-server-auth">
         <scp
+            trust="true"
             host="${server-name}"
             username="${server-username}"
             password="${server-password}"
@@ -314,7 +330,9 @@
         <antcall target="server-worker-run" />
     </target>
     <target name="server-worker-run" depends="get-server-auth, get-server-db-auth" description="Run worker on server">
-        <sshexec password="${server-password}" 
+        <sshexec 
+                trust="true"
+                password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="${server-java} -jar
@@ -341,7 +359,9 @@
         </exec>
     </target>
     <target name="server-kill-all-workers" depends="get-server-auth">
-        <sshexec password="${server-password}" 
+        <sshexec 
+                trust="true"
+                password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
                 command="kill -9 `ps -ef | grep Dtoplink.jdbc.url=jdbc:mysql://localhost:3306/acorn | grep -v grep | awk '{print $2}'`"

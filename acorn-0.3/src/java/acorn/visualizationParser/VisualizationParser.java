@@ -8,6 +8,7 @@ import acorn.db.EModelController;
 import acorn.db.EReaction;
 import acorn.db.EReactionController;
 import acorn.db.EVisualizationController;
+import acorn.errorHandling.WriteErr;
 import acorn.exception.XmlParseException;
 import org.apache.myfaces.custom.fileupload.UploadedFile;
 import java.io.IOException;
@@ -115,20 +116,21 @@ public class VisualizationParser {
             Element nameEle = (Element) ele.getElementsByTagName("name").item(0);
             String name = vbb.getValueOfNode(nameEle, "value");
 
-            EReaction r = rc.getBySid(name);
+            EReaction r = rc.getByModelNameAndReactionSid(name, modelName);
             if (r == null) {
                 throw new XmlParseException("There is no reaction: " + name + " in the model you chose.");
             }
-            validateReactants(id, name);
-            validateProducts(id, name);
+            validateReactants(id, name, r.getId());
+            validateProducts(id, name, r.getId());
         }
     }
 
     /* reactants validation with database for reaction
      * @params id - atrribute of transition node in xml file
      * @params name - name of reaction in db, name node in xml file
+     * @paramx rId - id of reaciton in db
      */
-    public void validateReactants(String id, String name) throws XmlParseException {
+    public void validateReactants(String id, String name, int rId) throws XmlParseException {
         ArrayList<String> al = new ArrayList();
         ArrayList<String> dbAl = new ArrayList();
 
@@ -140,7 +142,7 @@ public class VisualizationParser {
         }
         EReactionController rc = new EReactionController();
 
-        dbAl = rc.getReactantsSpeciesList(name);
+        dbAl = rc.getReactantsSpeciesList(rId);
         for (String sid : al) {
             if (!dbAl.contains(sid)) {
                 throw new XmlParseException("There is no reactant: "+sid+ " for reaction: "+name+" in model you chose.");
@@ -162,9 +164,10 @@ public class VisualizationParser {
     /* products validation with database for reaction
      * @params id - atrribute of transition node in xml file
      * @params name - name of reaction in db, name node in xml file
+     * @params rid - id of reaction in db
      */
 
-    public void validateProducts(String id, String name) throws XmlParseException {
+    public void validateProducts(String id,String name, int rId) throws XmlParseException {
         ArrayList<String> al = new ArrayList();
         ArrayList<String> dbAl = new ArrayList();
 
@@ -174,7 +177,7 @@ public class VisualizationParser {
             String s = (String) iter.next();
         }
         EReactionController rc = new EReactionController();
-        dbAl = rc.getProductsSpeciesList(name);
+        dbAl = rc.getProductsSpeciesList(rId);
 
         for (String sid : al) {
             if (!dbAl.contains(sid)) {

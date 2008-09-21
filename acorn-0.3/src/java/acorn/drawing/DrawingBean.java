@@ -15,6 +15,7 @@ import acorn.db.EVisualizationController;
 import acorn.db.EfbaResultElement;
 import acorn.exception.DotFileException;
 import java.awt.BorderLayout;
+import java.awt.HeadlessException;
 import java.awt.Image;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -156,7 +157,7 @@ public class DrawingBean {
     public String runNeato(String filePath) throws DotFileException {
         try {
             Runtime rt = Runtime.getRuntime();
-            String firstRun = "neato -y -s" + scale + " -O " + filePath;
+            String firstRun = "neato -y -s" + scale + " " + filePath + " -o" + filePath + ".dot";
             Process p = rt.exec(firstRun);
             for (int i = 0; i <= 10; i++) {
                 if ((new File(filePath + ".dot")).exists()) {
@@ -172,7 +173,7 @@ public class DrawingBean {
                 }
             }
 
-            String secondRun = "neato -s" + scale + " -T" + format + " -O " + filePath + ".dot";
+            String secondRun = "neato -s" + scale + " -T" + format + " " + filePath + ".dot -o" + filePath + ".dot." + format;
 
             Process p2 = rt.exec(secondRun);
         } catch (Exception e) {
@@ -202,16 +203,16 @@ public class DrawingBean {
             }
             File file = new File(filePath);
             image = ImageIO.read(file);
-
+            // Use a label to display the image
+            JFrame frame = new JFrame();
+            JLabel label = new JLabel(new ImageIcon(image));
+            frame.getContentPane().add(label, BorderLayout.CENTER);
+            frame.pack();
+            frame.setVisible(true);
         } catch (IOException e) {
+        } catch (HeadlessException se) {
+            throw new DotFileException("No X11 DISPLAY variable was set on server. Path to your drawing:"+filePath);
         }
-
-        // Use a label to display the image
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel(new ImageIcon(image));
-        frame.getContentPane().add(label, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
     }
 
     public EVisualization getVis() {

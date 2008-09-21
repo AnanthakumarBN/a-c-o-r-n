@@ -50,7 +50,7 @@ public class AddVisualizationBean {
             context.addMessage(null, message);
             return null;
         }
-        
+
         catch (Exception e) {
             FacesContext context = FacesContext.getCurrentInstance();
             FacesMessage message = new FacesMessage(

@@ -27,7 +27,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NamedQueries({@NamedQuery(name = "EMetabolism.findById", query = "SELECT e FROM EMetabolism e WHERE e.id = :id"), 
 @NamedQuery(name = "EMetabolism.findBySid", query = "SELECT e FROM EMetabolism e WHERE e.sid = :sid"), 
 @NamedQuery(name = "EMetabolism.findByName", query = "SELECT e FROM EMetabolism e WHERE e.name = :name"), 
-@NamedQuery(name = "EMetabolism.findByOrganism", query = "SELECT e FROM EMetabolism e WHERE e.organism = :organism")})
+@NamedQuery(name = "EMetabolism.findByOrganism", query = "SELECT e FROM EMetabolism e WHERE e.organism = :organism"),
+@NamedQuery(name = "EMetabolism.findByIDAndReactionSid", query = "SELECT r from EMetabolism m JOIN m.eReactionCollection r where m.id=:id and r.sid=:sid")
+})
 public class EMetabolism implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

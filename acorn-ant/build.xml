@@ -21,11 +21,15 @@
     <property name="local-acornConfig" value="local-acornConfig.xml" />
     <property name="server-db-persistence" value="server-db-persistence.xml" />
     <property name="server-worker-persistence" value="server-worker-persistence.xml" />
-    <property name="server-name" value="sysbio1.sbs.surrey.ac.uk" />
+    <!--property name="server-name" value="sysbio1.sbs.surrey.ac.uk" /-->
+    <!--<propetry name="server-adminpassfile" value=".adminpassfile" /> -->
+    <property name="server-name" value="sysbio3.fhms.surrey.ac.uk" />
     <property name="server-root-name" value="acorn" />
     <property name="server-root-dir" value="/usr/local/${server-root-name}" />
-    <property name="server-web-dir" value="${server-root-dir}/acorn-1.0" />
+    <property name="server-web-dir" value="${server-root-dir}/acorn-0.3" />
     <property name="server-web-name" value="acorn-0.3.war" />
+    <property name="server-web-undeploy-name" value="acorn-0.3" />
+    <property name="file-to-asadmin-pass" value="/usr/local/acorn/.glassfishpassfile"/>
     <property name="server-web-file" value="${server-web-dir}/${server-web-name}" />
     <property name="server-worker-dir" value="${server-root-dir}/acorn-worker" />
     <property name="server-worker-name" value="acorn-worker.jar" />
@@ -40,16 +44,16 @@
     <property name="server-domain-dir" value="${server-glassfish-home}/domains/${local-domain-name}" />
     <property name="server-worker-log-file" value="${server-root-dir}/worker.log" />
     <property name="server-db-driver" value="com.mysql.jdbc.Driver" />
-    <property name="server-db-url" value="jdbc:mysql://localhost:3306/acorn" />
+    <property name="server-db-url" value="jdbc:mysql://localhost:3306/acorn-db" />
     <property name="server-iiport" value="3700" />
-    <property name="server-java" value="/opt/SDK/jdk/bin/java" />
+    <property name="server-java" value="/usr/java/jdk1.6.0_10/bin/java" />
     <property name="server-mysql-connector" value="${server-root-dir}/mysql-connector/mysql-connector-5.0.7-bin.jar" />
     
     <target name="save-server-db-auth" unless="server-db-password">
         <input addproperty="server-db-username" message="Enter server database username: " />
         <input addproperty="server-db-password" message="Enter server database password: " />
-        <echo file="${local-server-db-username-file}" message="${server-username}" />
-        <echo file="${local-server-db-password-file}" message="${server-password}" />
+        <echo file="${local-server-db-username-file}" message="${server-db-username}" />
+        <echo file="${local-server-db-password-file}" message="${server-db-password}" />
     </target>
     <target name="get-server-db-auth" unless="server-db-password" >
         <loadfile property="server-db-username" srcfile="${local-server-db-username-file}" failonerror="false"/>
@@ -149,7 +153,7 @@
                 verbose="true"/>
     </target>
     <target name="local-create-resources" >
-        <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.QueueConnectionFactory imqConsumerFlowLimit=1 jms/taskQueueFactory" 
+        <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.QueueConnectionFactory imqConsumerFlowLimit=1 jms/taskQueueFactory"
         failonerror=""/>
         <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.Queue jms/taskQueue" 
         failonerror=""/>
@@ -167,7 +171,7 @@
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
-            command="${server-glassfish-asadmin} deploy ${server-web-file}" 
+            command="${server-glassfish-asadmin} deploy --user admin --passwordfile ${file-to-asadmin-pass} ${server-web-file}"
             failonerror=""
         />
     </target>
@@ -180,7 +184,7 @@
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
-            command="${server-glassfish-asadmin} undeploy ${server-web-name}"
+            command="${server-glassfish-asadmin} undeploy --user admin --passwordfile ${file-to-asadmin-pass} ${server-web-undeploy-name}"
             failonerror=""
         />
     </target>
@@ -336,7 +340,7 @@
                 username="${server-username}"
                 host="${server-name}"
                 command="${server-java} -jar
-                -Dtoplink.jdbc.user=${server-db-username} 
+                -Dtoplink.jdbc.user=${server-db-username}
                 -Dtoplink.jdbc.password=${server-db-password}
                 -Dtoplink.jdbc.url=${server-db-url}
                 -Dtoplink.jdbc.driver=${server-db-driver}

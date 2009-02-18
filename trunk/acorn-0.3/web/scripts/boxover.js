@@ -371,3 +371,10 @@ function hideSelects(){
    elements[i].style.visibility='hidden';
    }
 }
+
+function popitup(url) {
+	newwindow=window.open(url,'name','height=500,width=650');
+	if (window.focus) {newwindow.focus()}
+	return false;
+}
+

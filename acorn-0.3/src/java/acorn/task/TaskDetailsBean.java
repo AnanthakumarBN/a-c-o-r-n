@@ -11,7 +11,6 @@ import acorn.db.ETaskController;
 import acorn.db.EUser;
 import acorn.db.EVisualization;
 import acorn.db.EVisualizationController;
-import acorn.db.EVisualizationController;
 import acorn.drawing.DrawingBean;
 import acorn.errorHandling.ErrorBean;
 import acorn.exception.DotFileException;
@@ -29,6 +28,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * TaskDetailsBean
@@ -281,7 +281,8 @@ public class TaskDetailsBean {
         }
         DrawingBean db = new DrawingBean(v, task);
         try {
-            db.draw();
+            String path = db.draw();
+            ((HttpServletRequest) context.getExternalContext().getRequest()).getSession().setAttribute("PICTURE_PATH", path);
         } catch (DotFileException dfe) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_FATAL,

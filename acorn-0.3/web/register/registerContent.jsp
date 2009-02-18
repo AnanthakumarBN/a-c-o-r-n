@@ -81,7 +81,7 @@
             Verification string: <h:inputText id="captchaText" 
                                               requiredMessage="*" 
                                               validator="#{UserManager.validateCaptchaText}"
-                                              required="true" 
+                                              required="true"
                                               value="#{UserManager.captchaText}">
                 <f:validateLength minimum="2" maximum="20"/>
             </h:inputText>

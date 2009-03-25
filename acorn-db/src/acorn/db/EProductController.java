@@ -36,4 +36,31 @@ public class EProductController extends EntityController {
             em.close();
         }  
     }
+
+      public List<EReaction> getReactions(ESpecies spec){
+        EntityManager em = getEntityManager();
+        try{
+            return em.createNamedQuery("EProduct.getReactionBySpecies").
+                    setParameter("spec1", spec).getResultList();
+        }finally{
+        }
+    }
+
+    public List<EReaction> getReactions(ESpecies spec1, ESpecies spec2){
+        EntityManager em = getEntityManager();
+        try{
+            return em.createNamedQuery("EProduct.getReactionBy2Species").
+                    setParameter("spec1", spec1).setParameter("spec2",spec2).getResultList();
+        }finally{
+        }
+    }
+
+    public List<ESpecies> getSpecies(EReaction reaction){
+        EntityManager em = getEntityManager();
+        try{
+            return em.createNamedQuery("EProduct.getSpeciesByReaction").
+                    setParameter("reaction", reaction).getResultList();
+        }finally{
+        }
+    }
 }

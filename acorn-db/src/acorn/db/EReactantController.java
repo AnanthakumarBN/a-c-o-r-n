@@ -19,7 +19,6 @@ public class EReactantController extends EntityController {
             return (List<EReactant>) em.createQuery("SELECT r FROM EReactant r WHERE r.reaction = :reaction").
                         setParameter("reaction", reaction).getResultList();
         } finally {
-            em.close();
         }
     }
     
@@ -35,5 +34,32 @@ public class EReactantController extends EntityController {
         } finally {
             em.close();
         }  
+    }
+
+    public List<EReaction> getReactions(ESpecies spec){
+        EntityManager em = getEntityManager();
+        try{
+            return em.createNamedQuery("EReactant.getReactionBySpecies").
+                    setParameter("spec1", spec).getResultList();
+        }finally{
+        }
+    }
+
+    public List<EReaction> getReactions(ESpecies spec1, ESpecies spec2){
+        EntityManager em = getEntityManager();
+        try{
+            return em.createNamedQuery("EReactant.getReactionBy2Species").
+                    setParameter("spec1", spec1).setParameter("spec2",spec2).getResultList();
+        }finally{
+        }
+    }
+
+    public List<ESpecies> getSpecies(EReaction reaction){
+        EntityManager em = getEntityManager();
+        try{
+            return em.createNamedQuery("EReactant.getSpeciesByReaction").
+                    setParameter("reaction", reaction).getResultList();
+        }finally{
+        }
     }
 }

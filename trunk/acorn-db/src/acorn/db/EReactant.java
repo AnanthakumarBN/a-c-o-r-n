@@ -23,7 +23,16 @@ import static javax.persistence.GenerationType.IDENTITY;
  */
 @Entity
 @Table(name = "EREACTANT")
-@NamedQueries({@NamedQuery(name = "EReactant.findById", query = "SELECT e FROM EReactant e WHERE e.id = :id"), @NamedQuery(name = "EReactant.findByStoichiometry", query = "SELECT e FROM EReactant e WHERE e.stoichiometry = :stoichiometry")})
+@NamedQueries({
+@NamedQuery(name = "EReactant.findById", query = "SELECT e FROM EReactant e WHERE e.id = :id"),
+@NamedQuery(name = "EReactant.findByStoichiometry", query = "SELECT e FROM EReactant e WHERE e.stoichiometry = :stoichiometry"),
+@NamedQuery(name = "EReactant.getReactionBySpecies",
+        query="SELECT r1.reaction FROM EReactant r1 WHERE r1.species = :spec1"),
+@NamedQuery(name = "EReactant.getReactionBy2Species", 
+        query = "SELECT r1.reaction FROM EReactant r1, EReactant r2 WHERE r1.reaction = r2.reaction and r1.species = :spec1 and r2.species = :spec2"),
+@NamedQuery(name= "EReactant.getSpeciesByReaction",
+        query="SELECT r.species FROM EReactant r WHERE r.reaction=:reaction")
+})
 public class EReactant implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

@@ -30,7 +30,12 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NamedQuery(name = "ESpecies.findBySid", query = "SELECT e FROM ESpecies e WHERE e.sid = :sid"), 
 @NamedQuery(name = "ESpecies.findByName", query = "SELECT e FROM ESpecies e WHERE e.name = :name"), 
 @NamedQuery(name = "ESpecies.findByCharge", query = "SELECT e FROM ESpecies e WHERE e.charge = :charge"), 
-@NamedQuery(name = "ESpecies.findByBoundaryCondition", query = "SELECT e FROM ESpecies e WHERE e.boundaryCondition = :boundaryCondition")})
+@NamedQuery(name = "ESpecies.findByBoundaryCondition", query = "SELECT e FROM ESpecies e WHERE e.boundaryCondition = :boundaryCondition"),
+@NamedQuery(name = "ESpecies.findByModelAndSid",
+    query = "SELECT s FROM ESpecies s, EModel m WHERE s.compartment.metabolism.id = m.metabolism.id AND m.name = :modelName and s.sid =:sid"),
+@NamedQuery(name = "ESpecies.findByModelName",
+    query = "SELECT s FROM ESpecies s, EModel m WHERE s.compartment.metabolism.id = m.metabolism.id AND m.name = :modelName")})
+
 public class ESpecies implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

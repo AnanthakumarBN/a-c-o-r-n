@@ -24,7 +24,14 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Table(name = "EPRODUCT")
 @NamedQueries({@NamedQuery(name = "EProduct.findById", query = "SELECT e FROM EProduct e WHERE e.id = :id"), 
-@NamedQuery(name = "EProduct.findByStoichiometry", query = "SELECT e FROM EProduct e WHERE e.stoichiometry = :stoichiometry")})
+@NamedQuery(name = "EProduct.findByStoichiometry", query = "SELECT e FROM EProduct e WHERE e.stoichiometry = :stoichiometry"),
+@NamedQuery(name = "EProduct.getReactionBySpecies",
+        query="SELECT r1.reaction FROM EProduct r1 WHERE r1.species = :spec1"),
+@NamedQuery(name = "EProduct.getReactionBy2Species",
+        query = "SELECT r1.reaction FROM EProduct r1, EProduct r2 WHERE r1.reaction = r2.reaction and r1.species = :spec1 and r2.species = :spec2"),
+@NamedQuery(name = "EProduct.getSpeciesByReaction",
+        query = "SELECT p.species FROM EProduct p WHERE p.reaction=:reaction")
+})
 public class EProduct implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

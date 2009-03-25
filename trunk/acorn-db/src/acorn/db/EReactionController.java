@@ -81,10 +81,9 @@ public class EReactionController extends EntityController {
         }
         return al;
     }
-    
-        public EReaction getByModelNameAndReactionSid(String reactionSid, String modelName) {
+
+    public EReaction getByModelNameAndReactionSid(String reactionSid, String modelName) {
         EntityManager em = getEntityManager();
-        ArrayList<String> al = new ArrayList();
         EReaction r = null;
         EModel m = null;
         EMetabolism metabol = null;
@@ -93,13 +92,33 @@ public class EReactionController extends EntityController {
             em.getTransaction().begin();
             m = (EModel) em.createNamedQuery("EModel.findByName").setParameter("name", modelName).getSingleResult();
             metabol = m.getMetabolism();
-            r = (EReaction) em.createNamedQuery("EMetabolism.findByIDAndReactionSid").setParameter("id",metabol.getId()).setParameter("sid", reactionSid).getSingleResult();
+            r = (EReaction) em.createNamedQuery("EMetabolism.findByIDAndReactionSid").setParameter("id", metabol.getId()).setParameter("sid", reactionSid).getSingleResult();
             em.getTransaction().commit();
-        }catch (NoResultException nre){
+        } catch (NoResultException nre) {
             return null;
         } finally {
             em.close();
         }
         return r;
+    }
+
+    public List<EReaction> getByModelName(String modelName) {
+        EntityManager em = getEntityManager();
+        List<EReaction> reactionList = new ArrayList<EReaction>();
+        EModel m = null;
+        EMetabolism metabolism = null;
+
+        try {
+            em.getTransaction().begin();
+            m = (EModel) em.createNamedQuery("EModel.findByName").setParameter("name", modelName).getSingleResult();
+            metabolism = m.getMetabolism();
+             reactionList = (List<EReaction>) em.createNamedQuery("EReaction.findByMetabolism").setParameter("metabolism", metabolism).getResultList();
+            em.getTransaction().commit();
+        } catch (NoResultException nre) {
+            return null;
+        } finally {
+            em.close();
+        }
+        return reactionList;
     }
 }

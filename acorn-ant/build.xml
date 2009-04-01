@@ -5,13 +5,16 @@
     <property name="local-root-dir" value="../../${local-root-name}" />
     <property name="local-db-dir" value="${local-root-dir}/acorn-db" />
     <property name="local-web-dir" value="${local-root-dir}/acorn-0.3" />
+    <property name="local-WS-dir" value="${local-root-dir}/AcornWS" />
     <property name="local-worker-dir" value="${local-root-dir}/acorn-worker" />
     <property name="local-amkfba-dir" value="${local-root-dir}/amkfba" />
     <property name="local-amkfba-run" value="${local-amkfba-dir}/amkfba" />
     <property name="local-web-name" value="acorn-0.3.war" />
     <property name="local-web-file" value="${local-web-dir}/dist/${local-web-name}" />
     <property name="local-worker-name" value="acorn-worker.jar" />
+    <property name="local-WS-name" value="AcornWSApplication.jar" />
     <property name="local-worker-file" value="${local-worker-dir}/dist/${local-worker-name}" />
+    <property name="local-WS-file" value="${local-WS-dir}/dist/${local-WS-name}" />
     <property name="local-db-name" value="acorn-db.jar" />
     <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />
     <property name="local-glassfish-asadmin" value="${local-glassfish-home}/bin/asadmin" />
@@ -27,10 +30,14 @@
     <property name="server-root-name" value="acorn" />
     <property name="server-root-dir" value="/usr/local/${server-root-name}" />
     <property name="server-web-dir" value="${server-root-dir}/acorn-0.3" />
+    <property name="server-WS-dir" value="${server-root-dir}/acorn-webservice" />
     <property name="server-web-name" value="acorn-0.3.war" />
+    <property name="server-WS-name" value="AcornWSApplication.jar" />
     <property name="server-web-undeploy-name" value="acorn-0.3" />
+    <property name="server-WS-undeploy-name" value="AcornWSApplication" />
     <property name="file-to-asadmin-pass" value="/usr/local/acorn/.glassfishpassfile"/>
     <property name="server-web-file" value="${server-web-dir}/${server-web-name}" />
+    <property name="server-WS-file" value="${server-WS-dir}/${server-WS-name}" />
     <property name="server-worker-dir" value="${server-root-dir}/acorn-worker" />
     <property name="server-worker-name" value="acorn-worker.jar" />
     <property name="server-worker-file" value="${server-worker-dir}/${server-worker-name}" />
@@ -135,7 +142,7 @@
         <ant antfile="${local-web-dir}/build.xml" target="dist" inheritall="false" />
     </target>
     <target name="server-start-domain" depends="get-server-auth" >
-        <sshexec 
+        <sshexec
                 trust="true"
                 password="${server-password}" 
                 username="${server-username}"
@@ -155,18 +162,18 @@
     <target name="local-create-resources" >
         <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.QueueConnectionFactory imqConsumerFlowLimit=1 jms/taskQueueFactory"
         failonerror=""/>
-        <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.Queue jms/taskQueue" 
+        <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.Queue jms/taskQueue"
         failonerror=""/>
     </target>
     <target name="local-delete-resources">
-        <exec command="${local-glassfish-asadmin} delete-jms-resource --user admin --passwordfile ${local-domain-passwordfile} jms/taskQueueFactory" 
+        <exec command="${local-glassfish-asadmin} delete-jms-resource --user admin --passwordfile ${local-domain-passwordfile} jms/taskQueueFactory"
         failonerror="">
         </exec>
-        <exec command="${local-glassfish-asadmin} delete-jms-resource --user admin --passwordfile ${local-domain-passwordfile} jms/taskQueue" 
+        <exec command="${local-glassfish-asadmin} delete-jms-resource --user admin --passwordfile ${local-domain-passwordfile} jms/taskQueue"
         failonerror=""/>
     </target>
     <target name="server-web-deploy" description="Deploy acorn on server" depends="get-server-auth">
-        <sshexec  
+        <sshexec
             trust="true"
             password="${server-password}" 
             username="${server-username}"
@@ -175,11 +182,11 @@
             failonerror=""
         />
     </target>
-    <target name="server-web-deploy-all" depends="get-server-auth, server-web-compile, copy-web-to-server" description="Do all to deploy acorn on server">
+    <target name="server-web-deploy-all" depends="get-server-auth, server-web-compile, server-web-undeploy, server-stop-domain, server-start-domain, copy-web-to-server" description="Do all to deploy acorn on server">
         <antcall target="server-web-deploy" />
     </target>
     <target name="server-web-undeploy" depends="get-server-auth">
-        <sshexec  
+        <sshexec
             trust="true"
             password="${server-password}" 
             username="${server-username}"
@@ -188,8 +195,31 @@
             failonerror=""
         />
     </target>
+    <target name="server-WS-deploy" description="Deploy acorn webservice on server" depends="get-server-auth">
+        <sshexec
+            trust="true"
+            password="${server-password}"
+            username="${server-username}"
+            host="${server-name}"
+            command="${server-glassfish-asadmin} deploy --user admin --passwordfile ${file-to-asadmin-pass} ${server-WS-file}"
+            failonerror=""
+        />
+    </target>
+    <target name="server-WS-deploy-all" depends="get-server-auth, server-web-compile, copy-WS-to-server" description="Do all to deploy acorn webservice on server">
+        <antcall target="server-WS-deploy" />
+    </target>
+    <target name="server-WS-undeploy" depends="get-server-auth">
+        <sshexec
+            trust="true"
+            password="${server-password}"
+            username="${server-username}"
+            host="${server-name}"
+            command="${server-glassfish-asadmin} undeploy --user admin --passwordfile ${file-to-asadmin-pass} ${server-WS-undeploy-name}"
+            failonerror=""
+        />
+    </target>
     <target name="server-create-resources" depends="get-server-auth">
-        <sshexec  
+        <sshexec
             trust="true"
             password="${server-password}" 
             username="${server-username}"
@@ -197,7 +227,7 @@
             command="${server-glassfish-asadmin} create-jms-resource --restype javax.jms.QueueConnectionFactory --property imqConsumerFlowLimit=1 jms/taskQueueFactory" 
             failonerror=""
         />
-        <sshexec 
+        <sshexec
             trust="true"
             password="${server-password}" 
             username="${server-username}"
@@ -207,14 +237,14 @@
         />
     </target>
     <target name="server-delete-resources" depends="get-server-auth">
-        <sshexec 
+        <sshexec
             trust="true"
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
             command="${server-glassfish-asadmin} delete-jms-resource jms/taskQueueFactory" 
             failonerror=""/>
-        <esshxec 
+        <esshxec
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
@@ -233,7 +263,7 @@
     </target>
     <target name="local-worker-run-all" depends="local-worker-compile" description="Compile and run worker on localhost">
         <ant target="local-worker-run" />
-    </target>    
+    </target>
     <!--
     <target name="server-copy-acorn-config" >
         <copy file="${local-acornConfig}" todir="${local-glassfish-home}/domains/${local-domain-name}/config" />
@@ -300,7 +330,7 @@
           />
     </target>
     <target name="remove-worker-from-server" depends="get-server-auth">
-        <sshexec 
+        <sshexec
                 trust="true"
                 password="${server-password}" 
                 username="${server-username}"
@@ -319,6 +349,17 @@
             todir="${server-username}:${server-password}@${server-name}:${server-worker-dir}"
           />
     </target>
+    <target name="copy-WS-to-server" depends="get-server-auth">
+        <scp
+            trust="true"
+            host="${server-name}"
+            username="${server-username}"
+            password="${server-password}"
+            verbose="true"
+            file="${local-WS-file}"
+            todir="${server-username}:${server-password}@${server-name}:${server-WS-dir}"
+          />
+    </target>
     <target name="copy-db-to-server" depends="get-server-auth">
         <scp
             trust="true"
@@ -334,7 +375,7 @@
         <antcall target="server-worker-run" />
     </target>
     <target name="server-worker-run" depends="get-server-auth, get-server-db-auth" description="Run worker on server">
-        <sshexec 
+        <sshexec
                 trust="true"
                 password="${server-password}" 
                 username="${server-username}"
@@ -363,7 +404,7 @@
         </exec>
     </target>
     <target name="server-kill-all-workers" depends="get-server-auth">
-        <sshexec 
+        <sshexec
                 trust="true"
                 password="${server-password}" 
                 username="${server-username}"

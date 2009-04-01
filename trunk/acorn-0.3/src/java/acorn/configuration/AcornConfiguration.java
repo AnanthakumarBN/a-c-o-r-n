@@ -33,22 +33,22 @@ public class AcornConfiguration {
                 String page = sub.getString("name");
                 securityLevel.put(page, secLevel);
             }
-            
+
             String driver = null;
             try {
                 driver = instance.getString("database.driver");
                 if (driver != null) {
                     Class.forName(driver);
-                    //Class.forName(driver, true, ClassLoader.getSystemClassLoader());
-                    //Class.forName(driver, false, ClassLoader.getSystemClassLoader());
-                } 
-                else System.err.println("property database.driver is not set!");
+                //Class.forName(driver, true, ClassLoader.getSystemClassLoader());
+                //Class.forName(driver, false, ClassLoader.getSystemClassLoader());
+                } else {
+                    System.err.println("property database.driver is not set!");
+                }
             } catch (Exception e1) {
                 if (driver == null) {
                     System.err.println("can't find database.driver property!");
                     e1.printStackTrace(System.err);
-                }
-                else {
+                } else {
                     System.err.println("Class.forName(\"" + driver + "\") failed!");
                     e1.printStackTrace(System.err);
                     try {
@@ -57,9 +57,10 @@ public class AcornConfiguration {
                         System.err.println("Class.forName(\"" + driver + "\", true) failed!");
                         e2.printStackTrace(System.err);
                         try {
-                            Class.forName(driver, false, ClassLoader.getSystemClassLoader());                
+                            Class.forName(driver, false, ClassLoader.getSystemClassLoader());
                         } catch (Exception e3) {
-                            System.err.println("Class.forName(\"" + driver + "\", false) failed!");e3.printStackTrace(System.err);
+                            System.err.println("Class.forName(\"" + driver + "\", false) failed!");
+                            e3.printStackTrace(System.err);
                         }
                     }
                 }
@@ -67,17 +68,32 @@ public class AcornConfiguration {
 
             String st = instance.getString("database.url");
             if (st != null) {
-                System.setProperty("toplink.jdbc.url", st);
+                try {
+                    System.clearProperty("toplink.jdbc.url");
+                    System.setProperty("toplink.jdbc.url", st);
+                } catch (IllegalArgumentException ex) {
+                    System.setProperty("toplink.jdbc.url", st);
+                }
             }
 
             st = instance.getString("database.user");
             if (st != null) {
-                System.setProperty("toplink.jdbc.user", st);
+                try {
+                    System.clearProperty("toplink.jdbc.user");
+                    System.setProperty("toplink.jdbc.user", st);
+                } catch (IllegalArgumentException ex) {
+                    System.setProperty("toplink.jdbc.user", st);
+                }
             }
 
             st = instance.getString("database.password");
             if (st != null) {
-                System.setProperty("toplink.jdbc.password", st);
+                try{
+                    System.clearProperty("toplink.jdbc.password");
+                 System.setProperty("toplink.jdbc.password", st);
+                }catch (IllegalArgumentException ex) {
+                    System.setProperty("toplink.jdbc.password", st);
+                }
             }
 
         } catch (ConfigurationException e) {

@@ -112,7 +112,6 @@ public class VisualizationParser {
         for (int i = 0; i < nl.getLength(); i++) {
             ele = (Element) nl.item(i);
             String id = ele.getAttribute("id");
-            System.out.println(id);
             Element nameEle = (Element) ele.getElementsByTagName("name").item(0);
             String name = vbb.getValueOfNode(nameEle, "value");
 
@@ -136,10 +135,6 @@ public class VisualizationParser {
 
         // list of reactants in XML (pipe2) file
         al = getSpeciesList(id, true);
-        Iterator iter = al.iterator();
-        while (iter.hasNext()) {
-            String s = (String) iter.next();
-        }
         EReactionController rc = new EReactionController();
 
         dbAl = rc.getReactantsSpeciesList(rId);
@@ -155,12 +150,6 @@ public class VisualizationParser {
         }
     }
 
-    public void wypiszListe(List<String> l) {
-        for (String s : l) {
-            System.out.println(s);
-        }
-        System.out.println("KONIEC WYPISYWANIA");
-    }
     /* products validation with database for reaction
      * @params id - atrribute of transition node in xml file
      * @params name - name of reaction in db, name node in xml file
@@ -172,10 +161,6 @@ public class VisualizationParser {
         ArrayList<String> dbAl = new ArrayList();
 
         al = getSpeciesList(id, false);
-        Iterator iter = al.iterator();
-        while (iter.hasNext()) {
-            String s = (String) iter.next();
-        }
         EReactionController rc = new EReactionController();
         dbAl = rc.getProductsSpeciesList(rId);
 

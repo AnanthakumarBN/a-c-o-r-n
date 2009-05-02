@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.glazelists
+OpenIDE-Module-Localizing-Bundle: org/glazelists/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: org.acorn.ws
+OpenIDE-Module-Localizing-Bundle: org/acorn/ws/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

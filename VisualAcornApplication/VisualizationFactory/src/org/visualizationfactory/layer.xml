@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="Edit">
+            <file name="MDActions-OpenVisFromDB.instance">
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="org.visualizationfactory.Bundle"/>
+                <attr name="delegate" newvalue="MDActions.OpenVisFromDB"/>
+                <attr name="displayName" bundlevalue="MDActions.Bundle#CTL_OpenVisFromDB"/>
+                <attr name="iconBase" stringvalue="MDActions/db_update.png"/>
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="noIconInMenu" stringvalue="false"/>
+            </file>
+            </folder>
+        <folder name="Window">
+            <file name="org-visualizationfactory-VisualizationFactoryAction.instance">
+                <attr name="SystemFileSystem.localizingBundle" stringvalue="org.visualizationfactory.Bundle"/>
+                <attr name="component" methodvalue="org.visualizationfactory.VisualizationFactoryTopComponent.findInstance"/>
+                <attr name="displayName" bundlevalue="org.visualizationfactory.Bundle#CTL_VisualizationFactoryAction"/>
+                <attr name="instanceCreate" methodvalue="org.openide.windows.TopComponent.openAction"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="File">
+            <file name="MDActions-OpenVisFromDB.shadow">
+                <attr name="originalFile" stringvalue="Actions/Edit/MDActions-OpenVisFromDB.instance"/>
+                <attr name="position" intvalue="1200"/>
+            </file>
+            <file name="MDActions-SaveToDB-separatorAfter.instance">
+                <attr name="instanceClass" stringvalue="javax.swing.JSeparator"/>
+                <attr name="position" intvalue="1350"/>
+            </file>
+            </folder>
+        <file name="Refactoring_hidden"/>
+        <file name="RunProject_hidden"/>
+        <file name="Source_hidden"/>
+        <file name="Versioning_hidden"/>
+        <folder name="Window">
+            <file name="VisualizationFactoryAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/org-visualizationfactory-VisualizationFactoryAction.instance"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Toolbars">
+        <folder name="File">
+            <file name="MDActions-OpenVisFromDB.shadow">
+                <attr name="originalFile" stringvalue="Actions/Edit/MDActions-OpenVisFromDB.instance"/>
+                <attr name="position" intvalue="500"/>
+            </file>
+            </folder>
+    </folder>
+    <folder name="Windows2">
+        <folder name="Components">
+            <file name="VisualizationFactoryTopComponent.settings" url="VisualizationFactoryTopComponentSettings.xml"/>
+        </folder>
+        <folder name="Modes">
+            <folder name="editor">
+                <file name="VisualizationFactoryTopComponent.wstcref" url="VisualizationFactoryTopComponentWstcref.xml"/>
+            </folder>
+        </folder>
+    </folder>
+</filesystem>

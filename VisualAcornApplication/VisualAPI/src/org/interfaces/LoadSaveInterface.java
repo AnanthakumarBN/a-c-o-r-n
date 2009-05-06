@@ -27,4 +27,10 @@ public interface LoadSaveInterface {
     public void nodesLocationAndControlPointsChanged();
 
     public void modelSet();
+
+    public void loadVisualization(List<VisEdge> edges);
+
+    public void clearVisualization();
+
+    public void addComputationsToTransitionsLabel(boolean addComp);
 }

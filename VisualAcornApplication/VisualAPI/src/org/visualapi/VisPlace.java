@@ -5,6 +5,8 @@
 
 package org.visualapi;
 
+import java.awt.Point;
+
 /**
  *
  * @author markos
@@ -13,6 +15,10 @@ public class VisPlace extends VisNode{
 
     public VisPlace() {
         super();
+    }
+
+    public VisPlace(String name, String sid, Point location, String xmlSid) {
+        super(name, sid, location, xmlSid);
     }
 
 

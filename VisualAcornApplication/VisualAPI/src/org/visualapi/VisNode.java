@@ -40,6 +40,15 @@ public abstract class VisNode {
         xmlSid = null;
     }
 
+    public VisNode(String name, String sid, Point location, String xmlSid) {
+        this.name = name;
+        this.sid = sid;
+        this.location = location;
+        this.xmlSid = xmlSid;
+        sourceNodes = new HashSet<VisNode>(0);
+        targetNodes = new HashSet<VisNode>(0);
+    }
+
     public String getName() {
         return name;
     }
@@ -88,8 +97,6 @@ public abstract class VisNode {
         this.targetNodes = targetNodes;
     }
 
-    
-
     @Override
     public String toString() {
         return sid;
@@ -115,7 +122,6 @@ public abstract class VisNode {
         return sourceNodes.remove(node);
     }
 
-
     /**
      * 
      * @param nameStructList this could be named by list of nameStructList
@@ -125,20 +131,47 @@ public abstract class VisNode {
         ArrayList<NameStruct> finalStructList = new ArrayList<NameStruct>(nameStructList);
         HashSet<NameStruct> allUsedNameStructs = new HashSet<NameStruct>(0);
 
-        for(VisNode target : targetNodes){
+        for (VisNode target : targetNodes) {
             allUsedNameStructs.addAll(target.getSourceNodesStruct());
         }
-        for(VisNode source : sourceNodes){
+        for (VisNode source : sourceNodes) {
             allUsedNameStructs.addAll(source.getTargetNodesStruct());
         }
-        
+
         finalStructList.removeAll(allUsedNameStructs);
-        if (!allUsedNameStructs.contains(this.getStruct())) {
-            if ((sourceNodes.size() != 0 || targetNodes.size() != 0) && this.sid != null && nameStructList.contains(this.getStruct())) {
-                finalStructList.add(this.getStruct());
-            }
+        if (isConnected() && this.sid != null && nameStructList.contains(this.getStruct()) && !isStructUsed()) {
+            finalStructList.add(this.getStruct());
         }
         return finalStructList;
+    }
+
+    /**
+     *
+     * @return true if all source and target nodes do not used the same struct as this, false in other case
+     */
+    private boolean isStructUsed() {
+        NameStruct myStruct = this.getStruct();
+        for (VisNode target : targetNodes) {
+            ArrayList<NameStruct> sourceList = target.getSourceNodesStruct();
+            if (sourceList.indexOf(myStruct) != sourceList.lastIndexOf(myStruct)) {
+                return true;
+            }
+        }
+        for (VisNode source : sourceNodes) {
+            ArrayList<NameStruct> targetList = source.getTargetNodesStruct();
+            if (targetList.indexOf(myStruct) != targetList.lastIndexOf(myStruct)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return true if node is connected with other node, false in other case
+     */
+    private boolean isConnected() {
+        return (sourceNodes.size() != 0 || targetNodes.size() != 0);
     }
 
     public void removeTargetConnections() {
@@ -198,7 +231,7 @@ public abstract class VisNode {
         return targetSids;
     }
 
-    public List<NameStruct> getTargetNodesStruct() {
+    public ArrayList<NameStruct> getTargetNodesStruct() {
         ArrayList<NameStruct> targetStructList = new ArrayList<NameStruct>(countNoNullNodes(targetNodes));
         for (VisNode node : targetNodes) {
             if (node.getSid() != null) {
@@ -243,6 +276,11 @@ public abstract class VisNode {
 
     public NameStruct getStruct() {
         return new NameStruct(this.name, this.sid);
+    }
+
+    public void removeNullsFromSets(){
+        this.targetNodes.remove(null);
+        this.sourceNodes.remove(null);
     }
 }
 

@@ -5,6 +5,7 @@
 package acorn.db;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -29,6 +30,8 @@ public abstract class EVisArc implements Serializable {
     private Collection <EVisArcpath> arcpathList;
 
     public EVisArc() {
+        this.sid = null;
+        this.arcpathList = new ArrayList<EVisArcpath>(0);
     }
 
     public EVisArc(String sid) {
@@ -47,7 +50,10 @@ public abstract class EVisArc implements Serializable {
     public void setArcpathList(Collection<EVisArcpath> arcpathList) {
         this.arcpathList = arcpathList;
     }
-    
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
     
     public Long getId() {
         return id;

@@ -55,9 +55,9 @@ public class EReactionController extends EntityController {
         return al;
     }
 
-    /*
-     * @params reactionSid - sid of reaction for which list of products sids is computed
-     * @returns - list of sid of Species for reaction with reactionSid
+    /**
+     * @param rId - id of reaction for which list of products sids is computed
+     * @return - list of sid of Species for reaction with reactionSid
      */
     public ArrayList<String> getProductsSpeciesList(int rId) {
         EntityManager em = getEntityManager();
@@ -66,7 +66,7 @@ public class EReactionController extends EntityController {
         EProductController pc = new EProductController();
         EReaction r;
 
-        //finds reaction by Sid - reaction parameter 
+        //finds reaction by id - reaction parameter 
         try {
             em.getTransaction().begin();
             r = (EReaction) em.createNamedQuery("EReaction.findById").setParameter("id", rId).getSingleResult();
@@ -102,6 +102,30 @@ public class EReactionController extends EntityController {
         return r;
     }
 
+    /**
+     *
+     * @param reactionSid  - sid of reaction
+     * @param model - model of reaction
+     * @return reaction - searched reaction
+     */
+    public EReaction getByModelAndReactionSid(String reactionSid, EModel model) {
+        EntityManager em = getEntityManager();
+        EReaction r = null;
+        EMetabolism metabol = null;
+        try {
+            em.getTransaction().begin();
+            metabol = model.getMetabolism();
+            r = (EReaction) em.createNamedQuery("EMetabolism.findByIDAndReactionSid").
+                    setParameter("id", metabol.getId()).setParameter("sid", reactionSid).getSingleResult();
+            em.getTransaction().commit();
+        } catch (NoResultException nre) {
+            return null;
+        } finally {
+            em.close();
+        }
+        return r;
+    }
+
     public List<EReaction> getByModelName(String modelName) {
         EntityManager em = getEntityManager();
         List<EReaction> reactionList = new ArrayList<EReaction>();
@@ -112,7 +136,7 @@ public class EReactionController extends EntityController {
             em.getTransaction().begin();
             m = (EModel) em.createNamedQuery("EModel.findByName").setParameter("name", modelName).getSingleResult();
             metabolism = m.getMetabolism();
-             reactionList = (List<EReaction>) em.createNamedQuery("EReaction.findByMetabolism").setParameter("metabolism", metabolism).getResultList();
+            reactionList = (List<EReaction>) em.createNamedQuery("EReaction.findByMetabolism").setParameter("metabolism", metabolism).getResultList();
             em.getTransaction().commit();
         } catch (NoResultException nre) {
             return null;

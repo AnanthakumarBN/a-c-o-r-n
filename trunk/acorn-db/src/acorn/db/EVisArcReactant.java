@@ -39,6 +39,15 @@ public class EVisArcReactant extends EVisArc implements Serializable {
         this.visualization = visualization;
     }
 
+    public EVisArcReactant(EVisPlace source_r, EVisTransition target_r, EVisualization visualization) {
+        super();
+        this.source_r = source_r;
+        this.target_r = target_r;
+        this.visualization = visualization;
+    }
+
+
+
     public EVisArcReactant() {
     }
 

@@ -6,9 +6,6 @@ package acorn.db;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -32,9 +29,11 @@ public class EVisArcProduct extends EVisArc implements Serializable {
     private EVisualization visualization;
 
     public EVisArcProduct() {
+        super();
     }
 
     public EVisArcProduct(EVisTransition source, EVisPlace target, EVisualization visualization) {
+        super();
         this.source_p = source;
         this.target_p = target;
         this.visualization = visualization;
@@ -45,6 +44,22 @@ public class EVisArcProduct extends EVisArc implements Serializable {
         this.source_p = transition;
         this.target_p = place;
         this.visualization = vis;
+    }
+
+    public EVisTransition getSource_p() {
+        return source_p;
+    }
+
+    public void setSource_p(EVisTransition source_p) {
+        this.source_p = source_p;
+    }
+
+    public EVisPlace getTarget_p() {
+        return target_p;
+    }
+
+    public void setTarget_p(EVisPlace target_p) {
+        this.target_p = target_p;
     }
 
     public EVisTransition getSource() {
@@ -71,10 +86,12 @@ public class EVisArcProduct extends EVisArc implements Serializable {
         this.visualization = visualization;
     }
 
+    @Override
     public Long getId() {
         return super.getId();
     }
 
+    @Override
     public void setId(Long id) {
          super.setId(id);
     }

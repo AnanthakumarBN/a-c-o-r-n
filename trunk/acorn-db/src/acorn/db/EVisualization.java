@@ -29,7 +29,9 @@ import javax.persistence.Table;
     @NamedQuery(name= "EVisualization.getPlaces", query="select v.places from EVisualization v where v.id=:id"),
     @NamedQuery(name= "EVisualization.getTransitions", query="select v.transitions from EVisualization v where v.id=:id"),
     @NamedQuery(name= "EVisualization.getArcResources", query="select v.arcResource from EVisualization v where v.id=:id"),
-    @NamedQuery(name= "EVisualization.getArcProducts", query="select v.arcProduct from EVisualization v where v.id=:id")
+    @NamedQuery(name= "EVisualization.getArcProducts", query="select v.arcProduct from EVisualization v where v.id=:id"),
+    @NamedQuery(name = "EVisualization.getAllVisualizations", query = "select v from EVisualization v"),
+    @NamedQuery(name = "EVisualization.getVisualizationsByModel", query = "select v from EVisualization v where v.model=:model")
 })
 public class EVisualization implements Serializable {
 
@@ -38,8 +40,6 @@ public class EVisualization implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-//    @ManyToOne
-//    private EModel model;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "visualization")
     private Collection<EVisPlace> places;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "visualization")

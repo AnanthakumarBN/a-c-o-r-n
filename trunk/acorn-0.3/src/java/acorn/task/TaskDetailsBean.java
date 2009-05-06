@@ -252,7 +252,7 @@ public class TaskDetailsBean {
     }
 
     public String generateDrawing() throws DotFileException, InterruptedException {
-        int modelId = getModelID();
+//        int modelId = getModelID();
         String visname = getSelectedVisualizations();
         FacesContext context = FacesContext.getCurrentInstance();
         if (visname == null) {

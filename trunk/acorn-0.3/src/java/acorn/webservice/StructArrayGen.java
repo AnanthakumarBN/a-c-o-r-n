@@ -27,7 +27,7 @@ public class StructArrayGen {
         return structArray;
     }
 
-    public static NameStruct[] getSortedReactionsArray(List<EReaction> list){
+    public static NameStruct[] getSortedReactionsArray(List<EReaction> list, String modelName){
         NameStruct[] structArray = new NameStruct[list.size()];
         int i = 0;
         for(EReaction spec: list){

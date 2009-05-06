@@ -21,7 +21,7 @@ public class ETaskController extends EntityController {
             em.close();
         }
     }
-    
+
     /**
      * Returns list of all tasks owned by @user.
      * @return - list of all tasks owned by @user
@@ -30,14 +30,14 @@ public class ETaskController extends EntityController {
         EntityManager em = getEntityManager();
         try {
             return (List<ETask>) em.createNamedQuery("ETask.findByUserID").
-                        setParameter("id", user).
-                        setHint("toplink.refresh", true).
-                        getResultList();
+                    setParameter("id", user).
+                    setHint("toplink.refresh", true).
+                    getResultList();
         } finally {
             em.close();
-        }  
+        }
     }
-    
+
     /**
      * Returns list of all shared tasks.
      * @return - list of all shared tasks
@@ -46,14 +46,14 @@ public class ETaskController extends EntityController {
         EntityManager em = getEntityManager();
         try {
             return (List<ETask>) em.createQuery("SELECT e FROM ETask e WHERE e.shared = :shared").
-                        setParameter("shared", true).
-                        setHint("toplink.refresh", true).
-                        getResultList();
+                    setParameter("shared", true).
+                    setHint("toplink.refresh", true).
+                    getResultList();
         } finally {
             em.close();
-        }  
+        }
     }
-    
+
     /**
      * Finds and returns @task.
      * @return - @task
@@ -70,9 +70,9 @@ public class ETaskController extends EntityController {
             return taskx;
         } finally {
             em.close();
-        }  
+        }
     }
-    
+
     /**
      * Finds and returns @taskId.
      * @return - @taskId
@@ -89,9 +89,9 @@ public class ETaskController extends EntityController {
             return taskx;
         } finally {
             em.close();
-        }  
+        }
     }
-    
+
     /**
      * Merges @task.
      */
@@ -103,9 +103,9 @@ public class ETaskController extends EntityController {
             em.getTransaction().commit();
         } finally {
             em.close();
-        }  
+        }
     }
-    
+
     /**
      * Removes @task from database.
      */
@@ -120,7 +120,7 @@ public class ETaskController extends EntityController {
             em.close();
         }
     }
-    
+
     /**
      * Removes @taskId from database.
      */
@@ -134,5 +134,27 @@ public class ETaskController extends EntityController {
         } finally {
             em.close();
         }
+    }
+
+
+    /* @params reactionSid - sid of reaction for which flux is returned
+     *
+     *
+     * @returns flux for pointed reaction and task
+     */
+    public float getFlux(ETask task, String reactionSid) {
+        float flux = 0;
+        List<EfbaResultElement> fbaList = (List<EfbaResultElement>) task.getEfbaResultElementCollection();
+        if (fbaList == null) {
+            return flux;
+        }
+        for (EfbaResultElement fba : fbaList) {
+            EReaction react = fba.getReaction();
+
+            if (react.getSid().equals(reactionSid)) {
+                return fba.getFlux();
+            }
+        }
+        return flux;
     }
 }

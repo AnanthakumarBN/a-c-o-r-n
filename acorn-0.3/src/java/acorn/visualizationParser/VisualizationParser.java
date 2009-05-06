@@ -8,14 +8,11 @@ import acorn.db.EModelController;
 import acorn.db.EReaction;
 import acorn.db.EReactionController;
 import acorn.db.EVisualizationController;
-import acorn.errorHandling.WriteErr;
 import acorn.exception.XmlParseException;
 import org.apache.myfaces.custom.fileupload.UploadedFile;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import javax.persistence.NoResultException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -52,7 +49,6 @@ public class VisualizationParser {
         if (!isVisualizationNameFree()) {
             throw new XmlParseException("Name of visualization is in use. Write another one.");
         }
-        ;
         parseDocument();
         vbb.insertToDB();
     }

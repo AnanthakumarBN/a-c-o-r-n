@@ -49,15 +49,16 @@
             <h:commandLink action="#{TaskDetailsBean.generateDrawing}" value="Generate drawing." >
                 <f:param name="taskID" value="#{param['taskID']}"/>
             </h:commandLink>
+            </div>
             <% if (request.getSession().getAttribute("PICTURE_PATH") != null) {
             %>
-            <a href="#" onclick="return popitup('/picture')">View</a>
+                <a href="#" onclick="return popitup('/picture')">View</a>
             <%        }
             %>
 
             <br/>
 
-        </div>
+
         <div class="navigationBox">
 
             <a4j:commandLink styleClass="navArrow" reRender="visualizations" action="#{TaskDetailsBean.visualizationsFirstPage}">

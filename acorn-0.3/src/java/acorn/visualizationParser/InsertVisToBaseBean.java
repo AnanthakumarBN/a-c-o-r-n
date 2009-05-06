@@ -6,6 +6,10 @@ package acorn.visualizationParser;
 
 import acorn.db.EModel;
 import acorn.db.EModelController;
+import acorn.db.EReaction;
+import acorn.db.EReactionController;
+import acorn.db.ESpecies;
+import acorn.db.ESpeciesController;
 import acorn.db.EVisArc;
 import acorn.db.EVisArcProduct;
 import acorn.db.EVisArcReactant;
@@ -33,6 +37,9 @@ public class InsertVisToBaseBean {
     NodeList transNl;
     ArrayList<EVisTransition> transitionList;
     EVisualization vis;
+
+    private ESpeciesController speciesController = new ESpeciesController();
+    private EReactionController reactionController = new EReactionController();
 
     public InsertVisToBaseBean(Element docEle, String visualizationName, String mName) {
         this.docEle = docEle;
@@ -79,30 +86,32 @@ public class InsertVisToBaseBean {
      */
 
     public EVisPlace createPlace(Element elem, EVisualization evis) {
-        String sid = elem.getAttribute("id");
+        String xmlSid = elem.getAttribute("id");
         Element nameElem = (Element) elem.getElementsByTagName("name").item(0);
-        String name = getValueOfNode(nameElem, "value");
+        String sid = getValueOfNode(nameElem, "value").split(";")[0];
         Element graphPosEle = (Element) elem.getElementsByTagName("graphics").item(0);
         Element positionEle = (Element) graphPosEle.getElementsByTagName("position").item(0);
         Point p = getPoint(positionEle);
-        int x = (int) p.getX();
-        int y = (int) p.getY();
+        double x = p.getX();
+        double y = p.getY();
         ArrayList<EVisArcReactant> rl = new ArrayList<EVisArcReactant>();
-        EVisPlace pl = new EVisPlace(name, sid, evis, x, y);
+        ESpecies species = speciesController.getBySidName(modelName, sid);
+        EVisPlace pl = new EVisPlace(xmlSid, x, y, vis, species);
         return pl;
     }
 
     public EVisTransition createTransition(Element elem, EVisualization evis) {
-        String sid = elem.getAttribute("id");
+        String xmlSid = elem.getAttribute("id");
         Element nameElem = (Element) elem.getElementsByTagName("name").item(0);
-        String name = getValueOfNode(nameElem, "value");
+        String sid = getValueOfNode(nameElem, "value").split(";")[0];
         Element graphPosEle = (Element) elem.getElementsByTagName("graphics").item(0);
         Element positionEle = (Element) graphPosEle.getElementsByTagName("position").item(0);
         Point p = getPoint(positionEle);
-        int x = (int) p.getX();
-        int y = (int) p.getY();
+        double x = p.getX();
+        double y = p.getY();
         ArrayList<EVisArcReactant> rl = new ArrayList<EVisArcReactant>();
-        EVisTransition trans = new EVisTransition(name, sid, x, y, evis);
+        EReaction reaction = reactionController.getByModelNameAndReactionSid(sid, modelName);
+        EVisTransition trans = new EVisTransition(xmlSid, p, reaction, vis);
         return trans;
     }
     /*
@@ -114,7 +123,7 @@ public class InsertVisToBaseBean {
 
         ArrayList<EVisArcReactant> rl = new ArrayList<EVisArcReactant>();
         for (EVisPlace place : placeList) {
-            ArrayList<Element> eleList = getElementsByAttribute("arc", "source", place.getSid());
+            ArrayList<Element> eleList = getElementsByAttribute("arc", "source", place.getXmlSid());
             EVisArcReactant arc;
             for (Element ele : eleList) {
                 String sid = ele.getAttribute("id");
@@ -140,7 +149,7 @@ public class InsertVisToBaseBean {
 
         ArrayList<EVisArcProduct> rl = new ArrayList<EVisArcProduct>();
         for (EVisPlace place : placeList) {
-            ArrayList<Element> eleList = getElementsByAttribute("arc", "target", place.getSid());
+            ArrayList<Element> eleList = getElementsByAttribute("arc", "target", place.getXmlSid());
             EVisArcProduct arc;
             for (Element ele : eleList) {
                 String sid = ele.getAttribute("id");
@@ -186,9 +195,9 @@ public class InsertVisToBaseBean {
      * 
      */
 
-    public EVisTransition getTransitionBySid(String sid) {
+    public EVisTransition getTransitionBySid(String xmlSid) {
         for (EVisTransition t : transitionList) {
-            if (sid.equals(t.getSid())) {
+            if (xmlSid.equals(t.getXmlSid())) {
                 return t;
             }
         }
@@ -198,9 +207,9 @@ public class InsertVisToBaseBean {
      * 
      */
 
-    public EVisPlace getPlaceBySid(String sid) {
+    public EVisPlace getPlaceByXmlSid(String xmlSid) {
         for (EVisPlace p : placeList) {
-            if (sid.equals(p.getSid())) {
+            if (xmlSid.equals(p.getXmlSid())) {
                 return p;
             }
         }

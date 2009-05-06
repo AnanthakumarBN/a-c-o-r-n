@@ -64,6 +64,30 @@
 <message name="removeVisualizationResponse">
 <part name="parameters" element="tns:removeVisualizationResponse"></part>
 </message>
+<message name="getDescendantVisualizationNames">
+<part name="parameters" element="tns:getDescendantVisualizationNames"></part>
+</message>
+<message name="getDescendantVisualizationNamesResponse">
+<part name="parameters" element="tns:getDescendantVisualizationNamesResponse"></part>
+</message>
+<message name="getMethodType">
+<part name="parameters" element="tns:getMethodType"></part>
+</message>
+<message name="getMethodTypeResponse">
+<part name="parameters" element="tns:getMethodTypeResponse"></part>
+</message>
+<message name="isFba">
+<part name="parameters" element="tns:isFba"></part>
+</message>
+<message name="isFbaResponse">
+<part name="parameters" element="tns:isFbaResponse"></part>
+</message>
+<message name="getVisualization">
+<part name="parameters" element="tns:getVisualization"></part>
+</message>
+<message name="getVisualizationResponse">
+<part name="parameters" element="tns:getVisualizationResponse"></part>
+</message>
 <portType name="AcornWS">
 <operation name="getEncoding">
 <input message="tns:getEncoding"></input>
@@ -102,6 +126,22 @@
 <operation name="removeVisualization">
 <input message="tns:removeVisualization"></input>
 <output message="tns:removeVisualizationResponse"></output>
+</operation>
+<operation name="getDescendantVisualizationNames">
+<input message="tns:getDescendantVisualizationNames"></input>
+<output message="tns:getDescendantVisualizationNamesResponse"></output>
+</operation>
+<operation name="getMethodType">
+<input message="tns:getMethodType"></input>
+<output message="tns:getMethodTypeResponse"></output>
+</operation>
+<operation name="isFba">
+<input message="tns:isFba"></input>
+<output message="tns:isFbaResponse"></output>
+</operation>
+<operation name="getVisualization">
+<input message="tns:getVisualization"></input>
+<output message="tns:getVisualizationResponse"></output>
 </operation>
 </portType>
 <binding name="AcornWSPortBinding" type="tns:AcornWS">
@@ -185,6 +225,42 @@
 </output>
 </operation>
 <operation name="removeVisualization">
+<soap:operation soapAction=""></soap:operation>
+<input>
+<soap:body use="literal"></soap:body>
+</input>
+<output>
+<soap:body use="literal"></soap:body>
+</output>
+</operation>
+<operation name="getDescendantVisualizationNames">
+<soap:operation soapAction=""></soap:operation>
+<input>
+<soap:body use="literal"></soap:body>
+</input>
+<output>
+<soap:body use="literal"></soap:body>
+</output>
+</operation>
+<operation name="getMethodType">
+<soap:operation soapAction=""></soap:operation>
+<input>
+<soap:body use="literal"></soap:body>
+</input>
+<output>
+<soap:body use="literal"></soap:body>
+</output>
+</operation>
+<operation name="isFba">
+<soap:operation soapAction=""></soap:operation>
+<input>
+<soap:body use="literal"></soap:body>
+</input>
+<output>
+<soap:body use="literal"></soap:body>
+</output>
+</operation>
+<operation name="getVisualization">
 <soap:operation soapAction=""></soap:operation>
 <input>
 <soap:body use="literal"></soap:body>

@@ -21,7 +21,7 @@ public class SpeciesReactionBuffer {
      *
      * species2 ...
      *
-     * i.e.                 /---> reacitoo21
+     * i.e.                 /---> reaction21
      * reaction1 ---> species1 ----> reaction11
      *                 /
      *   reaction2--->/
@@ -185,6 +185,19 @@ public class SpeciesReactionBuffer {
         } else {
             return stsStructList.getTargetList().containsAll(values);
         }
+    }
+
+    public boolean containsKey(NameStruct key, boolean isReactionMap, boolean isSource){
+        HashMap<NameStruct, STStructList> map = null;
+        if (isReactionMap) {
+            map = speciesForReaction;
+        } else {
+            map = reactionsForSpecies;
+        }
+        if (!map.containsKey(key)) {
+            return false;
+        }
+        return true;
     }
 
     public List<NameStruct> getNotValidNameStructs(NameStruct key, Collection<NameStruct> values, boolean isReactionMap, boolean isSource) throws BadKeyInBufferStruct{

@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import org.dbStructs.NameStruct;
 import org.exceptions.VisValidationException;
+import org.visualapi.VisNode;
 import org.visualapi.VisPlace;
 import org.visualapi.VisTransition;
 import org.interfaces.LoadSaveInterface;
@@ -46,8 +47,12 @@ public class DBSupporter {
         modelNameList = dataProvider.getModels();
         srBuffer = new SpeciesReactionBuffer();
         modelName = null;
-        visualizationNames = dataProvider.getAllVisualizationNames();
+        updateVisualizationNames();
         savedVisualizationName = null;
+    }
+
+    public void clearVisualizatioon() {
+        graphProvider.clearVisualization();
     }
 
     public LoadSaveInterface getGraphProvider() {
@@ -61,8 +66,6 @@ public class DBSupporter {
 //    public void setScene(GraphModelScene scene) {
 //        this.scene = scene;
 //    }
-
-    
     /**
      * @param reactants reactants in returned reactions
      * @param products products in returned reactions
@@ -168,6 +171,7 @@ public class DBSupporter {
             allReactionList = dataProvider.getAllReactionsByModelName(modelName);
             allSpeciesList = dataProvider.getAllSpeciesByModelName(modelName);
             graphProvider.modelSet();
+            this.updateVisualizationNames();
             return true;
         }
         return false;
@@ -200,13 +204,14 @@ public class DBSupporter {
     }
 
     public void updateVisualizationNames() {
-        this.visualizationNames = dataProvider.getAllVisualizationNames();
+        if (this.modelNameList.contains(this.modelName)) {
+            this.visualizationNames = dataProvider.getDescendantVisualizationNames(modelName);
+        }
     }
 
     public void removeVisualization(String name) {
         dataProvider.removeVisualization(name);
-//        updateVisualizationNames();
-        this.visualizationNames.remove(name);
+        this.updateVisualizationNames();
     }
 
     /**
@@ -255,7 +260,11 @@ public class DBSupporter {
 
     public void saveVisualization(String visualizationName)
             throws RepeatedVisualizationNameException_Exception, BadKeyInBufferStruct, VisValidationException, VisValidationException_Exception {
+
         validateVisualization();
+        if (visualizationNames.contains(visualizationName)) {
+            new VisValidationException("Visualization: " + visualizationName + "is in database.\n Write another one.");
+        }
         List<VisTransition> transitions = graphProvider.getTransitionsFromScene();
         List<VisPlace> places = graphProvider.getPlacesFromScene();
         List<VisEdge> edges = graphProvider.getEdgesFromScene();
@@ -263,5 +272,59 @@ public class DBSupporter {
         visualizationNames.add(visualizationName);
         savedVisualizationName = visualizationName;
         graphProvider.nodesLocationAndControlPointsChanged();
+        this.updateVisualizationNames();
+    }
+
+    public void eraseOldSaveNewVisualization(String visualizationName) throws BadKeyInBufferStruct, VisValidationException, RepeatedVisualizationNameException_Exception, VisValidationException_Exception {
+        validateVisualization();
+        this.removeVisualization(visualizationName);
+
+        List<VisTransition> transitions = graphProvider.getTransitionsFromScene();
+        List<VisPlace> places = graphProvider.getPlacesFromScene();
+        List<VisEdge> edges = graphProvider.getEdgesFromScene();
+        dataUploader.saveVisualization(modelName, visualizationName, transitions, places, edges);
+        visualizationNames.add(visualizationName);
+        savedVisualizationName = visualizationName;
+        graphProvider.nodesLocationAndControlPointsChanged();
+        this.updateVisualizationNames();
+
+    }
+
+    public void getVisualization(String visualizationName){
+        List<VisEdge> edges = dataProvider.getVisualization(visualizationName);
+        List<NameStruct> sourceTransitions = new ArrayList<NameStruct>(0);
+        List<NameStruct> targetTransitions = new ArrayList<NameStruct>(0);
+
+        List<NameStruct> sourceTransitionsToDown = new ArrayList<NameStruct>(0);
+        List<NameStruct> targetTransitionsToDown = new ArrayList<NameStruct>(0);
+
+        //updates SpeciesReactionBuffer
+        for(VisEdge edge : edges){
+            if(edge.getSource().isTransition()){
+                sourceTransitions.add(edge.getSource().getStruct());
+            }else{
+                targetTransitions.add(edge.getTarget().getStruct());
+            }
+        }
+        sourceTransitionsToDown = srBuffer.getStructsToDownload(sourceTransitions, true, false);
+        targetTransitionsToDown = srBuffer.getStructsToDownload(sourceTransitions, true, true);
+
+        //downloads from web service
+        for(NameStruct trans: sourceTransitionsToDown){
+            List<NameStruct> targetSpecies = dataProvider.getSpeciesForReaction(modelName, trans.getSid(), false);
+            srBuffer.addNameStructList(trans, targetSpecies, true, false);
+        }
+
+        for(NameStruct trans: targetTransitionsToDown){
+            List<NameStruct> sourceSpecies = dataProvider.getSpeciesForReaction(modelName, trans.getSid(), true);
+            srBuffer.addNameStructList(trans, sourceSpecies, true, true);
+        }
+        
+        graphProvider.loadVisualization(edges);
+        this.savedVisualizationName = visualizationName;
+    }
+
+    public void addcomputationsToTransitionsName(boolean addComp){
+        graphProvider.addComputationsToTransitionsLabel(addComp);
     }
 }

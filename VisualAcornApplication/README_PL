@@ -1,0 +1,11 @@
+Słownik:
+- Reakcja jest symbolizowana przez czarny porstokąt. Będę nazywał ją również tranzycją (wg nazewnictwa z Sieci Petriego)
+- Substancja biorąca udział w reakcjach to kółko. Będę ją nazywał miejscem.
+
+Przydatne praktyki:
+I. Schemat postępowania przy tworzeniu wizualizacji:
+    1. Najpierw rysujemy tranzycje i miejsca
+    2. Następnie łączymy je.
+    3. nazywamy je.
+Taki schemat zapobiega rysowaniu niewłaściwych wizualizacji (jeśli połączymy miejsce z tranzycją jako produkt, program będzie wiedział
+że dane miejsce może nazwać tylko nazwami substancji które są produktami danej reakcji).

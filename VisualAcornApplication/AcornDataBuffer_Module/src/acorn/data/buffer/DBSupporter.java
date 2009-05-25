@@ -16,11 +16,15 @@ import java.util.Collection;
 import java.util.List;
 import org.dbStructs.NameStruct;
 import org.exceptions.VisValidationException;
-import org.visualapi.VisNode;
+import org.openide.util.Lookup.Result;
 import org.visualapi.VisPlace;
 import org.visualapi.VisTransition;
 import org.interfaces.LoadSaveInterface;
 import org.visualapi.VisEdge;
+
+import org.structs.ComputationsVis;
+import org.openide.util.Lookup;
+import org.visualapi.VisNode;
 
 /**
  *
@@ -38,8 +42,13 @@ public class DBSupporter {
     private NameStruct[] template = new NameStruct[0];
     private List<String> visualizationNames;
     private String savedVisualizationName;
+
 //    private GraphModelScene scene;
     private LoadSaveInterface graphProvider;
+    private boolean fbaTask;
+    private boolean doneTask;
+    private Lookup.Result visCompResult;
+
 
     public DBSupporter() {
         dataProvider = new DBDataDownloader();
@@ -49,6 +58,24 @@ public class DBSupporter {
         modelName = null;
         updateVisualizationNames();
         savedVisualizationName = null;
+        fbaTask = false;
+        doneTask = false;
+    }
+
+    public boolean isDoneTask() {
+        return doneTask;
+    }
+
+    public boolean isFbaTask() {
+        return fbaTask;
+    }
+
+    public Result getVisCompResult() {
+        return visCompResult;
+    }
+
+    public void setVisCompResult(Result visCompResult) {
+        this.visCompResult = visCompResult;
     }
 
     public void clearVisualizatioon() {
@@ -71,7 +98,9 @@ public class DBSupporter {
      * @param products products in returned reactions
      * @return List of reactions that uses reactants and products
      */
-    public List<NameStruct> getSuitableReactions(List<NameStruct> reactants, List<NameStruct> products) {
+    public List<NameStruct> getSuitableReactions(VisTransition reaction) {
+        List<NameStruct> reactants = reaction.getSourceNodesStruct();
+        List<NameStruct> products = reaction.getTargetNodesStruct();
         List<NameStruct> finalList = new ArrayList<NameStruct>(allReactionList);
         List<NameStruct> notDownloadedSpeciesList;
         List<NameStruct> downloadedSpeciesList;
@@ -101,13 +130,12 @@ public class DBSupporter {
                 finalList.retainAll(srBuffer.getListOfReactions(downlodedSpecies, true));
             }
         }
-        System.out.print(srBuffer);
-//        NameStruct[] finalArray = finalList.toArray(template);
-//        Arrays.sort(finalArray);
         return finalList;
     }
 
-    public List<NameStruct> getSuitableSpecies(List<NameStruct> sourceReactions, List<NameStruct> targetReactions) {
+    public List<NameStruct> getSuitableSpecies(VisPlace place) {
+        List<NameStruct> sourceReactions = place.getSourceNodesStruct();
+        List<NameStruct> targetReactions = place.getTargetNodesStruct();
         List<NameStruct> finalSpeciesList = new ArrayList<NameStruct>(allSpeciesList);
         List<NameStruct> notDownloadedReactionList;
         List<NameStruct> downloadedReactionList;
@@ -161,6 +189,31 @@ public class DBSupporter {
         }
     }
 
+    /**
+     *
+     * @param reactionKey reaction NameStruct
+     * @param sourceSpecies if true returns source list of species NameStructs else target list
+     * @return list of reactants or products for reactionKey reaction
+     */
+    public List<NameStruct> getSpeciesForReaction(NameStruct reactionKey, boolean sourceSpecies){
+        List<NameStruct> species = srBuffer.getListOfSpecies(reactionKey, sourceSpecies);
+        if (species == null){
+            species = dataProvider.getSpeciesForReaction(modelName, reactionKey.getSid(), sourceSpecies);
+            srBuffer.addNameStructList(reactionKey, species, true, sourceSpecies);
+        }
+        return new ArrayList<NameStruct>(species);
+    }
+
+    public List<NameStruct> getReactionsForSpecies(NameStruct speciesKey, boolean sourceReactions){
+        List<NameStruct> reactions = srBuffer.getListOfReactions(speciesKey, sourceReactions);
+
+        if (reactions == null){
+            reactions = dataProvider.getReactionsForSpecies(modelName, speciesKey.getSid(), sourceReactions);
+            srBuffer.addNameStructList(speciesKey, reactions, false, sourceReactions);
+        }
+        return new ArrayList<NameStruct>(reactions);
+    }
+
     public String getModelName() {
         return modelName;
     }
@@ -172,6 +225,11 @@ public class DBSupporter {
             allSpeciesList = dataProvider.getAllSpeciesByModelName(modelName);
             graphProvider.modelSet();
             this.updateVisualizationNames();
+            graphProvider.clearVisualization();
+            this.fbaTask = dataProvider.isFbaTask(modelName);
+            this.doneTask = dataProvider.isTaskDone(modelName);
+
+//            this.srBuffer.clear();
             return true;
         }
         return false;
@@ -234,7 +292,7 @@ public class DBSupporter {
             if (sourceStructs != null) {
                 notValidStructs = srBuffer.getNotValidNameStructs(transStruct, sourceStructs, true, true);
                 if (notValidStructs.size() != 0) {
-                    String message = transStruct.getSid() + " has not reactant(s): ";
+                    String message = transStruct.getSid() + " doesn't have reactant(s): ";
                     for (NameStruct notValidStruct : notValidStructs) {
                         message = message.concat(notValidStruct.getSid() + ", ");
                     }
@@ -246,7 +304,7 @@ public class DBSupporter {
             if (targetStructs != null) {
                 notValidStructs = srBuffer.getNotValidNameStructs(transStruct, targetStructs, true, false);
                 if (notValidStructs.size() != 0) {
-                    String message = transStruct.getSid() + " has not product(s): ";
+                    String message = transStruct.getSid() + " doesn't have product(s): ";
                     for (NameStruct notValidStruct : notValidStructs) {
                         message = message.concat(notValidStruct.getSid() + ", ");
                     }
@@ -290,7 +348,7 @@ public class DBSupporter {
 
     }
 
-    public void getVisualization(String visualizationName){
+    public void getVisualization(String visualizationName) {
         List<VisEdge> edges = dataProvider.getVisualization(visualizationName);
         List<NameStruct> sourceTransitions = new ArrayList<NameStruct>(0);
         List<NameStruct> targetTransitions = new ArrayList<NameStruct>(0);
@@ -299,10 +357,10 @@ public class DBSupporter {
         List<NameStruct> targetTransitionsToDown = new ArrayList<NameStruct>(0);
 
         //updates SpeciesReactionBuffer
-        for(VisEdge edge : edges){
-            if(edge.getSource().isTransition()){
+        for (VisEdge edge : edges) {
+            if (edge.getSource().isTransition()) {
                 sourceTransitions.add(edge.getSource().getStruct());
-            }else{
+            } else {
                 targetTransitions.add(edge.getTarget().getStruct());
             }
         }
@@ -310,21 +368,39 @@ public class DBSupporter {
         targetTransitionsToDown = srBuffer.getStructsToDownload(sourceTransitions, true, true);
 
         //downloads from web service
-        for(NameStruct trans: sourceTransitionsToDown){
+        for (NameStruct trans : sourceTransitionsToDown) {
             List<NameStruct> targetSpecies = dataProvider.getSpeciesForReaction(modelName, trans.getSid(), false);
             srBuffer.addNameStructList(trans, targetSpecies, true, false);
         }
 
-        for(NameStruct trans: targetTransitionsToDown){
+        for (NameStruct trans : targetTransitionsToDown) {
             List<NameStruct> sourceSpecies = dataProvider.getSpeciesForReaction(modelName, trans.getSid(), true);
             srBuffer.addNameStructList(trans, sourceSpecies, true, true);
         }
-        
-        graphProvider.loadVisualization(edges);
+        Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
+        if (!c.isEmpty()) {
+            graphProvider.loadVisualization(edges, true);
+        } else {
+            graphProvider.loadVisualization(edges, false);
+        }
         this.savedVisualizationName = visualizationName;
     }
 
-    public void addcomputationsToTransitionsName(boolean addComp){
+    public void addcomputationsToTransitionsName(boolean addComp) {
         graphProvider.addComputationsToTransitionsLabel(addComp);
+    }
+
+    public void nameVisNode(VisNode node, NameStruct struct){
+        node.setName(struct.getName());
+        node.setSid(struct.getSid());
+        node.setXmlSid("");
+        
+        if(node.isTransition()){
+            ((VisTransition)node).setFlux( dataProvider.getFlux(modelName, struct.getSid()));
+        }
+    }
+
+    public float getFlux(String sid){
+        return dataProvider.getFlux(modelName, sid);
     }
 }

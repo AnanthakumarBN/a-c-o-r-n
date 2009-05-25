@@ -17,7 +17,7 @@ import org.dbStructs.NameStruct;
 public class SpeciesReactionBuffer {
 
     /**             -----sourceSet -> {reaction1, reaction2, ...}
-     * species1 ---|_____targetList -> {reaction11, reaction21, ...}
+     * species1 ---|_____targetSet -> {reaction11, reaction21, ...}
      *
      * species2 ...
      *
@@ -32,6 +32,11 @@ public class SpeciesReactionBuffer {
     public SpeciesReactionBuffer() {
         reactionsForSpecies = new HashMap<NameStruct, STStructList>();
         speciesForReaction = new HashMap<NameStruct, STStructList>();
+    }
+
+    public void clear() {
+        reactionsForSpecies.clear();
+        speciesForReaction.clear();
     }
 
     /**
@@ -210,9 +215,9 @@ public class SpeciesReactionBuffer {
         }
         if (!map.containsKey(key)) {
             if(isReactionMap){
-            throw new BadKeyInBufferStruct(key.toString() + "is not valid reaction.");
+            throw new BadKeyInBufferStruct(key.toString() + " isn't valid reaction.");
             }else{
-                throw new BadKeyInBufferStruct(key.toString()+ "is not valid species.");
+                throw new BadKeyInBufferStruct(key.toString()+ " isn't valid species.");
             }
 
         }

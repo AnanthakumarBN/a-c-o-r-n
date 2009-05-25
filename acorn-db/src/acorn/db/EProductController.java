@@ -43,6 +43,7 @@ public class EProductController extends EntityController {
             return em.createNamedQuery("EProduct.getReactionBySpecies").
                     setParameter("spec1", spec).getResultList();
         }finally{
+            em.close();
         }
     }
 
@@ -52,6 +53,7 @@ public class EProductController extends EntityController {
             return em.createNamedQuery("EProduct.getReactionBy2Species").
                     setParameter("spec1", spec1).setParameter("spec2",spec2).getResultList();
         }finally{
+            em.close();
         }
     }
 
@@ -61,6 +63,7 @@ public class EProductController extends EntityController {
             return em.createNamedQuery("EProduct.getSpeciesByReaction").
                     setParameter("reaction", reaction).getResultList();
         }finally{
+            em.close();
         }
     }
 }

@@ -318,6 +318,8 @@ public class EModelController extends EntityController {
             return true;
         } catch (NoResultException ex) {
             return false;
+        }finally{
+            em.close();
         }
     }
 
@@ -333,6 +335,8 @@ public class EModelController extends EntityController {
             }
         } catch (NoResultException ex) {
             return false;
+        }finally{
+            em.close();
         }
         return false;
     }

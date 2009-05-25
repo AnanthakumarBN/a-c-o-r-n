@@ -2,6 +2,7 @@ package acorn.db;
 
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 /**
  * ETaskController
@@ -156,5 +157,19 @@ public class ETaskController extends EntityController {
             }
         }
         return flux;
+    }
+
+    public ETask getTask(EModel model){
+        EntityManager em = getEntityManager();
+
+        try{
+            ETask task = (ETask) em.createNamedQuery("ETask.findByModel").setParameter("model", model).getSingleResult();
+            return task;
+        }catch(NoResultException ex){
+            return null;
+        }
+        finally{
+            em.close();
+        }
     }
 }

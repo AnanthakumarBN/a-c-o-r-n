@@ -33,18 +33,20 @@ public class EVisualizationController extends EntityController {
             EVisualization visualization = (EVisualization) em.createNamedQuery("EVisualization.getByName").setParameter("name", visName).getSingleResult();
             em.remove(visualization);
             em.getTransaction().commit();
-        }catch(NoResultException ex){
-            return;
-        }
-        finally {
+        } catch (NoResultException ex) {
+        } finally {
             em.close();
         }
     }
 
     public EVisualization getVisualizationByName(String name) {
         EntityManager em = getEntityManager();
-        EVisualization v = (EVisualization) em.createNamedQuery("EVisualization.getByName").setParameter("name", name).getSingleResult();
-        return v;
+        try {
+            EVisualization v = (EVisualization) em.createNamedQuery("EVisualization.getByName").setParameter("name", name).getSingleResult();
+            return v;
+        } finally {
+            em.close();
+        }
     }
 
     public List<EVisualization> getVisualization(EModel model) {
@@ -160,20 +162,19 @@ public class EVisualizationController extends EntityController {
 
         List<EVisualization> visualizations = new ArrayList<EVisualization>(0);
         EModel model = null;
+        
         try {
             model = mc.getModelByName(modelName);
-        } catch (NoResultException ex) {
-            return visualizations;
-        }
-        List<EModel> models = new ArrayList<EModel>(1);
-        models.add(model);
-        try {
+            List<EModel> models = new ArrayList<EModel>(1);
+            models.add(model);
             while (!models.isEmpty()) {
                 for (EModel mod : models) {
                     visualizations.addAll(getModelVisualizations(mod));
                 }
                 models = mc.getChildrenByModelList(models);
             }
+            return visualizations;
+        } catch (NoResultException ex) {
             return visualizations;
         } finally {
             em.close();

@@ -42,6 +42,7 @@ public class EReactantController extends EntityController {
             return em.createNamedQuery("EReactant.getReactionBySpecies").
                     setParameter("spec1", spec).getResultList();
         }finally{
+            em.close();
         }
     }
 
@@ -51,6 +52,7 @@ public class EReactantController extends EntityController {
             return em.createNamedQuery("EReactant.getReactionBy2Species").
                     setParameter("spec1", spec1).setParameter("spec2",spec2).getResultList();
         }finally{
+            em.close();
         }
     }
 
@@ -60,6 +62,7 @@ public class EReactantController extends EntityController {
             return em.createNamedQuery("EReactant.getSpeciesByReaction").
                     setParameter("reaction", reaction).getResultList();
         }finally{
+            em.close();
         }
     }
 }

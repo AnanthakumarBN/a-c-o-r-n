@@ -37,7 +37,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NamedQuery(name = "ETask.findByLastChange", query = "SELECT e FROM ETask e WHERE e.lastChange = :lastChange"),
 @NamedQuery(name = "ETask.findByStatus", query = "SELECT e FROM ETask e WHERE e.status = :status"), 
 @NamedQuery(name = "ETask.findByShared", query = "SELECT e FROM ETask e WHERE e.shared = :shared"),
-@NamedQuery(name = "ETask.findByUserID", query = "SELECT t FROM ETask t, EModel m WHERE t.model = m.id AND m.owner = :id")})
+@NamedQuery(name = "ETask.findByUserID", query = "SELECT t FROM ETask t, EModel m WHERE t.model = m.id AND m.owner = :id"),
+@NamedQuery(name = "ETask.findByModel" , query = "SELECT t FROM ETask t where t.model = :model")})
+
 public class ETask implements Serializable {
     public static String statusDone = "done";
     public static String statusInProgress = "in progress";

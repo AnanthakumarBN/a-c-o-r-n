@@ -28,7 +28,9 @@
     <class>acorn.db.EVisArcReactant</class>
     <class>acorn.db.EVisArcpath</class>
     <class>acorn.db.EVisArc</class>
-    <!--<properties>
-    </properties>-->
+    <class>acorn.db.EVisNode</class>
+    <properties>
+      <property name="toplink.ddl-generation" value="create-tables"/>
+    </properties>
   </persistence-unit>
 </persistence>

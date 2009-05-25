@@ -1,11 +1,105 @@
 Słownik:
-- Reakcja jest symbolizowana przez czarny porstokąt. Będę nazywał ją również tranzycją (wg nazewnictwa z Sieci Petriego)
+- Reakcja jest symbolizowana przez czarny prostokąt. Będę nazywał ją również tranzycją (wg nazewnictwa z Sieci Petriego)
 - Substancja biorąca udział w reakcjach to kółko. Będę ją nazywał miejscem.
+- Węzeł - to substancja lub reakcja.
+- Task - zadanie obliczone przez amkfbę. Jego wyniki można oglądać na wizualizacji przy nazwie reakcji.
+
+
+
+Schemat użytkowania:
+1. Rozpakuj plik visualacornapplication.zip - zostanie stworzony katalog "visualacornapplication". Wejdź do niego.
+1.5 Tutaj możesz znaleźć między innymi pliki "README_*".
+2. Przejdź do bin.
+3. Uruchom visualacornapplication(Linux) lub visualacornapplication.exe (Windows).
+3.5 Przez chwilę uruchamia się aplikacja.
+4. Otwiera się okno "VisualizationFactory Window" z zakładkami:
+   -"Program settings" - ustawiasz model dla którego będziesz tworzył wizualizacje
+   -"Validate/Save/Delete Vis" - walidujesz, zapisujesz, usuwasz, ładujesz wizualizacje
+   -"Visualization settings" - ustawiasz nazwę dla substancji i reakcji/ dodajesz obliczenia dla zadań FBA
+5. W zakładce "Program settins" wybierz model dla którego chcesz tworzyć wizualizację
+
+Otwieranie Okna "VisualizationFactory Window"
+5.1 Jeśli zamkniesz okno w którym rysujesz wizualizacje możesz je ponownie otworzyć.
+5.2 Wystarczy nacisnąć ALT+W albo kliknąć "Window" w górnym menu, a następnie wybrać
+"VisualizationFactory".
+
+Dodawanie tranzycji bądź miejsca:
+6. Kliknij prawym klawiszem myszy(lewym jeśli jesteś leworęczny) na ekranie na którym
+będziesz rysował wizualizacje.
+7. Wybierz "Create place" albo "create transition".
+
+Łączenie miejsca z tranzycją:
+8. Przytrzymaj CTRL + kliknij lewym klawiszem myszy na wezeł z którego chcesz poprowadzić strzałkę
+8.5 Trzymaj "CTRL" i klawisz myszy.
+9. Przeciągnij kursor nad węzeł, który chcesz połączyć strzałką.
+9.5 Puść klawisze.
+
+Usuwanie strzałki/połączenia pomiędzy tranzycją i miejscem:
+9.6 Kliknij na strzałkę którą chcesz usunąć.
+9.7 Złap myszką za jeden z jej końców i przesuń go z węzła.
+
+albo:
+9.6.1 Kliknij na strzałkę prawym klawiszem myszy
+
+
+Nazywanie węzłów:
+10. Kliknij na wybrany węzeł.
+11. Przejdź na zakładkę "Visualization settings".
+12. Wybierz odpoweidnią nazwę (każda substancja lub tranzycja jest symbolizowana przez swój SID)
+13. naciśnij przycisk "Set name".
+
+Przybliżanie, oddalanie, przesuwanie się po panelu do rysowania
+13.1 Przytrzymaj klawisz "CTRL" i porusz kółkiem myszki aby przybliżyć/oddalić wizualizację
+13.2 Naciśnij kółko myszki i przesuń kursor myszki aby przesunąć widoczną część wizualizacji
+13.3 Z lewej strony okna do rysowania wizualizacji znajduje się jej pomniejszenie.
+Możesz zmieniać obraz widoczny na głównym oknie łapiąc prostokąt i przesuwając go.
+
+Dodawanie obliczeń (wykonanych przez amkfbę) do wizualizacji:
+14. W zakładce: "Visualization settings" po prawej stronie znajdują się 2 Radio buttons.
+15. Jeśli Task którego model wybraliśmy jest obliczony i jest to zadanie FBA te Radio Buttons są aktywne.
+16. Należy przełączyć na tą pozycję która nam odpowiada(dodanie lub usunięcie obliczeń z wizualizacji).
+
+Zapisywanie/ Nadpisanie:
+17. W zakładce "validate/Save/Delete Vis" w polu tekstowym obok "visualization's name":
+wpisz nazwę wizualizacji.
+18. Następnie kliknij "Save to database" lub "Erase old and Save" aby zapisać.
+
+Walidacja wizualizacji / Czyszczenie wizualizacji:
+19. W zakładce "Validate/Save/Delete Vis" kliknij przycisk "Validate visualziation"
+aby sprawdzić poprawność wizualizacji. Jeśli są błędy - podpowiedź jak poprawić wizualizację
+zostanie wyświetlona.
+20. Jeśli chcesz usunąć całą wizualizację która jest na ekranie kliknij "Clear Visualization".
+
+Ładowanie/ Usuwanie wizualizacji z systemu Acorn:
+[Możesz ładować wizualizacje, które są podpięte pod model który ustawiłeś/aś i modele
+które są jego dziećmi]
+21. W zakładce "Validate/save/Delete Vis" z prawej strony z rozwijanej listy przy
+"Visualization names" wybierz odpowiednia wizualizację.
+22. Jeśli chcsz ją edytować kliknij "Load visualization". Wizualizacja pojawia się
+na ekranie.
+23. Jeśli chcesz ją usunąć klikasz "Delete visualization".
+
+Automatyczne generowanie substratów/produktów, reakcji źródłowych/docelowych
+24. Kliknięcie prawym klawiszem myszy na nazwaną reakcję lub substancję rozwija menu.
+25. Aby wygenerować reakcje źródłowe(dla substancji) lub substraty(dla reakcji)
+należy kliknąć "Add source nodes".
+26. Aby wygenerować reakcje docelowe (dla substancji) lub produkty (dla reakcji)
+należy kliknąć "Add target nodes".
 
 Przydatne praktyki:
 I. Schemat postępowania przy tworzeniu wizualizacji:
-    1. Najpierw rysujemy tranzycje i miejsca
-    2. Następnie łączymy je.
-    3. nazywamy je.
-Taki schemat zapobiega rysowaniu niewłaściwych wizualizacji (jeśli połączymy miejsce z tranzycją jako produkt, program będzie wiedział
-że dane miejsce może nazwać tylko nazwami substancji które są produktami danej reakcji).
+    1. Najpierw rysuj tranzycje i miejsca
+    2. Następnie połącz je.
+    3. nazwij je.
+Taki schemat zapobiega rysowaniu niewłaściwych wizualizacji (jeśli połączymy miejsce
+z tranzycją jako produkt, program będzie wiedział, że dane miejsce może nazwać tylko
+nazwami substancji które są produktami danej reakcji).
+
+II. Przy pozostawieniu kursora myszki bez ruchu pojawiają się podpowiedzi (Tooltips)
+które mają za zadanie pomóc przy użytkowaniu aplikacji.
+
+Błędy programu:
+W razie błędu przesyłaj komunikat na adres: mateusz.markowski@gmail.com
+Spróbuj opisać błąd, jaka sekwencja działań doprowadziła do błędu.
+
+Dzięki!

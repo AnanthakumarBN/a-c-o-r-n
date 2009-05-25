@@ -23,7 +23,7 @@ public class VisEdge {
         this.source = source;
         this.target = target;
         source.addTargetNode(target);
-        target.addSourceNode(source);
+//        target.addSourceNode(source);
         this.controlPoints = new ArrayList<Point>(0);
     }
 
@@ -64,6 +64,9 @@ public class VisEdge {
         addEdgeToNodes(this.source, this.target);
     }
 
+    /**
+     * removes this edge from sourceNode and targetNode
+     */
     public void removeEdgeFromNodes(){
         target.removeSourceNode(source);
         source.removeTargetNode(target);

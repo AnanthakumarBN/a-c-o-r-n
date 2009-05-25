@@ -6,6 +6,7 @@ package org.visualapi;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import org.dbStructs.NameStruct;
@@ -232,7 +233,7 @@ public abstract class VisNode {
     }
 
     public ArrayList<NameStruct> getTargetNodesStruct() {
-        ArrayList<NameStruct> targetStructList = new ArrayList<NameStruct>(countNoNullNodes(targetNodes));
+        ArrayList<NameStruct> targetStructList = new ArrayList<NameStruct>(0);
         for (VisNode node : targetNodes) {
             if (node.getSid() != null) {
                 targetStructList.add(new NameStruct(node.getName(), node.getSid()));
@@ -245,7 +246,7 @@ public abstract class VisNode {
      * @return sid list of nodes that are target nodes in connection with this
      */
     public ArrayList<String> getSourceNodesSid() {
-        ArrayList<String> sourceSids = new ArrayList<String>(countNoNullNodes(sourceNodes));
+        ArrayList<String> sourceSids = new ArrayList<String>(0);
         for (VisNode node : sourceNodes) {
             if (node.getSid() != null) {
                 sourceSids.add(node.getSid());
@@ -282,5 +283,32 @@ public abstract class VisNode {
         this.targetNodes.remove(null);
         this.sourceNodes.remove(null);
     }
+
+    private List<VisNode> getNoNullList(Collection<VisNode> nodes){
+        List<VisNode> noNullsList = new ArrayList<VisNode>(nodes);
+            for(VisNode node: nodes){
+                if(node.getSid() == null){
+                    noNullsList.remove(node);
+                }
+            }
+        return noNullsList;
+    }
+
+   public List<VisNode> getNoNullsSourceNodes(){
+       return getNoNullList(this.sourceNodes);
+   }
+
+   public List<VisNode> getNoNullsTargetNodes(){
+       return getNoNullList(this.targetNodes);
+   }
+
+
+   /**
+    * @param node
+    * @return if node and this are transitions or places returns true, if not returns false
+    */
+   public boolean isTheSame(VisNode node){
+       return (this.isPlace() && node.isPlace() ) || (this.isTransition() && node.isTransition());
+   }
 }
 

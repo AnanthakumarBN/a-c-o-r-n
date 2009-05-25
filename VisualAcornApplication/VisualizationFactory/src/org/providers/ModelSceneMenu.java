@@ -59,7 +59,9 @@ public class ModelSceneMenu implements PopupMenuProvider, ActionListener {
                 place = new VisTransition();
             }
 
+                place.setLocation(point);
                 Widget newNode = scene.addNode(place);
+                
                 //newNode.setPreferredLocation(point);
                 scene.getSceneAnimator().animatePreferredLocation(newNode, point);
                 scene.validate();

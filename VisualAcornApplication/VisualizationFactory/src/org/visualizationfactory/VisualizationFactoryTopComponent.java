@@ -21,24 +21,23 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import org.dbStructs.NameStruct;
 import org.exceptions.VisValidationException;
-import org.interfaces.LoadSaveInterface;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
+import org.structs.ComputationsVis;
 import org.view.NoSelectBorder;
 import org.view.NodeWidget;
 import org.view.SelectBorder;
+import org.vislogicengine.VisLogic;
 import org.visualapi.VisNode;
-
-enum ComputationsVis {
-
-    VISUALIZE, NOTVISUALIZE
-}
+import org.visualapi.VisPlace;
+import org.visualapi.VisTransition;
 
 public class VisualizationFactoryTopComponent extends TopComponent {
 
@@ -53,6 +52,8 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     private DBSupporter dbsupp = new DBSupporter();
     SelectBorder selectBorder = new SelectBorder();
     NoSelectBorder noselBorder = new NoSelectBorder();
+    private VisLogic logic;
+
 
     private VisualizationFactoryTopComponent() {
         initComponents();
@@ -78,11 +79,11 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                     List<NameStruct> structNames = null;
                     if (w.isPlaceWidget()) {
                         nodeNameLabel.setText("Name of place: ");
-                        structNames = dbsupp.getSuitableSpecies(node.getSourceNodesStruct(), node.getTargetNodesStruct());
+                        structNames = dbsupp.getSuitableSpecies((VisPlace) node);
 
                     } else if (w.isTransitionWidget()) {
                         nodeNameLabel.setText("Name of transition: ");
-                        structNames = dbsupp.getSuitableReactions(node.getSourceNodesStruct(), node.getTargetNodesStruct());
+                        structNames = dbsupp.getSuitableReactions((VisTransition) node);
                     }
                     structNames = node.removeUsedNodes(structNames);
                     namesComboBox.removeAllItems();
@@ -120,11 +121,15 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 
 
         dbsupp.setGraphProvider(scene.getLoadSaveListener());
+        logic = new VisLogic(scene.getLoadSaveListener());
+        logic.setDbsupp(dbsupp);
+        scene.setLogic(logic);
+        
         graphView = scene.createView();
         jScrollPane1.setViewportView(graphView);
         add(scene.createSatelliteView(), BorderLayout.WEST);
+        result = Utilities.actionsGlobalContext().lookupResult(VisNode.class);
 
-        result = org.openide.util.Utilities.actionsGlobalContext().lookupResult(VisNode.class);
         result.addLookupListener(new LookupListener() {
 
             @Override
@@ -146,24 +151,34 @@ public class VisualizationFactoryTopComponent extends TopComponent {
             }
         });
 
-        visCompResult = org.openide.util.Utilities.actionsGlobalContext().lookupResult(ComputationsVis.class);
-        visCompResult.addLookupListener(new LookupListener() {
+        visCompResult = Utilities.actionsGlobalContext().lookupResult(ComputationsVis.class);
+        dbsupp.setVisCompResult(visCompResult);
+        logic.setVisCompResult(visCompResult);
+        visCompResult.addLookupListener(
+                new LookupListener() {
 
-            @Override
-            public void resultChanged(LookupEvent e) {
-                Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
-                if(c.isEmpty()){
-                    System.out.println("AAAAAAAAAAAAA");
-                }else{
-                    System.out.println("BBBBBBBBBBB");
-                }
-            }
-        });
+                    @Override
+                    public void resultChanged(LookupEvent e) {
+                        Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
+                        if (c.isEmpty()) {
+                            dbsupp.addcomputationsToTransitionsName(false);
+                        } else {
+                            dbsupp.addcomputationsToTransitionsName(true);
+                        }
+                    }
+                });
+
+    }
+
+    private boolean isVisCompResultEmpty() {
+        Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
+        return c.isEmpty();
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         visualizationNamesComboBox1 = new javax.swing.JComboBox();
+        addCompButtonGrp = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
         settingsPanel = new javax.swing.JTabbedPane();
         programPanel = new javax.swing.JPanel();
@@ -193,8 +208,9 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         setNameButton = new javax.swing.JButton();
         fullNameLabel = new javax.swing.JLabel();
         fullName = new javax.swing.JLabel();
-        computationsCheckBox = new javax.swing.JCheckBox();
-        addCompToggleButton = new javax.swing.JToggleButton();
+        addCompRadioButton = new javax.swing.JRadioButton();
+        remCompRadioButton = new javax.swing.JRadioButton();
+        jSeparator2 = new javax.swing.JSeparator();
 
         visualizationNamesComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[0]));
         visualizationNamesComboBox1.setEnabled(false);
@@ -298,6 +314,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         });
 
         org.openide.awt.Mnemonics.setLocalizedText(eraseAndSaveButton, org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.eraseAndSaveButton.text")); // NOI18N
+        eraseAndSaveButton.setEnabled(false);
         eraseAndSaveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 eraseAndSaveButtonActionPerformed(evt);
@@ -305,6 +322,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         });
 
         org.openide.awt.Mnemonics.setLocalizedText(clearVisualizationButton, org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.clearVisualizationButton.text")); // NOI18N
+        clearVisualizationButton.setEnabled(false);
         clearVisualizationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearVisualizationButtonActionPerformed(evt);
@@ -344,16 +362,16 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                     .addGroup(validSavePanelLayout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(visualizationNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(SaveErrorsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
-                .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(saveVisToDBButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(eraseAndSaveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(validateButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(clearVisualizationButton, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE))
+                        .addComponent(visualizationNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(saveVisToDBButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(eraseAndSaveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(validateButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(clearVisualizationButton, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)))
+                    .addComponent(SaveErrorsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 666, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -363,7 +381,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                     .addComponent(visualizationNamesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(visualizationNamesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(482, Short.MAX_VALUE))
+                .addContainerGap(476, Short.MAX_VALUE))
         );
         validSavePanelLayout.setVerticalGroup(
             validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -381,11 +399,11 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                                     .addComponent(saveVisToDBButton)
                                     .addComponent(validateButton))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(eraseAndSaveButton)
-                                .addComponent(clearVisualizationButton))
-                            .addComponent(SaveErrorsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 62, Short.MAX_VALUE)))
+                        .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(eraseAndSaveButton)
+                            .addComponent(clearVisualizationButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(SaveErrorsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, validSavePanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -425,58 +443,75 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 
         org.openide.awt.Mnemonics.setLocalizedText(fullName, org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.fullName.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(computationsCheckBox, org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.computationsCheckBox.text")); // NOI18N
-        computationsCheckBox.addActionListener(new java.awt.event.ActionListener() {
+        addCompButtonGrp.add(addCompRadioButton);
+        org.openide.awt.Mnemonics.setLocalizedText(addCompRadioButton, org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.addCompRadioButton.text")); // NOI18N
+        addCompRadioButton.setEnabled(false);
+        addCompRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                computationsCheckBoxActionPerformed(evt);
+                addCompRadioButtonActionPerformed(evt);
             }
         });
 
-        org.openide.awt.Mnemonics.setLocalizedText(addCompToggleButton, org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.addCompToggleButton.text")); // NOI18N
-        addCompToggleButton.addActionListener(new java.awt.event.ActionListener() {
+        addCompButtonGrp.add(remCompRadioButton);
+        remCompRadioButton.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(remCompRadioButton, org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.remCompRadioButton.text")); // NOI18N
+        remCompRadioButton.setEnabled(false);
+        remCompRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addCompToggleButtonActionPerformed(evt);
+                remCompRadioButtonActionPerformed(evt);
             }
         });
+
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         javax.swing.GroupLayout visualizationPanelLayout = new javax.swing.GroupLayout(visualizationPanel);
         visualizationPanel.setLayout(visualizationPanelLayout);
         visualizationPanelLayout.setHorizontalGroup(
             visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(visualizationPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(nodeNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(fullNameLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(setNameButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)))
-                .addGap(53, 53, 53)
                 .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(visualizationPanelLayout.createSequentialGroup()
-                        .addComponent(addCompToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(25, 25, 25)
+                        .addComponent(nodeNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(fullName, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(computationsCheckBox)
-                    .addComponent(namesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(662, Short.MAX_VALUE))
+                        .addComponent(namesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(setNameButton, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(visualizationPanelLayout.createSequentialGroup()
+                        .addGap(38, 38, 38)
+                        .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fullName, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(fullNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(30, 30, 30)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(remCompRadioButton)
+                    .addComponent(addCompRadioButton))
+                .addContainerGap(640, Short.MAX_VALUE))
         );
         visualizationPanelLayout.setVerticalGroup(
             visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(visualizationPanelLayout.createSequentialGroup()
-                .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nodeNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(namesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(setNameButton)
-                    .addComponent(computationsCheckBox))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(fullNameLabel)
-                        .addComponent(fullName, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(addCompToggleButton))
-                .addContainerGap(13, Short.MAX_VALUE))
+                    .addGroup(visualizationPanelLayout.createSequentialGroup()
+                        .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(nodeNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(namesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(setNameButton))
+                            .addComponent(addCompRadioButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(visualizationPanelLayout.createSequentialGroup()
+                                .addComponent(remCompRadioButton)
+                                .addGap(27, 27, 27))
+                            .addGroup(visualizationPanelLayout.createSequentialGroup()
+                                .addComponent(fullNameLabel)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fullName, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         settingsPanel.addTab(org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.visualizationPanel.TabConstraints.tabTitle"), visualizationPanel); // NOI18N
@@ -484,35 +519,20 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         add(settingsPanel, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void addCompToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCompToggleButtonActionPerformed
-        if (addCompToggleButton.isSelected()) {
-            content.add(ComputationsVis.VISUALIZE);
-            dbsupp.addcomputationsToTransitionsName(true);
-            addCompToggleButton.setText("Remove computations from vis");
-        } else {
-            content.remove(ComputationsVis.VISUALIZE);
-            dbsupp.addcomputationsToTransitionsName(false);
-            addCompToggleButton.setText("Add computations to vis");
-        }
-}//GEN-LAST:event_addCompToggleButtonActionPerformed
-
-    private void computationsCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_computationsCheckBoxActionPerformed
-        if (computationsCheckBox.isSelected()) {
-            content.add(ComputationsVis.VISUALIZE);
-            dbsupp.addcomputationsToTransitionsName(true);
-        } else {
-            content.remove(ComputationsVis.VISUALIZE);
-            dbsupp.addcomputationsToTransitionsName(false);
-        }
-}//GEN-LAST:event_computationsCheckBoxActionPerformed
-
     private void setNameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setNameButtonActionPerformed
         if (selectedWidget instanceof NodeWidget) {
             NameStruct selectedStruct = (NameStruct) namesComboBox.getSelectedItem();
-            selectedWidget.setNameAndSid(selectedStruct.getName(), selectedStruct.getSid());
+            VisNode node = selectedWidget.getVisNode();
+
+            dbsupp.nameVisNode(node, selectedStruct);
             selectedWidget.setLabel(selectedStruct.getSid());
+
             if (selectedWidget.isTransitionWidget()) {
                 dbsupp.setSpeciesForReaction(selectedStruct);
+                Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
+                if (!c.isEmpty()) {
+                    selectedWidget.setLabel(selectedStruct.getSid() + " " + Float.toString(((VisTransition) node).getFlux()));
+                }
             }
             content.remove(selectedWidget.getVisNode());
             content.add(selectedWidget.getVisNode());
@@ -525,13 +545,17 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 
     private void loadVisualizationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadVisualizationButtonActionPerformed
         String visName = (String) visualizationNamesComboBox.getSelectedItem();
-        dbsupp.getVisualization(visName);
+        if (visName != null) {
+            dbsupp.getVisualization(visName);
+        }
 }//GEN-LAST:event_loadVisualizationButtonActionPerformed
 
     private void deleteVisualizationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteVisualizationButtonActionPerformed
         String visName = (String) visualizationNamesComboBox.getSelectedItem();
-        dbsupp.removeVisualization(visName);
-        this.updateVisualizationNamesComboBox();
+        if (visName != null) {
+            dbsupp.removeVisualization(visName);
+            this.updateVisualizationNamesComboBox();
+        }
 }//GEN-LAST:event_deleteVisualizationButtonActionPerformed
 
     private void clearVisualizationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearVisualizationButtonActionPerformed
@@ -602,7 +626,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 
             enableButtons();
             updateVisualizationNamesComboBox();
-            content.add(dbsupp);
+//            content.add(dbsupp);
         }
         setModelButton.setEnabled(false);
 }//GEN-LAST:event_setModelButtonActionPerformed
@@ -611,12 +635,26 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         setModelButton.setEnabled(true);
 }//GEN-LAST:event_modelsComboBoxActionPerformed
 
+    private void addCompRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCompRadioButtonActionPerformed
+        if (addCompRadioButton.isSelected() && isVisCompResultEmpty()) {
+            content.add(ComputationsVis.VISUALIZE);
+//            dbsupp.addcomputationsToTransitionsName(true);
+        }
+    }//GEN-LAST:event_addCompRadioButtonActionPerformed
+
+    private void remCompRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remCompRadioButtonActionPerformed
+        if (remCompRadioButton.isSelected() && !isVisCompResultEmpty()) {
+            content.remove(ComputationsVis.VISUALIZE);
+//            dbsupp.addcomputationsToTransitionsName(false);
+        }
+    }//GEN-LAST:event_remCompRadioButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel ModelNameLabel;
     private javax.swing.JLabel SaveErrorsLabel;
-    private javax.swing.JToggleButton addCompToggleButton;
+    private javax.swing.ButtonGroup addCompButtonGrp;
+    private javax.swing.JRadioButton addCompRadioButton;
     private javax.swing.JButton clearVisualizationButton;
-    private javax.swing.JCheckBox computationsCheckBox;
     private javax.swing.JButton deleteVisualizationButton;
     private javax.swing.JButton eraseAndSaveButton;
     private javax.swing.JLabel fullName;
@@ -625,12 +663,14 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JButton loadVisualizationButton;
     private javax.swing.JComboBox modelsComboBox;
     private javax.swing.JComboBox namesComboBox;
     private javax.swing.JLabel nodeNameLabel;
     private javax.swing.JPanel programPanel;
+    private javax.swing.JRadioButton remCompRadioButton;
     private javax.swing.JButton saveVisToDBButton;
     private javax.swing.JButton setModelButton;
     private javax.swing.JButton setNameButton;
@@ -671,6 +711,16 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         visualizationNamesComboBox.setEnabled(true);
         loadVisualizationButton.setEnabled(true);
         deleteVisualizationButton.setEnabled(true);
+        eraseAndSaveButton.setEnabled(true);
+        clearVisualizationButton.setEnabled(true);
+
+        if (dbsupp.isDoneTask() && dbsupp.isFbaTask()) {
+            addCompRadioButton.setEnabled(true);
+            remCompRadioButton.setEnabled(true);
+        } else {
+            addCompRadioButton.setEnabled(false);
+            remCompRadioButton.setEnabled(false);
+        }
     }
 
     /**

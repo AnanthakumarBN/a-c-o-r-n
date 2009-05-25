@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import org.exceptions.VisValidationException;
 import org.interfaces.LoadSaveInterface;
@@ -26,6 +25,7 @@ import org.netbeans.api.visual.router.RouterFactory;
 import org.netbeans.api.visual.widget.LayerWidget;
 import org.netbeans.api.visual.widget.Widget;
 import org.openide.util.ImageUtilities;
+import org.providers.EdgeMenu;
 import org.providers.NodeMenu;
 import org.providers.SceneConnectProvider;
 import org.providers.SceneReconnectProvider;
@@ -33,6 +33,7 @@ import org.view.EdgeWidget;
 import org.view.NodeWidget;
 import org.view.PlaceWidget;
 import org.view.TransitionWidget;
+import org.vislogicengine.VisLogic;
 import org.visualapi.VisEdge;
 import org.visualapi.VisNode;
 import org.visualapi.VisPlace;
@@ -61,14 +62,18 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
 //
     private WidgetAction connectAction = ActionFactory.createExtendedConnectAction(interractionLayer, new SceneConnectProvider(this));
     private WidgetAction reconnectAction = ActionFactory.createReconnectAction(new SceneReconnectProvider(this));
+    private WidgetAction zoomAction = ActionFactory.createZoomAction();
+    private WidgetAction panAction = ActionFactory.createPanAction();
 //    private WidgetAction moveControlPointAction = ActionFactory.createFreeMoveControlPointAction();
 //    private WidgetAction selectAction = ActionFactory.createSelectAction(new ObjectSelectProvider());
     private ModelSceneMenu modelMenu = new ModelSceneMenu(this);
     private NodeMenu nodeMenu = new NodeMenu(this);
+    private EdgeMenu edgeMenu = new EdgeMenu(this);
     private SelectionNodeListener selectionNodeListener = null;
     private WidgetAction mouseClick;
 //    private SetModelListener setModelList;
     private LoadSaveInterface loadSaveListener;
+    private VisLogic logic;
 
     public GraphModelScene(SelectionNodeListener selNodeList) {
         mainLayer = new LayerWidget(this);
@@ -78,6 +83,9 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
         addChild(connectionLayer);
         addChild(interractionLayer);
         getActions().addAction(ActionFactory.createRectangularSelectAction(this, backgroundLayer));
+        getActions().addAction(panAction);
+        getActions().addAction(zoomAction);
+
         selectionNodeListener = selNodeList;
         setToolTipText("Set model, then generate visualization.");
         mouseClick = new WidgetAction.Adapter() {
@@ -132,6 +140,7 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
         connection.getActions().addAction(reconnectAction);
         connection.setToolTipText("Hold 'Ctrl'+'Mouse Right Button' to move arrow from one place(or transition) to another");
         connectionLayer.addChild(connection);
+        connection.getActions().addAction(ActionFactory.createPopupMenuAction(edgeMenu));
         return connection;
     }
 
@@ -149,6 +158,15 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
 
     public LoadSaveInterface getLoadSaveListener() {
         return loadSaveListener;
+    }
+
+    public VisLogic getLogic() {
+        return logic;
+    }
+
+    public void setLogic(VisLogic logic) {
+        this.nodeMenu.setLogic(logic);
+        this.logic = logic;
     }
 
     private class LoadSaveListener implements LoadSaveInterface {
@@ -275,23 +293,23 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
         }
 
         public void modelSet() {
-            setToolTipText("Left mouse click for creating a new place or transition");
+            setToolTipText("Right mouse click for creating a new place or transition");
             getActions().addAction(ActionFactory.createPopupMenuAction(modelMenu));
         }
 
         public void clearVisualization() {
 //            mainLayer.removeChildren();
 //            connectionLayer.removeChildren();
-            for(VisEdge edge: new ArrayList<VisEdge> (getEdges())){
+            for (VisEdge edge : new ArrayList<VisEdge>(getEdges())) {
                 removeEdge(edge);
             }
-            for(VisNode node: new ArrayList<VisNode> (getNodes())){
+            for (VisNode node : new ArrayList<VisNode>(getNodes())) {
                 removeNode(node);
             }
             validate();
         }
 
-        public void loadVisualization(List<VisEdge> edges) {
+        public void loadVisualization(List<VisEdge> edges, boolean addComp) {
             HashMap<String, VisPlace> placeMap = new HashMap<String, VisPlace>(0);
             HashMap<String, VisTransition> transitionMap = new HashMap<String, VisTransition>(0);
             HashSet<String> usedNodes = new HashSet<String>(0);
@@ -300,44 +318,54 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
 
             //adds nodes and edges
             for (VisEdge edge : edges) {
-                if (edge.getSource().isPlace()) {
-                    VisPlace source = (VisPlace) edge.getSource();
-                    VisTransition target = (VisTransition) edge.getTarget();
-                    if (!usedNodes.contains(source.getXmlSid())) {
-                        source.removeNullsFromSets();
-                        usedNodes.add(source.getXmlSid());
-                        NodeWidget w = (NodeWidget) addNode(source);
-                        w.setPreferredLocation(source.getLocation());
-                        w.setNameAndSid(source.getName(), source.getSid());
-                        w.setLabel(source.getSid());
-                    }
-                    if (!usedNodes.contains(target.getXmlSid())) {
-                        target.removeNullsFromSets();
-                        usedNodes.add(target.getXmlSid());
-                        NodeWidget w = (NodeWidget) addNode(target);
-                        w.setPreferredLocation(target.getLocation());
-                        w.setNameAndSid(target.getName(), target.getSid());
-                        w.setLabel(target.getSid());
-                    }
-                } else {
-                    VisTransition source = (VisTransition) edge.getSource();
-                    VisPlace target = (VisPlace) edge.getTarget();
-                    if (!usedNodes.contains(source.getXmlSid())) {
-                        source.removeNullsFromSets();
-                        usedNodes.add(source.getXmlSid());
-                        NodeWidget w = (NodeWidget) addNode(source);
-                        w.setPreferredLocation(source.getLocation());
-                        w.setNameAndSid(source.getName(), source.getSid());
-                        w.setLabel(source.getSid());
-                    }
-                    if (!usedNodes.contains(target.getXmlSid())) {
-                        target.removeNullsFromSets();
-                        usedNodes.add(target.getXmlSid());
-                        NodeWidget w = (NodeWidget) addNode(target);
-                        w.setPreferredLocation(target.getLocation());
-                        w.setNameAndSid(target.getName(), target.getSid());
-                        w.setLabel(target.getSid());
-                    }
+//                if (edge.getSource().isPlace()) {
+//                    VisPlace source = (VisPlace) edge.getSource();
+//                    VisTransition target = (VisTransition) edge.getTarget();
+//                    if (!usedNodes.contains(source.getXmlSid())) {
+//                        source.removeNullsFromSets();
+//                        usedNodes.add(source.getXmlSid());
+//                        NodeWidget w = (NodeWidget) addNode(source);
+//                        w.setPreferredLocation(source.getLocation());
+//                        w.setNameAndSid(source.getName(), source.getSid());
+//                        w.setLabel(source.getSid());
+//                    }
+//                    if (!usedNodes.contains(target.getXmlSid())) {
+//                        target.removeNullsFromSets();
+//                        usedNodes.add(target.getXmlSid());
+//                        NodeWidget w = (NodeWidget) addNode(target);
+//                        w.setPreferredLocation(target.getLocation());
+//                        w.setNameAndSid(target.getName(), target.getSid());
+//                        String name = target.getSid();
+//                        if (addComp) {
+//                            name = name.concat(" " + Float.toString(target.getFlux()));
+//                        }
+//                        w.setLabel(name);
+//                    }
+//                } else {
+                VisNode source = edge.getSource();
+                VisNode target = edge.getTarget();
+                if (!usedNodes.contains(source.getXmlSid())) {
+                    source.removeNullsFromSets();
+                    usedNodes.add(source.getXmlSid());
+                    addNodeToScene(source, addComp);
+//                        NodeWidget w = (NodeWidget) addNode(source);
+//                        w.setPreferredLocation(source.getLocation());
+//                        w.setNameAndSid(source.getName(), source.getSid());
+//                        String name = source.getSid();
+//                        if (addComp) {
+//                            name = name.concat(" " + Float.toString(source.getFlux()));
+//                        }
+//                        w.setLabel(name);
+                }
+                if (!usedNodes.contains(target.getXmlSid())) {
+                    target.removeNullsFromSets();
+                    usedNodes.add(target.getXmlSid());
+                    addNodeToScene(target, addComp);
+//                        NodeWidget w = (NodeWidget) addNode(target);
+//                        w.setPreferredLocation(target.getLocation());
+//                        w.setNameAndSid(target.getName(), target.getSid());
+//                        w.setLabel(target.getSid());
+//                    }
                 }
                 addEdge(edge);
                 setEdgeSource(edge, edge.getSource());
@@ -345,26 +373,57 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
             }
             validate();
         }
+
+        public void addNewEdge(VisNode source, VisNode target) {
+            if (!source.isTheSame(target)) {
+                VisEdge edge = new VisEdge(source,target);
+                addEdge(edge);
+                setEdgeSource(edge, edge.getSource());
+                setEdgeTarget(edge, edge.getTarget());
+            }
+        }
+
+        /**
+         * adds node to graphScene
+         */
+        public void addNodeToScene(VisNode node, boolean addComp) {
+            NodeWidget w = (NodeWidget) addNode(node);
+            w.setPreferredLocation(node.getLocation());
+            w.setNameAndSid(node.getName(), node.getSid());
+
+            String widgetLabel = node.getSid();
+            if (addComp && node.isTransition() && node.getSid() != null) {
+                VisTransition trans = (VisTransition) node;
+                widgetLabel = widgetLabel.concat(" " + Float.toString(trans.getFlux()));
+            }
+            w.setLabel(widgetLabel);
+        }
+
         /**
          * 
          * @param addComp if true label of transition widget will be with computations, if false only its sid
          */
-        public void addComputationsToTransitionsLabel(boolean addComp){
+        public void addComputationsToTransitionsLabel(boolean addComp) {
             List<Widget> widgets = mainLayer.getChildren();
 
             String name;
-            for(Widget widget : widgets){
-                if (widget instanceof TransitionWidget){
-                    TransitionWidget transWidget = (TransitionWidget)widget;
+            for (Widget widget : widgets) {
+                if (widget instanceof TransitionWidget) {
+                    TransitionWidget transWidget = (TransitionWidget) widget;
                     VisTransition trans = (VisTransition) transWidget.getVisNode();
                     name = trans.getSid();
-                    if(addComp){
-                        name = name.concat(" "+Float.toString(trans.getFlux()));
+                    if (addComp && name != null) {
+                        name = name.concat(" " + Float.toString(trans.getFlux()));
                     }
                     transWidget.setLabel(name);
                 }
-                validate();
             }
+            validate();
         }
+
+        public void validateNewGraph() {
+            validate();
+        }
+        
     }
 }

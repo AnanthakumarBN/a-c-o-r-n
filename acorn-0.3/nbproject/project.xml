@@ -2,6 +2,9 @@
 <project xmlns="http://www.netbeans.org/ns/project/1">
     <type>org.netbeans.modules.web.project</type>
     <configuration>
+        <buildExtensions xmlns="http://www.netbeans.org/ns/ant-build-extender/1">
+            <extension file="jaxws-build.xml" id="jaxws"/>
+        </buildExtensions>
         <creator-data xmlns="http://www.sun.com/creator/ns"/>
         <data xmlns="http://www.netbeans.org/ns/web-project/3">
             <name>acorn-0.3</name>
@@ -79,6 +82,14 @@
                     <file>${file.reference.tomahawk-1.1.6.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
+                <library>
+                    <file>${libs.JAVADB_DRIVER_LABEL.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library>
+                    <file>${reference.org_visualapi.module}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
             </web-module-libraries>
             <web-module-additional-libraries/>
             <source-roots>
@@ -96,6 +107,14 @@
                 <target>jar</target>
                 <clean-target>clean</clean-target>
                 <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>org_visualapi</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>netbeans</target>
+                <clean-target>clean</clean-target>
+                <id>module</id>
             </reference>
         </references>
     </configuration>

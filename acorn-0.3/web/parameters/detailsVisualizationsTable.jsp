@@ -52,7 +52,7 @@
             </div>
             <% if (request.getSession().getAttribute("PICTURE_PATH") != null) {
             %>
-                <a href="#" onclick="return popitup('/picture')">View</a>
+                <a href="#" onclick="return popitup('/picture.jpg')">View</a>
             <%        }
             %>
 

@@ -190,7 +190,7 @@ public class AcornWS {
         List<VisPlace> visPlaces = null;
         List<VisEdge> visEdges = null;
         if (eVisualizationController.isVisualizationNameUsed(visualizationName)) {
-            throw new RepeatedVisualizationNameException("Visualization with name: " + visualizationName + " is in database.");
+            throw new RepeatedVisualizationNameException("Visualization: " + visualizationName + " is in database. Write another one.");
         }
         try {
             visTransitions = getDeserializedVisTransitions(reactions, clientEncoding);
@@ -476,5 +476,31 @@ public class AcornWS {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "isTaskDone")
+    public boolean isTaskDone(@WebParam(name = "modelName")
+    String modelName) {
+        return eModelController.isDoneTask(modelName);
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "getFlux")
+    public Float getFlux(@WebParam(name = "modelName")
+    String modelName, @WebParam(name = "reactionSid")
+    String reactionSid) {
+        float flux = 0;
+        EModel model = eModelController.getModelByName(modelName);
+        ETask task = model.getTask();
+        if(task == null){
+            return flux;
+        }
+        flux = eTaskController.getFlux(task, reactionSid);
+        return flux;
     }
 }

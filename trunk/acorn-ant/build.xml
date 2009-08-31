@@ -117,6 +117,9 @@
         <ant antfile="${local-db-dir}/build.xml" target="clean" inheritall="false" />
         <antcall target="swap-to-local-db" />
     </target>
+    <target name="local" depends="local-copy-acorn-config, local-create-resources">
+        <ant target="local-web-deploy-all"/>
+    </target>
     <target name="local-web-compile" depends="local-web-clean, local-db-compile">
         <ant antfile="${local-web-dir}/build.xml" target="dist" inheritall="false" />
     </target>
@@ -130,7 +133,8 @@
         <ant antfile="${local-web-dir}/build.xml" target="run" inheritall="false" />
     </target>
     <target name="local-copy-acorn-config" >
-        <copy  overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/domains/${local-domain-name}/config/acornConfig.xml" />
+        <copy  overwrite="true" file="${local-acornConfig}" tofile="c:/a/acornConfig.xml" />
+<!--        <copy  overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/domains/${local-domain-name}/config/acornConfig.xml" />-->
     </target>
     <target name="local-start-domain" >
         <exec command="${local-glassfish-asadmin} start-domain ${local-domain-name}" />
@@ -160,7 +164,7 @@
                 verbose="true"/>
     </target>
     <target name="local-create-resources" >
-        <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.QueueConnectionFactory imqConsumerFlowLimit=1 jms/taskQueueFactory"
+        <exec  command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.QueueConnectionFactory imqConsumerFlowLimit=1 jms/taskQueueFactory"
         failonerror=""/>
         <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.Queue jms/taskQueue"
         failonerror=""/>

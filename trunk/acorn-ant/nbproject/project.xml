@@ -7,14 +7,24 @@
             <name>acorn-ant</name>
             <properties/>
             <folders/>
-            <ide-actions/>
+            <ide-actions>
+                <action name="build">
+                    <target>local-create-resources</target>
+                </action>
+                <action name="run">
+                    <target>local-create-resources</target>
+                </action>
+            </ide-actions>
             <view>
                 <items>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
                 </items>
-                <context-menu/>
+                <context-menu>
+                    <ide-action name="build"/>
+                    <ide-action name="run"/>
+                </context-menu>
             </view>
             <subprojects/>
         </general-data>

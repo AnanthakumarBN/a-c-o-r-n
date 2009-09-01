@@ -17,7 +17,7 @@
     <property name="local-WS-file" value="${local-WS-dir}/dist/${local-WS-name}" />
     <property name="local-db-name" value="acorn-db.jar" />
     <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />
-    <property name="local-glassfish-asadmin" value="${local-glassfish-home}/bin/asadmin" />
+    <property name="local-glassfish-asadmin" value="${local-glassfish-home}/bin/asadmin${local-script-extension}" />
     <property name="local-db-persistence" value="local-db-persistence.xml" />
     <property name="local-worker-persistence" value="local-worker-persistence.xml" />
     <property name="local-worker-properties" value="local-worker-project.properties" />
@@ -117,13 +117,14 @@
         <ant antfile="${local-db-dir}/build.xml" target="clean" inheritall="false" />
         <antcall target="swap-to-local-db" />
     </target>
-    <target name="local" depends="local-copy-acorn-config, local-create-resources">
+    <target name="local" depends="local-copy-acorn-config"><!--local-create-resources-->
         <ant target="local-web-deploy-all"/>
     </target>
     <target name="local-web-compile" depends="local-web-clean, local-db-compile">
         <ant antfile="${local-web-dir}/build.xml" target="dist" inheritall="false" />
     </target>
     <target name="local-web-clean" >
+        <ant antfile="${local-web-dir}/nbproject/ant-deploy.xml" target="-undeploy-ant" inheritall="false"/>
         <ant antfile="${local-web-dir}/build.xml" target="clean" inheritall="false" />
     </target>
     <target name="local-web-deploy-all" depends="local-web-compile" description="Deploy acorn on localhost">
@@ -133,8 +134,7 @@
         <ant antfile="${local-web-dir}/build.xml" target="run" inheritall="false" />
     </target>
     <target name="local-copy-acorn-config" >
-        <copy  overwrite="true" file="${local-acornConfig}" tofile="c:/a/acornConfig.xml" />
-<!--        <copy  overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/domains/${local-domain-name}/config/acornConfig.xml" />-->
+        <copy  overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/domains/${local-domain-name}/config/acornConfig.xml" />
     </target>
     <target name="local-start-domain" >
         <exec command="${local-glassfish-asadmin} start-domain ${local-domain-name}" />
@@ -163,18 +163,47 @@
                 command="${server-glassfish-asadmin} stop-domain ${server-domain-name}"
                 verbose="true"/>
     </target>
-    <target name="local-create-resources" >
-        <exec  command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.QueueConnectionFactory imqConsumerFlowLimit=1 jms/taskQueueFactory"
-        failonerror=""/>
-        <exec command="${local-glassfish-asadmin} create-jms-resource --user admin --passwordfile ${local-domain-passwordfile} --restype javax.jms.Queue jms/taskQueue"
-        failonerror=""/>
-    </target>
-    <target name="local-delete-resources">
-        <exec command="${local-glassfish-asadmin} delete-jms-resource --user admin --passwordfile ${local-domain-passwordfile} jms/taskQueueFactory"
-        failonerror="">
+    <target name="local-create-resources" depends="local-create-apass-file">
+        <exec executable="${local-glassfish-asadmin}" failonerror="">
+            <arg value="create-jms-resource"/>
+            <arg value="--restype"/>
+            <arg value="javax.jms.QueueConnectionFactory"/>
+            <arg value="--user"/>
+            <arg value="admin"/>
+            <arg value="--passwordfile"/>
+            <arg value="${local-domain-passwordfile}"/>
+            <arg value="--property"/>
+            <arg value="imqConsumerFlowLimit=1"/>
+            <arg value="jms/taskQueueFactory"/>
         </exec>
-        <exec command="${local-glassfish-asadmin} delete-jms-resource --user admin --passwordfile ${local-domain-passwordfile} jms/taskQueue"
-        failonerror=""/>
+        <exec executable="${local-glassfish-asadmin}" failonerror="">
+            <arg value="create-jms-resource"/>
+            <arg value="--user"/>
+            <arg value="admin"/>
+            <arg value="--passwordfile"/>
+            <arg value="${local-domain-passwordfile}"/>
+            <arg value="--restype"/>
+            <arg value="javax.jms.Queue"/>
+            <arg value="jms/taskQueue"/>
+        </exec>
+    </target>
+    <target name="local-delete-resources"  depends="local-create-apass-file">
+        <exec executable="${local-glassfish-asadmin}" failonerror="">
+            <arg value="delete-jms-resource"/>
+            <arg value="--user"/>
+            <arg value="admin"/>
+            <arg value="--passwordfile"/>
+            <arg value="${local-domain-passwordfile}"/>
+            <arg value="jms/taskQueueFactory"/>
+        </exec>
+        <exec command="${local-glassfish-asadmin}" failonerror="">
+            <arg value="delete-jms-resource"/>
+            <arg value="--user"/>
+            <arg value="admin"/>
+            <arg value="--passwordfile"/>
+            <arg value="${local-domain-passwordfile}"/>
+            <arg value="jms/taskQueue"/>
+        </exec>
     </target>
     <target name="server-web-deploy" description="Deploy acorn on server" depends="get-server-auth">
         <sshexec

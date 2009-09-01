@@ -1375,7 +1375,7 @@ public class TaskBean {
     public boolean isError() {
         Integer id = getModelID();
 
-        if (data.get(id).errorMessage.isEmpty()) {
+        if (data.get(id).errorMessage.length()==0) {
             return false;
         } else {
             return true;

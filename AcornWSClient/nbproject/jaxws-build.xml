@@ -6,28 +6,27 @@
                 ===================
             -->
     <target name="wsimport-init" depends="init">
-        <mkdir dir="${build.generated.dir}/wsimport/client"/>
+        <mkdir dir="${build.generated.sources.dir}/jax-ws"/>
         <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
             <classpath path="${libs.jaxws21.classpath}"/>
         </taskdef>
     </target>
     <target name="wsimport-client-AcornWSService" depends="wsimport-init">
-        <property name="wsdl-AcornWSService" location="xml-resources/web-service-references/AcornWSService/wsdl/localhost_8080/AcornWSService.wsdl"/>
-        <wsimport sourcedestdir="${build.generated.dir}/wsimport/client" destdir="${build.generated.dir}/wsimport/client" wsdl="${wsdl-AcornWSService}" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="http://localhost:8080/AcornWSService?WSDL" xnocompile="true">
-            <produces dir="${build.generated.dir}/wsimport/client/acorn/webservice" includes="AcornWSService.java" casesensitive="no"/>
+        <mkdir dir="${build.generated.dir}/jax-wsCache/AcornWSService"/>
+        <property name="wsdl-AcornWSService" location="xml-resources/web-service-references/AcornWSService/wsdl/localhost_8080/acorn/AcornWSService.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/AcornWSService" destdir="${build.generated.dir}/jax-wsCache/AcornWSService" wsdl="${wsdl-AcornWSService}" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="http://localhost:8080/acorn/AcornWSService?WSDL" xnocompile="true">
+            <depends file="${wsdl-AcornWSService}"/>
+            <produces dir="${build.generated.dir}/jax-wsCache/AcornWSService"/>
         </wsimport>
-    </target>
-    <target name="wsimport-client-clean-AcornWSService" depends="-init-project">
-        <delete dir="${build.generated.dir}/wsimport/client/acorn/webservice"/>
-    </target>
-    <target name="wsimport-client-generate" depends="wsimport-client-AcornWSService"/>
-    <target name="wsimport-client-compile-depend" if="do.depend.true">
-        <j2seproject3:depend srcdir="${build.generated.dir}/wsimport/client" classpath="${libs.jaxws21.classpath}:${javac.classpath}" destdir="${build.classes.dir}"/>
-    </target>
-    <target name="wsimport-client-compile" depends="-pre-pre-compile, wsimport-client-compile-depend">
-        <j2seproject3:javac srcdir="${build.generated.dir}/wsimport/client" classpath="${libs.jaxws21.classpath}:${javac.classpath}" destdir="${build.classes.dir}"/>
-        <copy todir="${build.classes.dir}">
-            <fileset dir="${build.generated.dir}/wsimport/client" includes="**/*.xml"/>
+        <copy todir="${build.generated.sources.dir}/jax-ws">
+            <fileset dir="${build.generated.dir}/jax-wsCache/AcornWSService">
+                <include name="**/*.java"/>
+            </fileset>
         </copy>
     </target>
+    <target name="wsimport-client-clean-AcornWSService" depends="-init-project">
+        <delete dir="${build.generated.dir}/jax-wsCache/AcornWSService"/>
+        <delete dir="${build.generated.sources.dir}/jax-ws/acorn/webservice"/>
+    </target>
+    <target name="wsimport-client-generate" depends="wsimport-client-AcornWSService"/>
 </project>

@@ -31,8 +31,12 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NamedQuery(name = "ESpecies.findByName", query = "SELECT e FROM ESpecies e WHERE e.name = :name"), 
 @NamedQuery(name = "ESpecies.findByCharge", query = "SELECT e FROM ESpecies e WHERE e.charge = :charge"), 
 @NamedQuery(name = "ESpecies.findByBoundaryCondition", query = "SELECT e FROM ESpecies e WHERE e.boundaryCondition = :boundaryCondition"),
-@NamedQuery(name = "ESpecies.findByModelAndSid",
+@NamedQuery(name = "ESpecies.findByModelNameAndSid",
     query = "SELECT s FROM ESpecies s, EModel m WHERE s.compartment.metabolism.id = m.metabolism.id AND m.name = :modelName and s.sid =:sid"),
+@NamedQuery(name = "ESpecies.findByModelAndSid",
+    query = "SELECT s FROM ESpecies s, EModel m WHERE s.compartment.metabolism.id = m.metabolism.id AND m = :model and s.sid =:sid"),
+    @NamedQuery(name = "ESpecies.findModelBySpecies",
+    query = "SELECT m FROM ESpecies s, EModel m WHERE s.compartment.metabolism.id = m.metabolism.id AND s =:species"),
 @NamedQuery(name = "ESpecies.findByModelName",
     query = "SELECT s FROM ESpecies s, EModel m WHERE s.compartment.metabolism.id = m.metabolism.id AND m.name = :modelName")})
 

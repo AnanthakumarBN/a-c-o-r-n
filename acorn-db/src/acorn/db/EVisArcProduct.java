@@ -7,6 +7,8 @@ package acorn.db;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -15,6 +17,12 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="EVisArcProduct")
+@NamedQueries({
+    @NamedQuery(name="EVisArcProduct.getByReaction", query="" +
+    "select p from EVisArcProduct p " +
+            "where p.visualization=:visualization " +
+            "and p.source_p.reaction=:reaction")
+})
 public class EVisArcProduct extends EVisArc implements Serializable {
 
 //    private static final long serialVersionUID = 1L;

@@ -38,7 +38,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NamedQuery(name = "ETask.findByStatus", query = "SELECT e FROM ETask e WHERE e.status = :status"), 
 @NamedQuery(name = "ETask.findByShared", query = "SELECT e FROM ETask e WHERE e.shared = :shared"),
 @NamedQuery(name = "ETask.findByUserID", query = "SELECT t FROM ETask t, EModel m WHERE t.model = m.id AND m.owner = :id"),
-@NamedQuery(name = "ETask.findByModel" , query = "SELECT t FROM ETask t where t.model = :model")})
+@NamedQuery(name = "ETask.findByModel" , query = "SELECT t FROM ETask t where t.model = :model"),
+@NamedQuery(name = "ETask.getFlux", query = "SELECT f.flux FROM ETask t, IN(t.efbaResultElementCollection) f where t=:task and f.reaction.sid = :reactionSid")})
 
 public class ETask implements Serializable {
     public static String statusDone = "done";

@@ -144,19 +144,34 @@ public class ETaskController extends EntityController {
      * @returns flux for pointed reaction and task
      */
     public float getFlux(ETask task, String reactionSid) {
-        float flux = 0;
-        List<EfbaResultElement> fbaList = (List<EfbaResultElement>) task.getEfbaResultElementCollection();
-        if (fbaList == null) {
-            return flux;
-        }
-        for (EfbaResultElement fba : fbaList) {
-            EReaction react = fba.getReaction();
+        Float flux = new Float(0);
+        EntityManager em = getEntityManager();
 
-            if (react.getSid().equals(reactionSid)) {
-                return fba.getFlux();
-            }
-        }
+        try{
+        em.getTransaction().begin();
+        flux = (Float)em.createNamedQuery("ETask.getFlux")
+                .setParameter("reactionSid", reactionSid)
+                .setParameter("task", task).getSingleResult();
+        em.getTransaction().commit();
         return flux;
+        }catch(NoResultException ex){
+            return flux;
+        }finally{
+            em.close();
+        }
+//        List<EfbaResultElement> fbaList = (List<EfbaResultElement>) task.getEfbaResultElementCollection();
+//
+//        if (fbaList == null) {
+//            return flux;
+//        }
+//        for (EfbaResultElement fba : fbaList) {
+//            EReaction react = fba.getReaction();
+//
+//            if (react.getSid().equals(reactionSid)) {
+//                return fba.getFlux();
+//            }
+//        }
+//        return flux;
     }
 
     public ETask getTask(EModel model){

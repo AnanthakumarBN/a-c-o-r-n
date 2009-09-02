@@ -4,7 +4,9 @@
  */
 package org.interfaces;
 
+import java.util.Collection;
 import java.util.List;
+import org.dbStructs.NameStruct;
 import org.exceptions.VisValidationException;
 import org.visualapi.VisEdge;
 import org.visualapi.VisNode;
@@ -40,4 +42,6 @@ public interface LoadSaveInterface {
     public void addNodeToScene(VisNode node, boolean addComp);
 
     public void addNewEdge(VisNode source, VisNode target);
+
+    public void removeDetachedTransitions(Collection<NameStruct> detachedReactions);
 }

@@ -15,6 +15,8 @@ import acorn.db.ESpecies;
 import acorn.db.ESpeciesController;
 import acorn.db.ETask;
 import acorn.db.ETaskController;
+import acorn.db.EUser;
+import acorn.db.EUserController;
 import acorn.db.EVisArcProduct;
 import acorn.db.EVisArcReactant;
 import acorn.db.EVisPlace;
@@ -31,6 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.String;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +44,9 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.persistence.NoResultException;
+import org.dbStructs.ModelStruct;
 import org.dbStructs.NameStruct;
+import org.exceptions.AuthenticationException;
 import org.exceptions.VisValidationException;
 import org.visualapi.VisEdge;
 import org.visualapi.VisPlace;
@@ -60,35 +66,67 @@ public class AcornWS {
     private EModelController eModelController = new EModelController();
     private ETaskController eTaskController = new ETaskController();
     private EVisualizationController eVisualizationController = new EVisualizationController();
+    private EUserController eUserController = new EUserController();
 
     /**
      * Web service operation
      */
-    /**
-     *
-     * @return sorted array of models names
-     */
     @WebMethod(operationName = "getModels")
-    public String[] getModels() {
+    public String getModels(@WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
         List<EModel> lem = eModelController.getModels();
 //        ArrayList<String> modelElements = new ArrayList<String>(lem.size());
-        String[] modelElements = new String[lem.size()];
+        ModelStruct[] modelElements = new ModelStruct[lem.size()];
         int i = 0;
         for (EModel em : lem) {
 //            modelElements.set(i++, em.getName());
-            modelElements[i++] = em.getName();
+            modelElements[i++] = new ModelStruct(em.getId(), em.getName());
         }
         Arrays.sort(modelElements);
-        return modelElements;
+        return getModelStructXmlSerialization(modelElements);
     }
 
     /**
-     * @param modelName name of model
+     * @param user model names for this user are given
+     * @return sorted array of models names
+     */
+    @WebMethod(operationName = "getModelsForUser")
+    public String getModelsForUser(
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
+        EUser eUser = null;
+        try {
+            eUser = eUserController.findUserByLogin(login);
+        } catch (NoResultException ex) {
+            return null;
+        }
+        List<EModel> lem = eModelController.getModels(eUser);
+//        ArrayList<String> modelElements = new ArrayList<String>(lem.size());
+        ModelStruct[] modelElements = new ModelStruct[lem.size()];
+        int i = 0;
+        for (EModel em : lem) {
+            modelElements[i++] = new ModelStruct(em.getId(), em.getName());
+        }
+        Arrays.sort(modelElements);
+
+        return getModelStructXmlSerialization(modelElements);
+    }
+
+    /**
+     * @param modelId ID of model
      * @return sorted NameStruct of all ractions for model
      */
-    @WebMethod(operationName = "getAllReactionsByModelName")
-    public String getAllReactionsByModelName(@WebParam(name = "modelName") String modelName) {
-        List<EReaction> reactList = eReactionContr.getByModelName(modelName);
+    @WebMethod(operationName = "getAllReactionsByModelId")
+    public String getAllReactionsByModelId(@WebParam(name = "modelId") int modelId,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
+        List<EReaction> reactList = eReactionContr.getByModelId(modelId);
         NameStruct[] allReactions = new NameStruct[reactList.size()];
         int i = 0;
         for (EReaction react : reactList) {
@@ -101,9 +139,13 @@ public class AcornWS {
     /**
      * Web service operation
      */
-    @WebMethod(operationName = "getAllSpeciesByModelName")
-    public String getAllSpeciesByModelName(@WebParam(name = "modelName") String modelName) {
-        List<ESpecies> specList = eSpeciesContr.getSpecies(modelName);
+    @WebMethod(operationName = "getAllSpeciesByModelId")
+    public String getAllSpeciesByModelId(@WebParam(name = "modelId") int modelId,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
+        List<ESpecies> specList = eSpeciesContr.getSpecies(modelId);
         NameStruct[] allSpecies = new NameStruct[specList.size()];
         int i = 0;
         for (ESpecies spec : specList) {
@@ -118,8 +160,14 @@ public class AcornWS {
      * Web service operation
      */
     @WebMethod(operationName = "getReactionsForSpecies")
-    public String getReactionsForSpecies(@WebParam(name = "modelName") String modelName, @WebParam(name = "speciesSid") String speciesSid, @WebParam(name = "isSource") boolean isSource) {
-        ESpecies species = eSpeciesContr.getBySidName(modelName, speciesSid);
+    public String getReactionsForSpecies(@WebParam(name = "modelId") int modelId, 
+            @WebParam(name = "speciesSid") String speciesSid, @WebParam(name = "isSource") boolean isSource,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
+        ESpecies species = eSpeciesContr.getByModelIdAndSidName(modelId, speciesSid);
+        EModel model = eModelController.getModel(modelId);
         NameStruct[] structArray = null;
         if (species == null) {
             return new String("");
@@ -127,9 +175,9 @@ public class AcornWS {
 
         // list of reaction is source, so species is target/product so use eProductContr
         if (isSource) {
-            structArray = StructArrayGen.getSortedReactionsArray(eProductContr.getReactions(species), modelName);
+            structArray = StructArrayGen.getSortedReactionsArray(eProductContr.getReactions(species, model.getId()));
         } else {
-            structArray = StructArrayGen.getSortedReactionsArray(eReactantContr.getReactions(species), modelName);
+            structArray = StructArrayGen.getSortedReactionsArray(eReactantContr.getReactions(species, model.getId()));
         }
         return getXmlSerialization(structArray);
     }
@@ -138,17 +186,24 @@ public class AcornWS {
      * Web service operation
      */
     @WebMethod(operationName = "getSpeciesForReaction")
-    public String getSpeciesForReaction(@WebParam(name = "modelName") String modelName, @WebParam(name = "reactionSid") String reactionSid, @WebParam(name = "isSource") boolean isSource) {
-        EReaction reaction = eReactionContr.getByModelNameAndReactionSid(reactionSid, modelName);
+    public String getSpeciesForReaction(@WebParam(name = "modelId") int modelId, 
+            @WebParam(name = "reactionSid") String reactionSid, @WebParam(name = "isSource") boolean isSource,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
+        EReaction reaction = eReactionContr.getByModelIdAndReactionSid(modelId, reactionSid);
         NameStruct[] structArray = null;
         if (reaction == null) {
             return new String("");
         }
+        EReactantController rc = new EReactantController();
+        EProductController pc = new EProductController();
         //List of Species is source/reactant so use eReactantController
         if (isSource) {
-            structArray = StructArrayGen.getSortedSpeciesArray(eReactantContr.getSpecies(reaction));
+            structArray = StructArrayGen.getSortedSpeciesArray(rc.getSpecies(reaction));
         } else {
-            structArray = StructArrayGen.getSortedSpeciesArray(eProductContr.getSpecies(reaction));
+            structArray = StructArrayGen.getSortedSpeciesArray(pc.getSpecies(reaction));
         }
 
         return getXmlSerialization(structArray);
@@ -158,7 +213,7 @@ public class AcornWS {
      * Web service operation
      */
     @WebMethod(operationName = "getEncoding")
-    public String getEncoding() {
+    public String getEncoding(@WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
         OutputStreamWriter out = new OutputStreamWriter(new ByteArrayOutputStream());
         return out.getEncoding();
     }
@@ -177,15 +232,34 @@ public class AcornWS {
         }
     }
 
+    private String getModelStructXmlSerialization(ModelStruct[] structArray) {
+        ByteArrayOutputStream fos = new ByteArrayOutputStream();
+        try {
+            XMLEncoder encoder = new XMLEncoder(fos);
+            for (ModelStruct str : structArray) {
+                encoder.writeObject(str);
+            }
+            encoder.close();
+            return fos.toString();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
     /**
      * Web service operation
      */
     @WebMethod(operationName = "saveVisualization")
     public boolean saveVisualization(
-            @WebParam(name = "modelName") String modelName, @WebParam(name = "visualizationName") String visualizationName,
+            @WebParam(name = "modelId") int modelId, @WebParam(name = "visualizationName") String visualizationName,
             @WebParam(name = "reactions") String reactions, @WebParam(name = "species") String species,
             @WebParam(name = "arcs") String arcs,
-            @WebParam(name = "clientEncoding") String clientEncoding) throws RepeatedVisualizationNameException, VisValidationException {
+            @WebParam(name = "clientEncoding") String clientEncoding,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass)
+            throws RepeatedVisualizationNameException, VisValidationException, AuthenticationException {
+        if(!isAuthenticated(login, pass)){
+            throw new AuthenticationException("You are not authenticated.");
+        }
         List<VisTransition> visTransitions = null;
         List<VisPlace> visPlaces = null;
         List<VisEdge> visEdges = null;
@@ -214,7 +288,7 @@ public class AcornWS {
         List<EVisArcReactant> eVisArcReactants = new ArrayList<EVisArcReactant>(0);
         List<EVisArcProduct> eVisArcProducts = new ArrayList<EVisArcProduct>(0);
 
-        EModel model = eModelController.getModelByName(modelName);
+        EModel model = eModelController.getModel(modelId);
 
         Point point;
         String xmlSid;
@@ -226,7 +300,7 @@ public class AcornWS {
             if (!reactionMap.containsKey(trans.getSid())) {
                 EReaction reaction = eReactionContr.getByModelAndReactionSid(trans.getSid(), model);
                 if (reaction == null) {
-                    throw new VisValidationException("Model: " + modelName + " does not have " + trans.getSid() + " reaction.");
+                    throw new VisValidationException("Model: " + model.getName() + " does not have " + trans.getSid() + " reaction.");
                 }
                 reactionMap.put(trans.getSid(), reaction);
             }
@@ -241,9 +315,9 @@ public class AcornWS {
             point = place.getLocation();
             xmlSid = place.getXmlSid();
             if (!speciesMap.containsKey(place.getSid())) {
-                ESpecies spec = eSpeciesContr.getBySidName(modelName, place.getSid());
+                ESpecies spec = eSpeciesContr.getByModelIdAndSidName(model.getId(), place.getSid());
                 if (spec == null) {
-                    throw new VisValidationException("Model: " + modelName + " does not have " + place.getSid() + " species.");
+                    throw new VisValidationException("Model: " + model.getName() + " does not have " + place.getSid() + " species.");
                 }
                 speciesMap.put(place.getSid(), spec);
             }
@@ -353,8 +427,11 @@ public class AcornWS {
      * Web service operation
      */
     @WebMethod(operationName = "getAllVisualizationNames")
-    public List<String> getAllVisualizationNames() {
+    public List<String> getAllVisualizationNames(@WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
         List<EVisualization> visualizations = eVisualizationController.getAllVisualizations();
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
         List<String> visualizationNames = new ArrayList<String>(0);
         for (EVisualization vis : visualizations) {
             visualizationNames.add(vis.getName());
@@ -366,19 +443,27 @@ public class AcornWS {
      * Web service operation
      */
     @WebMethod(operationName = "removeVisualization")
-    public boolean removeVisualization(@WebParam(name = "visualizationName") String visualizationName) {
+    public boolean removeVisualization(@WebParam(name = "visualizationName") String visualizationName,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) throws AuthenticationException {
+        if(!isAuthenticated(login, pass)){
+            throw new AuthenticationException("You are not authenticated.");
+        }
         eVisualizationController.removeVisualization(visualizationName);
         return true;
     }
 
     /**
      *
-     * @param modelName
-     * @return visualization names - modelName and descendant models
+     * @param modelId
+     * @return visualization names - model name and descendant models
      */
     @WebMethod(operationName = "getDescendantVisualizationNames")
-    public List<String> getDescendantVisualizationNames(@WebParam(name = "modelName") String modelName) {
-        List<EVisualization> visuals = eVisualizationController.getDescVisualizations(modelName);
+    public List<String> getDescendantVisualizationNames(@WebParam(name = "modelId") int modelId,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
+        List<EVisualization> visuals = eVisualizationController.getDescVisualizations(modelId);
         List<String> names = new ArrayList<String>(0);
         for (EVisualization vis : visuals) {
             names.add(vis.getName());
@@ -390,14 +475,16 @@ public class AcornWS {
      * Web service operation
      */
     @WebMethod(operationName = "getMethodType")
-    public String getMethodType(@WebParam(name = "modelName") String modelName) {
+    public String getMethodType(@WebParam(name = "modelId") int modelId,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
         ByteArrayOutputStream fos = new ByteArrayOutputStream();
-        EMethodData method = eModelController.getMethodType(modelName);
+        EMethodData method = eModelController.getMethodType(modelId);
         if (method == null) {
-            System.out.println("NULL DLA METHODtYPE");
             return "method przyjmuje null";
         }
-        System.out.print("NAME OF TASK: " + method.getTask().getName() + "\n");
         return method.getTask().getName();
     }
 
@@ -405,61 +492,28 @@ public class AcornWS {
      * Web service operation
      */
     @WebMethod(operationName = "isFba")
-    public boolean isFba(@WebParam(name = "modelName") String modelName) {
-        return eModelController.isFbaTask(modelName);
+    public boolean isFba(@WebParam(name = "modelId") int modelId,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) throws javax.naming.AuthenticationException {
+        if(!isAuthenticated(login, pass)){
+            throw new javax.naming.AuthenticationException("You are not authenticated.");
+        }
+        return eModelController.isFbaTask(modelId);
     }
 
     /**
      * Web service operation
      */
     @WebMethod(operationName = "getVisualization")
-    public String getVisualization(@WebParam(name = "visName") String visName) {
+    public String getVisualization(@WebParam(name = "visName") String visName,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
         EVisualization vis = null;
-        try{
-            vis = eVisualizationController.getVisualizationByName(visName);
-        }catch (NoResultException ex){
-            return "";
-        }
-        Collection<EVisTransition> transitions = vis.getTransitions();
-        Collection<EVisPlace> places = vis.getPlaces();
-        Collection<EVisArcProduct> arcProducts = vis.getArcProduct();
-        Collection<EVisArcReactant> arcResources = vis.getArcResource();
-        HashMap<String, VisPlace> placesMap = new HashMap<String, VisPlace>(0);
-        HashMap<String, VisTransition> transitionMap = new HashMap<String, VisTransition>(0);
+        EVisualizationController visController = new EVisualizationController();
 
-        String modelName = vis.getModel().getName();
-        boolean isDoneAndFba = (eModelController.isDoneTask(modelName) && eModelController.isFbaTask(modelName));
-        ETask task = vis.getModel().getTask();
-
-        List<VisEdge> edges = new ArrayList<VisEdge>(0);
-
-        // VisPlaces creation
-        for (EVisPlace epl : places) {
-            VisPlace pl = new VisPlace(epl.getSpeciesName(), epl.getSpeciesSid(), epl.getPosition(), epl.getXmlSid());
-            placesMap.put(pl.getXmlSid(), pl);
-        }
-
-        // VisTransition creation
-        for (EVisTransition etrans : transitions) {
-            float flux = 0;
-            if (isDoneAndFba) {
-                flux = eTaskController.getFlux(task, etrans.getReactionSid());
-            }
-            VisTransition trans = new VisTransition(etrans.getReactionName(), etrans.getReactionSid(), etrans.getPosition(), etrans.getXmlSid(), flux);
-            transitionMap.put(trans.getXmlSid(), trans);
-        }
-
-        // VisEdge creation
-        for (EVisArcReactant arcResource : arcResources) {
-            VisPlace source = placesMap.get(arcResource.getSource().getXmlSid());
-            VisTransition target = transitionMap.get(arcResource.getTarget().getXmlSid());
-            edges.add(new VisEdge(source, target));
-        }
-        for (EVisArcProduct arcProduct : arcProducts) {
-            VisPlace target = placesMap.get(arcProduct.getTarget().getXmlSid());
-            VisTransition source = transitionMap.get(arcProduct.getSource().getXmlSid());
-            edges.add(new VisEdge(source, target));
-        }
+        List<VisEdge> edges = visController.getEdgesOfVisualization(visName);
+        
 
         return getXmlSerialization(edges);
     }
@@ -482,25 +536,134 @@ public class AcornWS {
      * Web service operation
      */
     @WebMethod(operationName = "isTaskDone")
-    public boolean isTaskDone(@WebParam(name = "modelName")
-    String modelName) {
-        return eModelController.isDoneTask(modelName);
+    public boolean isTaskDone(@WebParam(name = "modelId") int modelId, @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) throws AuthenticationException {
+        if(!isAuthenticated(login, pass)){
+            throw new AuthenticationException("You are not authenticated.");
+        }
+        return eModelController.isDoneTask(modelId);
     }
 
     /**
      * Web service operation
      */
     @WebMethod(operationName = "getFlux")
-    public Float getFlux(@WebParam(name = "modelName")
-    String modelName, @WebParam(name = "reactionSid")
-    String reactionSid) {
+    public Float getFlux(@WebParam(name = "modelId") int modelId, @WebParam(name = "reactionSid") String reactionSid,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
         float flux = 0;
-        EModel model = eModelController.getModelByName(modelName);
+        EModel model = eModelController.getModel(modelId);
         ETask task = model.getTask();
-        if(task == null){
+        if (task == null) {
             return flux;
         }
         flux = eTaskController.getFlux(task, reactionSid);
         return flux;
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "authenticate")
+    public void authenticate(@WebParam(name = "login") String login, @WebParam(name = "pass") String pass) throws AuthenticationException {
+        try {
+            char[] passwordFromDB = null;
+            char[] passwordFromWS = pass.toCharArray();
+
+            EUser user = null;
+            try {
+                user = eUserController.findUserByLogin(login);
+            } catch (NoResultException ex) {
+                throw new AuthenticationException("Incorrect login.");
+            }
+
+            String noMD5PasswordDB = new String(user.getPasswd());
+
+//            if(!noMD5PasswordDB.equals(pass)){
+//                throw new AuthenticationException("Incorrect password.");
+//            }
+
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            byte[] tmp = noMD5PasswordDB.getBytes();
+            md5.update(tmp);
+            passwordFromDB = byteArrToString(md5.digest()).toCharArray();
+            int correctCount = 0;
+            if (passwordFromDB.length != passwordFromWS.length) {
+                throw new AuthenticationException("Incorrect password.\n");
+            }
+            for (int i = 0; i < passwordFromWS.length; i++) {
+                if (passwordFromWS[i] == passwordFromDB[i]) {
+                    correctCount++;
+                }
+            }
+            if (passwordFromWS.length == correctCount) {
+                //do nothing here
+                } else {
+                throw new AuthenticationException("Incorrect password.\n");
+            }
+        } catch (NoSuchAlgorithmException ex) {
+            throw new AuthenticationException("No such algoritm exception.");
+        }
+
+    }
+    private boolean isAuthenticated(String login, String pass){
+        try{
+            authenticate(login, pass);
+        }catch (AuthenticationException ex){
+            return false;
+        }
+        return true;
+    }
+
+    private static String byteArrToString(byte[] b) {
+        String res = null;
+        StringBuffer sb = new StringBuffer(b.length * 2);
+        for (int i = 0; i < b.length; i++) {
+            int j = b[i] & 0xff;
+            if (j < 16) {
+                sb.append('0');
+            }
+            sb.append(Integer.toHexString(j));
+        }
+        res = sb.toString();
+        return res.toUpperCase();
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "getModelModificationDate")
+    public String getModelModificationDate(@WebParam(name = "modelId") int modelId,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
+        EModel model = eModelController.getModel(modelId);
+        if (model == null) {
+            return null;
+        }
+
+        ByteArrayOutputStream fos = new ByteArrayOutputStream();
+        XMLEncoder encoder = new XMLEncoder(fos);
+        encoder.writeObject(model.getLastChange());
+        encoder.close();
+        return fos.toString();
+    }
+
+    /**
+     * Web service operation
+     */
+    @WebMethod(operationName = "getDetachedReactions")
+    public String getDetachedReactions(
+            @WebParam(name = "modelId") int modelId,
+            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
+        if(!isAuthenticated(login, pass)){
+            return null;
+        }
+        Collection<EReaction> reactions = eModelController.getDetachedReactions(modelId);
+        NameStruct[] reactionStructs = StructArrayGen.getSortedReactionsArray(reactions);
+
+        return getXmlSerialization(reactionStructs);
     }
 }

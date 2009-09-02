@@ -35,9 +35,17 @@ public class DrawingBean {
     private EVisualization vis;
     private ETask task;
 
+    private static final String placeWidth = "0.0";
+    private static final String placeHeight = "0.0";
+
+    private static final String transitionWidth = "0.1";
+    private static final String transitionHeight = "0.1";
+
+    private static final String drawingScale = "70";
+
     public DrawingBean() {
         this.format = "jpg";
-        this.scale = "60";
+        this.scale = drawingScale;
         this.dir = "drawing";
     }
 
@@ -51,7 +59,7 @@ public class DrawingBean {
         this.vis = vis;
         this.task = task;
         this.format = "jpg";
-        this.scale = "60";
+        this.scale = drawingScale;
         this.dir = "drawing";
     }
 
@@ -85,24 +93,6 @@ public class DrawingBean {
         return filePath;
     }
 
-    /* @params reactionSid - sid of reaction for which flux is returned
-     * 
-     * 
-     * @returns flux for pointed reaction and task
-     */
-//    public String getFlux(String reactionSid) {
-//        String flux = "0.0";
-//        List<EfbaResultElement> fbaList = (List<EfbaResultElement>) task.getEfbaResultElementCollection();
-//        for (EfbaResultElement fba : fbaList) {
-//            EReaction react = fba.getReaction();
-//
-//            if (react.getSid().equals(reactionSid)) {
-//                return Float.toString(fba.getFlux());
-//            }
-//        }
-//        return flux;
-//    }
-
     public void writeDotFile(String filePath) {
         int corner_num = 0;
 
@@ -113,9 +103,8 @@ public class DrawingBean {
         List<EVisTransition> lt = vc.getTransitions(vis.getId());
         List<EVisArcProduct> lap = vc.getArcProducts(vis.getId());
         List<EVisArcReactant> lar = vc.getArcReactants(vis.getId());
-        String placeBack = "\", pin=true, width=\"0.2\", height=\"0.2\"];\n";
-        String smalPlaceBack = "\", pin=true, width=\"0.1\", height=\"0.1\"];\n";
-        String transitionBack = "\", shape=box, style=bold, pin=true, width=\"0.2\", height=\"0.3\"];\n";
+        String placeBack = "\", pin=true, width=\"" + placeWidth + "\", height=\"" + placeHeight + "\"];\n";
+        String transitionBack = "\", shape=box, style=bold, pin=true, width=\"" + transitionWidth + "\", height=\"" + transitionHeight + "\"];\n";
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
             out.write("Digraph " + vis.getName() + " {\n");

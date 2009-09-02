@@ -23,6 +23,12 @@ public class AddVisualizationBean {
     }
 
     public AddVisualizationBean(UploadedFile file, String name, String modelName) {
+        if (!name.matches("[ a-zA-Z_0-9]*")) {
+            FacesContext context = FacesContext.getCurrentInstance();
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_FATAL,
+                    "You can use only letters, digits, white spaces and underscores", null);
+        }
         String newName = name.replace(' ', '_');
         this.file = file;
         this.name = newName;
@@ -42,16 +48,14 @@ public class AddVisualizationBean {
             VisualizationParser vp = new VisualizationParser(name, modelName, file);
             vp.runParser();
 
-        }catch (XmlParseException xpe) {
+        } catch (XmlParseException xpe) {
             FacesContext context = FacesContext.getCurrentInstance();
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_FATAL,
                     xpe.getMessage(), null);
             context.addMessage(null, message);
             return null;
-        }
-
-        catch (Exception e) {
+        } catch (Exception e) {
             FacesContext context = FacesContext.getCurrentInstance();
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_FATAL,

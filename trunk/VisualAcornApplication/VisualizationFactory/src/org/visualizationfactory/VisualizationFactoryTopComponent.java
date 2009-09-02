@@ -7,11 +7,9 @@ package org.visualizationfactory;
 import org.graphscene.GraphModelScene;
 import acorn.webservice.RepeatedVisualizationNameException_Exception;
 import acorn.webservice.VisValidationException_Exception;
-import acorn.data.buffer.DBSupporter;
-import acorn.data.buffer.structures.BadKeyInBufferStruct;
+import factories.NDFactory;
+import org.exceptions.BadKeyInBufferStruct;
 
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.Serializable;
@@ -19,18 +17,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPFaultException;
+import org.dbStructs.ModelStruct;
 import org.dbStructs.NameStruct;
 import org.exceptions.VisValidationException;
+import org.interfaces.TopComponentHelperInterface;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import org.structs.ComputationsVis;
+import org.usermanagement.UserManagementPanel;
 import org.view.NoSelectBorder;
 import org.view.NodeWidget;
 import org.view.SelectBorder;
@@ -49,125 +55,139 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     private static VisualizationFactoryTopComponent instance;
     private static final String PREFERRED_ID = "VisualizationFactoryTopComponent";
     private NodeWidget selectedWidget = null;
-    private DBSupporter dbsupp = new DBSupporter();
     SelectBorder selectBorder = new SelectBorder();
     NoSelectBorder noselBorder = new NoSelectBorder();
     private VisLogic logic;
 
-
     private VisualizationFactoryTopComponent() {
-        initComponents();
-        setName(NbBundle.getMessage(VisualizationFactoryTopComponent.class, "CTL_VisualizationFactoryTopComponent"));
-        setToolTipText(NbBundle.getMessage(VisualizationFactoryTopComponent.class, "HINT_VisualizationFactoryTopComponent"));
+        try {
+
+            String user = NbPreferences.forModule(UserManagementPanel.class).get("user", "");
+            String MD5pass = NbPreferences.forModule(UserManagementPanel.class).get("pass","");
+            logic = new VisLogic();
+            logic.setTchepler(new TopComponentHelper());
+
+            initComponents();
+            setName(NbBundle.getMessage(VisualizationFactoryTopComponent.class, "CTL_VisualizationFactoryTopComponent"));
+            setToolTipText(NbBundle.getMessage(VisualizationFactoryTopComponent.class, "HINT_VisualizationFactoryTopComponent"));
 //        setIcon(Utilities.loadImage(ICON_PATH, true));
-        content = new InstanceContent();
-        associateLookup(new AbstractLookup(content));
+            content = new InstanceContent();
+            associateLookup(new AbstractLookup(content));
 
-        GraphModelScene scene = new GraphModelScene(new GraphModelScene.SelectionNodeListener() {
+            GraphModelScene scene = new GraphModelScene(new GraphModelScene.SelectionNodeListener() {
 
-            public void nodeSelected(NodeWidget w) {
-                if (dbsupp.getModelName() != null) {
+                public void nodeSelected(NodeWidget w) {
+                    if (logic.isModelSet()) {
+                        clearFields();
+                        if (selectedWidget != null) {
+                            selectedWidget.getLabelWidget().setForeground(Color.BLACK);
+                            selectedWidget.setBorder(noselBorder);
+                            content.remove(selectedWidget.getVisNode());
+                        }
+                        selectedWidget = w;
+                        VisNode node = w.getVisNode();
+                        //Adds node to lookup associated with VisualFactoryTopComponent
+                        content.add(node);
+                        List<NameStruct> structNames = null;
+                        if (w.isPlaceWidget()) {
+                            nodeNameLabel.setText("Name of place: ");
+                            structNames = logic.getSuitableSpecies((VisPlace) node);
+
+                        } else if (w.isTransitionWidget()) {
+                            nodeNameLabel.setText("Name of transition: ");
+                            structNames = logic.getSuitableReactions((VisTransition) node);
+                        }
+                        structNames = node.removeUsedNodes(structNames);
+                        namesComboBox.removeAllItems();
+                        if (structNames.size() == 0) {
+                            setNameButton.setEnabled(false);
+                            namesComboBox.setEnabled(false);
+                        } else {
+                            for (NameStruct name : structNames) {
+                                namesComboBox.addItem(name);
+                            }
+                        }
+                        w.setBorder(selectBorder);
+                        w.getLabelWidget().setForeground(Color.BLUE);
+                        namesComboBox.setEnabled(true);
+                        if (structNames.size() == 0) {
+                            setNameButton.setEnabled(false);
+                        } else {
+                            setNameButton.setEnabled(true);
+                        }
+                    }
+                }
+
+                public void unselect() {
+                    clearFields();
                     if (selectedWidget != null) {
                         selectedWidget.getLabelWidget().setForeground(Color.BLACK);
                         selectedWidget.setBorder(noselBorder);
                         content.remove(selectedWidget.getVisNode());
                     }
-                    selectedWidget = w;
-                    VisNode node = w.getVisNode();
-                    //Adds node to lookup associated with VisualFactoryTopComponent
-                    content.add(node);
-                    List<NameStruct> structNames = null;
-                    if (w.isPlaceWidget()) {
-                        nodeNameLabel.setText("Name of place: ");
-                        structNames = dbsupp.getSuitableSpecies((VisPlace) node);
-
-                    } else if (w.isTransitionWidget()) {
-                        nodeNameLabel.setText("Name of transition: ");
-                        structNames = dbsupp.getSuitableReactions((VisTransition) node);
-                    }
-                    structNames = node.removeUsedNodes(structNames);
-                    namesComboBox.removeAllItems();
-                    if (structNames.size() == 0) {
-                        setNameButton.setEnabled(false);
-                        namesComboBox.setEnabled(false);
-                    } else {
-                        for (NameStruct name : structNames) {
-                            namesComboBox.addItem(name);
-                        }
-                    }
-                    w.setBorder(selectBorder);
-                    w.getLabelWidget().setForeground(Color.BLUE);
-                    namesComboBox.setEnabled(true);
-                    if (structNames.size() == 0) {
-                        setNameButton.setEnabled(false);
-                    } else {
-                        setNameButton.setEnabled(true);
-                    }
+                    selectedWidget = null;
+                    namesComboBox.setEnabled(false);
+                    setNameButton.setEnabled(false);
+                    nodeNameLabel.setText("Select place or transition");
                 }
-            }
+            });
+            graphView = scene.createView();
+            jScrollPane1.setViewportView(graphView);
+            add(scene.createSatelliteView(), BorderLayout.WEST);
+            result = Utilities.actionsGlobalContext().lookupResult(VisNode.class);
 
-            public void unselect() {
-                if (selectedWidget != null) {
-                    selectedWidget.getLabelWidget().setForeground(Color.BLACK);
-                    selectedWidget.setBorder(noselBorder);
-                    content.remove(selectedWidget.getVisNode());
-                }
-                selectedWidget = null;
-                namesComboBox.setEnabled(false);
-                setNameButton.setEnabled(false);
-                nodeNameLabel.setText("Select place or transition");
-            }
-        });
+            result.addLookupListener(new LookupListener() {
+                // when node is clicked full name of node is displayed
 
-
-        dbsupp.setGraphProvider(scene.getLoadSaveListener());
-        logic = new VisLogic(scene.getLoadSaveListener());
-        logic.setDbsupp(dbsupp);
-        scene.setLogic(logic);
-        
-        graphView = scene.createView();
-        jScrollPane1.setViewportView(graphView);
-        add(scene.createSatelliteView(), BorderLayout.WEST);
-        result = Utilities.actionsGlobalContext().lookupResult(VisNode.class);
-
-        result.addLookupListener(new LookupListener() {
-
-            @Override
-            public void resultChanged(LookupEvent e) {
-                Collection<VisNode> c = (Collection<VisNode>) result.allInstances();
-                if (c.size() == 1) {
-                    VisNode node = c.iterator().next();
-                    fullNameLabel.setEnabled(true);
-                    fullName.setText(node.getName());
-                    if (node.isPlace()) {
-                        fullNameLabel.setText("Full name of species:");
-                    } else {
-                        fullNameLabel.setText("Full name of reaction:");
-                    }
-                } else {
-                    fullName.setText("");
-                    fullNameLabel.setEnabled(false);
-                }
-            }
-        });
-
-        visCompResult = Utilities.actionsGlobalContext().lookupResult(ComputationsVis.class);
-        dbsupp.setVisCompResult(visCompResult);
-        logic.setVisCompResult(visCompResult);
-        visCompResult.addLookupListener(
-                new LookupListener() {
-
-                    @Override
-                    public void resultChanged(LookupEvent e) {
-                        Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
-                        if (c.isEmpty()) {
-                            dbsupp.addcomputationsToTransitionsName(false);
+                @Override
+                public void resultChanged(LookupEvent e) {
+                    Collection<VisNode> c = (Collection<VisNode>) result.allInstances();
+                    if (c.size() == 1) {
+                        VisNode node = c.iterator().next();
+                        fullNameLabel.setEnabled(true);
+                        fullName.setText(node.getName());
+                        if (node.isPlace()) {
+                            fullNameLabel.setText("Full name of species:");
                         } else {
-                            dbsupp.addcomputationsToTransitionsName(true);
+                            fullNameLabel.setText("Full name of reaction:");
                         }
+                    } else {
+                        fullName.setText("");
+                        fullNameLabel.setEnabled(false);
                     }
-                });
+                }
+            });
 
+            logic.setGraphProvider(scene.getLoadSaveListener());
+            scene.setLogic(logic);
+            
+            visCompResult = Utilities.actionsGlobalContext().lookupResult(ComputationsVis.class);
+            logic.setVisCompResult(visCompResult);
+            visCompResult.addLookupListener(
+                    new LookupListener() {
+
+                        @Override
+                        public void resultChanged(LookupEvent e) {
+                            Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
+                            if (c.isEmpty()) {
+                                logic.addcomputationsToTransitionsName(false);
+                            } else {
+                                logic.addcomputationsToTransitionsName(true);
+                            }
+                        }
+                    });
+        } catch (SOAPFaultException ex) {
+
+            String msg = NbBundle.getMessage(NDFactory.class, "NDF.serverRestart");
+            NotifyDescriptor nd = NDFactory.getServerRestartError();
+            DialogDisplayer.getDefault().notify(nd);
+
+        } catch (WebServiceException ex) {
+//            String msg = "You may not be connected to internet.\n Check connection.";
+            String msg = NbBundle.getMessage(NDFactory.class, "NDF.noInternetConnection");
+            NotifyDescriptor nd = NDFactory.getNoConnectionError();
+            DialogDisplayer.getDefault().notify(nd);
+        }
     }
 
     private boolean isVisCompResultEmpty() {
@@ -184,8 +204,13 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         programPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         modelsComboBox = new javax.swing.JComboBox();
-        Object[] elements = (Object[]) dbsupp.getModelNameList();
-        AutoCompleteSupport support = AutoCompleteSupport.install(modelsComboBox, GlazedLists.eventListOf(elements));
+        //Object[] elements = (Object[]) dbsupp.getModelNameList();
+        //AutoCompleteSupport support = AutoCompleteSupport.install(modelsComboBox, GlazedLists.eventListOf(elements));
+        ModelStruct[] models = logic.getModelsArray();
+        modelsComboBox.removeAllItems();
+        for (ModelStruct model : models) {
+            modelsComboBox.addItem(model);
+        }
         setModelButton = new javax.swing.JButton();
         ModelNameLabel = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -524,11 +549,11 @@ public class VisualizationFactoryTopComponent extends TopComponent {
             NameStruct selectedStruct = (NameStruct) namesComboBox.getSelectedItem();
             VisNode node = selectedWidget.getVisNode();
 
-            dbsupp.nameVisNode(node, selectedStruct);
+            logic.nameVisNode(node, selectedStruct);
             selectedWidget.setLabel(selectedStruct.getSid());
 
             if (selectedWidget.isTransitionWidget()) {
-                dbsupp.setSpeciesForReaction(selectedStruct);
+                logic.setSpeciesForReaction(selectedStruct);
                 Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
                 if (!c.isEmpty()) {
                     selectedWidget.setLabel(selectedStruct.getSid() + " " + Float.toString(((VisTransition) node).getFlux()));
@@ -544,32 +569,36 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 }//GEN-LAST:event_namesComboBoxActionPerformed
 
     private void loadVisualizationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadVisualizationButtonActionPerformed
+        clearFields();
         String visName = (String) visualizationNamesComboBox.getSelectedItem();
         if (visName != null) {
-            dbsupp.getVisualization(visName);
+            logic.getVisualization(visName);
         }
 }//GEN-LAST:event_loadVisualizationButtonActionPerformed
 
     private void deleteVisualizationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteVisualizationButtonActionPerformed
+        clearFields();
         String visName = (String) visualizationNamesComboBox.getSelectedItem();
         if (visName != null) {
-            dbsupp.removeVisualization(visName);
+            logic.removeVisualization(visName);
             this.updateVisualizationNamesComboBox();
         }
 }//GEN-LAST:event_deleteVisualizationButtonActionPerformed
 
     private void clearVisualizationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearVisualizationButtonActionPerformed
-        dbsupp.clearVisualizatioon();
+        clearFields();
+        logic.clearVisualization();
 }//GEN-LAST:event_clearVisualizationButtonActionPerformed
 
     private void eraseAndSaveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eraseAndSaveButtonActionPerformed
+        clearFields();
         String visName = visualizationNameTextField.getText();
         if (visName == null || visName.equals("")) {
             SaveErrorsLabel.setText("set name for Visualization.");
             return;
         }
         try {
-            dbsupp.eraseOldSaveNewVisualization(visName);
+            logic.eraseOldSaveNewVisualization(visName);
         } catch (RepeatedVisualizationNameException_Exception ex) {
             SaveErrorsLabel.setText(ex.getMessage());
         } catch (BadKeyInBufferStruct ex) {
@@ -583,8 +612,9 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 }//GEN-LAST:event_eraseAndSaveButtonActionPerformed
 
     private void validateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_validateButtonActionPerformed
+        clearFields();
         try {
-            dbsupp.validateVisualization();
+            logic.validateVisualization();
             SaveErrorsLabel.setText("Visualization is valid.");
         } catch (BadKeyInBufferStruct ex) {
             SaveErrorsLabel.setText(ex.getMessage());
@@ -594,14 +624,10 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 }//GEN-LAST:event_validateButtonActionPerformed
 
     private void saveVisToDBButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveVisToDBButtonActionPerformed
-
+        clearFields();
         String visName = visualizationNameTextField.getText();
-        if (visName == null || visName.equals("")) {
-            SaveErrorsLabel.setText("set name for Visualization.");
-            return;
-        }
         try {
-            dbsupp.saveVisualization(visName);
+            logic.saveNewVisualization(visName);
         } catch (RepeatedVisualizationNameException_Exception ex) {
             SaveErrorsLabel.setText(ex.getMessage());
         } catch (BadKeyInBufferStruct ex) {
@@ -615,14 +641,15 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 }//GEN-LAST:event_saveVisToDBButtonActionPerformed
 
     private void visualizationNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_visualizationNameTextFieldActionPerformed
+        clearFields();
         saveVisToDBButton.setEnabled(true);
 }//GEN-LAST:event_visualizationNameTextFieldActionPerformed
 
     private void setModelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setModelButtonActionPerformed
-        String modelName = (String) modelsComboBox.getSelectedItem();
-        boolean isProperName = dbsupp.setModelName(modelName);
+        ModelStruct model = (ModelStruct) modelsComboBox.getSelectedItem();
+        boolean isProperName = logic.setModel(model);
         if (isProperName) {
-            ModelNameLabel.setText("Your model is: " + modelName);
+            ModelNameLabel.setText("Your model is: " + model);
 
             enableButtons();
             updateVisualizationNamesComboBox();
@@ -632,10 +659,12 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 }//GEN-LAST:event_setModelButtonActionPerformed
 
     private void modelsComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modelsComboBoxActionPerformed
+        clearFields();
         setModelButton.setEnabled(true);
 }//GEN-LAST:event_modelsComboBoxActionPerformed
 
     private void addCompRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCompRadioButtonActionPerformed
+        clearFields();
         if (addCompRadioButton.isSelected() && isVisCompResultEmpty()) {
             content.add(ComputationsVis.VISUALIZE);
 //            dbsupp.addcomputationsToTransitionsName(true);
@@ -643,6 +672,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     }//GEN-LAST:event_addCompRadioButtonActionPerformed
 
     private void remCompRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remCompRadioButtonActionPerformed
+        clearFields();
         if (remCompRadioButton.isSelected() && !isVisCompResultEmpty()) {
             content.remove(ComputationsVis.VISUALIZE);
 //            dbsupp.addcomputationsToTransitionsName(false);
@@ -697,7 +727,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     }
 
     private void updateVisualizationNamesComboBox() {
-        List<String> visNames = dbsupp.getVisualizationNames();
+        List<String> visNames = logic.getVisualizationNames();
         visualizationNamesComboBox.removeAllItems();
         for (String name : visNames) {
             visualizationNamesComboBox.addItem(name);
@@ -714,7 +744,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         eraseAndSaveButton.setEnabled(true);
         clearVisualizationButton.setEnabled(true);
 
-        if (dbsupp.isDoneTask() && dbsupp.isFbaTask()) {
+        if (logic.isDoneTask() && logic.isFbaTask()) {
             addCompRadioButton.setEnabled(true);
             remCompRadioButton.setEnabled(true);
         } else {
@@ -723,6 +753,9 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         }
     }
 
+    private void clearFields(){
+       SaveErrorsLabel.setText("");
+    }
     /**
      * Obtain the VisualizationFactoryTopComponent instance. Never call {@link #getDefault} directly!
      */
@@ -774,6 +807,16 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 
         public Object readResolve() {
             return VisualizationFactoryTopComponent.getDefault();
+        }
+    }
+
+    class TopComponentHelper implements TopComponentHelperInterface {
+
+        public void updateModelsList(ModelStruct[] models) {
+            modelsComboBox.removeAllItems();
+            for (ModelStruct name : models) {
+                modelsComboBox.addItem(name);
+            }
         }
     }
 }

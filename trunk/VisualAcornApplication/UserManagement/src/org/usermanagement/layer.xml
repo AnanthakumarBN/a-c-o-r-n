@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="OptionsDialog">
+        <folder name="Advanced">
+            <file name="org-usermanagement-UserManagementAdvancedOption.instance">
+                <attr name="controller" newvalue="org.usermanagement.UserManagementOptionsPanelController"/>
+                <attr name="displayName" bundlevalue="org.usermanagement.Bundle#AdvancedOption_DisplayName_UserManagement"/>
+                <attr name="instanceCreate" methodvalue="org.netbeans.spi.options.AdvancedOption.createSubCategory"/>
+                <attr name="keywords" bundlevalue="org.usermanagement.Bundle#AdvancedOption_Keywords_UserManagement"/>
+                <attr name="keywordsCategory" stringvalue="Advanced/"/>
+                <attr name="toolTip" bundlevalue="org.usermanagement.Bundle#AdvancedOption_Tooltip_UserManagement"/>
+            </file>
+        </folder>
+    </folder>
+</filesystem>

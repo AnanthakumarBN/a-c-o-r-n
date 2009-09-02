@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.visualapi;
 
 import java.awt.Point;
@@ -39,17 +38,18 @@ public class VisEdge {
         this.controlPoints = controlPoints;
     }
 
-    
     public VisNode getSource() {
         return source;
     }
 
     public void setSource(VisNode source) {
-        if (this.source != null){
+        if (this.source != null) {
             removeEdgeFromNodes();
         }
         this.source = source;
-        addEdgeToNodes(this.source, this.target);
+        if (this.source != null && this.target != null) {
+            addEdgeToNodes(this.source, this.target);
+        }
     }
 
     public VisNode getTarget() {
@@ -57,25 +57,24 @@ public class VisEdge {
     }
 
     public void setTarget(VisNode target) {
-        if (this.target != null){
+        if (this.target != null) {
             removeEdgeFromNodes();
         }
         this.target = target;
-        addEdgeToNodes(this.source, this.target);
+        if (this.source != null && this.target != null) {
+            addEdgeToNodes(this.source, this.target);
+        }
     }
 
     /**
      * removes this edge from sourceNode and targetNode
      */
-    public void removeEdgeFromNodes(){
+    public void removeEdgeFromNodes() {
         target.removeSourceNode(source);
         source.removeTargetNode(target);
     }
 
-    public void addEdgeToNodes(VisNode src, VisNode tar){
+    public void addEdgeToNodes(VisNode src, VisNode tar) {
         src.addTargetNode(tar);
     }
-
-    
-    
 }

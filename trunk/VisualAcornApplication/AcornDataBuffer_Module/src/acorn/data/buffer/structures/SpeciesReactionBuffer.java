@@ -4,6 +4,7 @@
  */
 package acorn.data.buffer.structures;
 
+import org.exceptions.BadKeyInBufferStruct;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +35,24 @@ public class SpeciesReactionBuffer {
         speciesForReaction = new HashMap<NameStruct, STStructList>();
     }
 
+    public void addReactionAndUpdateSpecies(NameStruct updateReaction, List<NameStruct> sourceSpec, List<NameStruct> targetSpec) {
+        addNameStructList(updateReaction, sourceSpec, true, true);
+        addNameStructList(updateReaction, targetSpec, true, false);
+
+        //update ReactionsForSpecies HasMap
+        for (NameStruct source : sourceSpec) {
+            if (reactionsForSpecies.containsKey(source) && reactionsForSpecies.get(source).getTargetList() != null) {
+                reactionsForSpecies.get(source).getTargetList().add(updateReaction);
+            }
+        }
+
+        for (NameStruct target : targetSpec) {
+            if (reactionsForSpecies.containsKey(target) && reactionsForSpecies.get(target).getSourceList() != null) {
+                reactionsForSpecies.get(target).getSourceList().add(updateReaction);
+            }
+        }
+    }
+
     public void clear() {
         reactionsForSpecies.clear();
         speciesForReaction.clear();
@@ -60,13 +79,13 @@ public class SpeciesReactionBuffer {
      * @param isSource
      * @return List of species which are source/target species for reactionKey reaction
      */
-    public List<NameStruct> getListOfSpecies(NameStruct reactionKey, boolean isSource){
-        if(!speciesForReaction.containsKey(reactionKey)){
+    public List<NameStruct> getListOfSpecies(NameStruct reactionKey, boolean isSource) {
+        if (!speciesForReaction.containsKey(reactionKey)) {
             return null;
         }
-        if(isSource){
+        if (isSource) {
             return speciesForReaction.get(reactionKey).getSourceList();
-        }else{
+        } else {
             return speciesForReaction.get(reactionKey).getTargetList();
         }
     }
@@ -192,7 +211,7 @@ public class SpeciesReactionBuffer {
         }
     }
 
-    public boolean containsKey(NameStruct key, boolean isReactionMap, boolean isSource){
+    public boolean containsKey(NameStruct key, boolean isReactionMap, boolean isSource) {
         HashMap<NameStruct, STStructList> map = null;
         if (isReactionMap) {
             map = speciesForReaction;
@@ -205,7 +224,68 @@ public class SpeciesReactionBuffer {
         return true;
     }
 
-    public List<NameStruct> getNotValidNameStructs(NameStruct key, Collection<NameStruct> values, boolean isReactionMap, boolean isSource) throws BadKeyInBufferStruct{
+    /**
+     * deletes reaction from both HashMaps speciesForReaction and reactionsForSpecies
+     * @param reaction NameStruct of the reaction that is removed
+     */
+    public void removeReaction(NameStruct reaction) {
+        if (speciesForReaction.containsKey(reaction)) {
+            STStructList species = speciesForReaction.get(reaction);
+            Collection<NameStruct> sourceSpecies = species.getSourceList();
+            Collection<NameStruct> targetSpecies = species.getTargetList();
+
+            if (sourceSpecies != null) {
+                for (NameStruct sourceSpec : sourceSpecies) {
+                    if (isSTSNotNull(sourceSpec, false, false)) {
+                        reactionsForSpecies.get(sourceSpec).getTargetList().remove(reaction);
+                    }
+                }
+            }
+            if (targetSpecies != null) {
+                for (NameStruct targetSpec : targetSpecies) {
+                    if (isSTSNotNull(targetSpec, false, true)) {
+                        reactionsForSpecies.get(targetSpec).getSourceList().remove(reaction);
+                    }
+                }
+            }
+            speciesForReaction.remove(reaction);
+        }
+    }
+
+    /**
+     *
+     * @param key key in hashMap either speciesForReaction or reactionsForSpecies
+     * @param isKeyReaction points is key a reaction key or not
+     * @param isSourceSTS points either of two HashMap is searched
+     * @return true if pointed List is not null - data was downloaded
+     */
+    public boolean isSTSNotNull(NameStruct key, boolean isKeyReaction, boolean isSourceSTS){
+        if(isKeyReaction){
+            if(!speciesForReaction.containsKey(key)){
+                return false;
+            }
+            if (isSourceSTS && speciesForReaction.get(key).getSourceList() == null){
+                return false;
+            } else if (!isSourceSTS && speciesForReaction.get(key).getTargetList() == null){
+                return false;
+            }
+
+            return true;
+        }else{
+            if(!reactionsForSpecies.containsKey(key)){
+                return false;
+            }
+            if(isSourceSTS && reactionsForSpecies.get(key).getSourceList() == null){
+                return false;
+            }
+            if(!isSourceSTS && reactionsForSpecies.get(key).getTargetList() == null){
+                return false;
+            }
+            return true;
+        }
+    }
+
+    public List<NameStruct> getNotValidNameStructs(NameStruct key, Collection<NameStruct> values, boolean isReactionMap, boolean isSource) throws BadKeyInBufferStruct {
         HashMap<NameStruct, STStructList> map = null;
         ArrayList<NameStruct> badNameStructs = new ArrayList<NameStruct>(values);
         if (isReactionMap) {
@@ -214,10 +294,10 @@ public class SpeciesReactionBuffer {
             map = reactionsForSpecies;
         }
         if (!map.containsKey(key)) {
-            if(isReactionMap){
-            throw new BadKeyInBufferStruct(key.toString() + " isn't valid reaction.");
-            }else{
-                throw new BadKeyInBufferStruct(key.toString()+ " isn't valid species.");
+            if (isReactionMap) {
+                throw new BadKeyInBufferStruct(key.toString() + " isn't valid reaction.");
+            } else {
+                throw new BadKeyInBufferStruct(key.toString() + " isn't valid species.");
             }
 
         }

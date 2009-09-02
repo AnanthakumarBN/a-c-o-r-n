@@ -5,16 +5,20 @@
 package org.graphscene;
 
 import java.awt.Image;
+import java.awt.Point;
 import java.lang.String;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import org.dbStructs.NameStruct;
 import org.exceptions.VisValidationException;
 import org.interfaces.LoadSaveInterface;
 import org.providers.ModelSceneMenu;
 import org.netbeans.api.visual.action.ActionFactory;
+import org.netbeans.api.visual.action.MoveProvider;
 import org.netbeans.api.visual.action.WidgetAction;
 import org.netbeans.api.visual.anchor.AnchorFactory;
 import org.netbeans.api.visual.anchor.AnchorShape;
@@ -64,6 +68,7 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
     private WidgetAction reconnectAction = ActionFactory.createReconnectAction(new SceneReconnectProvider(this));
     private WidgetAction zoomAction = ActionFactory.createZoomAction();
     private WidgetAction panAction = ActionFactory.createPanAction();
+    private WidgetAction multiMoveAction = ActionFactory.createMoveAction(null, new MultiMoveProvider());
 //    private WidgetAction moveControlPointAction = ActionFactory.createFreeMoveControlPointAction();
 //    private WidgetAction selectAction = ActionFactory.createSelectAction(new ObjectSelectProvider());
     private ModelSceneMenu modelMenu = new ModelSceneMenu(this);
@@ -76,12 +81,14 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
     private VisLogic logic;
 
     public GraphModelScene(SelectionNodeListener selNodeList) {
+
+        addChild(backgroundLayer);
         mainLayer = new LayerWidget(this);
         addChild(mainLayer);
-
         connectionLayer = new LayerWidget(this);
         addChild(connectionLayer);
         addChild(interractionLayer);
+
         getActions().addAction(ActionFactory.createRectangularSelectAction(this, backgroundLayer));
         getActions().addAction(panAction);
         getActions().addAction(zoomAction);
@@ -106,7 +113,6 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
         };
         this.getActions().addAction(mouseClick);
         loadSaveListener = new LoadSaveListener();
-
     }
 
     @Override
@@ -119,14 +125,19 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
             wid = new TransitionWidget(this, (VisTransition) node);
             wid.setImage(TRANSITION_IMG);
         }
-        wid.setToolTipText("Hold 'Ctrl'+'Mouse Right Button' to create arrow between place and transition");
+        wid.setToolTipText("Hold 'Ctrl'+ mouse left button to create arrow between place and transition");
 
         wid.getActions().addAction(connectAction);
-        wid.getActions().addAction(moveAction);
+
         mainLayer.addChild(wid);
         wid.getActions().addAction(ActionFactory.createPopupMenuAction(nodeMenu));
-        wid.getActions().addAction(mouseClick);
         wid.getActions().addAction(createSelectAction());
+        wid.getActions().addAction(multiMoveAction);
+        wid.getActions().addAction(mouseClick);
+
+//          wid.getActions().addAction(moveAction);
+
+        wid.getActions().addAction(createObjectHoverAction());
         return wid;
     }
 
@@ -136,7 +147,7 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
         connection.setTargetAnchorShape(AnchorShape.TRIANGLE_FILLED);
         connection.setEndPointShape(PointShape.SQUARE_FILLED_BIG);
         connection.getActions().addAction(createObjectHoverAction());
-        connection.getActions().addAction(createSelectAction());
+//        connection.getActions().addAction(createSelectAction());
         connection.getActions().addAction(reconnectAction);
         connection.setToolTipText("Hold 'Ctrl'+'Mouse Right Button' to move arrow from one place(or transition) to another");
         connectionLayer.addChild(connection);
@@ -318,54 +329,19 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
 
             //adds nodes and edges
             for (VisEdge edge : edges) {
-//                if (edge.getSource().isPlace()) {
-//                    VisPlace source = (VisPlace) edge.getSource();
-//                    VisTransition target = (VisTransition) edge.getTarget();
-//                    if (!usedNodes.contains(source.getXmlSid())) {
-//                        source.removeNullsFromSets();
-//                        usedNodes.add(source.getXmlSid());
-//                        NodeWidget w = (NodeWidget) addNode(source);
-//                        w.setPreferredLocation(source.getLocation());
-//                        w.setNameAndSid(source.getName(), source.getSid());
-//                        w.setLabel(source.getSid());
-//                    }
-//                    if (!usedNodes.contains(target.getXmlSid())) {
-//                        target.removeNullsFromSets();
-//                        usedNodes.add(target.getXmlSid());
-//                        NodeWidget w = (NodeWidget) addNode(target);
-//                        w.setPreferredLocation(target.getLocation());
-//                        w.setNameAndSid(target.getName(), target.getSid());
-//                        String name = target.getSid();
-//                        if (addComp) {
-//                            name = name.concat(" " + Float.toString(target.getFlux()));
-//                        }
-//                        w.setLabel(name);
-//                    }
-//                } else {
+
                 VisNode source = edge.getSource();
                 VisNode target = edge.getTarget();
                 if (!usedNodes.contains(source.getXmlSid())) {
                     source.removeNullsFromSets();
                     usedNodes.add(source.getXmlSid());
                     addNodeToScene(source, addComp);
-//                        NodeWidget w = (NodeWidget) addNode(source);
-//                        w.setPreferredLocation(source.getLocation());
-//                        w.setNameAndSid(source.getName(), source.getSid());
-//                        String name = source.getSid();
-//                        if (addComp) {
-//                            name = name.concat(" " + Float.toString(source.getFlux()));
-//                        }
-//                        w.setLabel(name);
+
                 }
                 if (!usedNodes.contains(target.getXmlSid())) {
                     target.removeNullsFromSets();
                     usedNodes.add(target.getXmlSid());
                     addNodeToScene(target, addComp);
-//                        NodeWidget w = (NodeWidget) addNode(target);
-//                        w.setPreferredLocation(target.getLocation());
-//                        w.setNameAndSid(target.getName(), target.getSid());
-//                        w.setLabel(target.getSid());
-//                    }
                 }
                 addEdge(edge);
                 setEdgeSource(edge, edge.getSource());
@@ -376,7 +352,7 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
 
         public void addNewEdge(VisNode source, VisNode target) {
             if (!source.isTheSame(target)) {
-                VisEdge edge = new VisEdge(source,target);
+                VisEdge edge = new VisEdge(source, target);
                 addEdge(edge);
                 setEdgeSource(edge, edge.getSource());
                 setEdgeTarget(edge, edge.getTarget());
@@ -424,6 +400,68 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
         public void validateNewGraph() {
             validate();
         }
-        
+
+        public void removeDetachedTransitions(Collection<NameStruct> detachedReactions) {
+            List<Widget> widgets = mainLayer.getChildren();
+
+            List<Widget> clonedWidgets = new ArrayList<Widget>(widgets);
+            for (Widget wid : clonedWidgets) {
+                if (wid instanceof TransitionWidget) {
+                    VisTransition visTrans = (VisTransition) ((TransitionWidget) wid).getVisNode();
+                    for (NameStruct react : detachedReactions) {
+                        if (react.getSid().equals(visTrans.getSid())) {
+                            visTrans.removeAllConnections();
+                            removeNodeWithEdges(visTrans);
+                            validate();
+                            break;
+                        }
+                    }
+//                    break;
+                }
+            }
+        }
+    }
+
+    /*For multi nodes move
+     */
+    private class MultiMoveProvider implements MoveProvider {
+
+        private HashMap<Widget, Point> originals = new HashMap<Widget, Point>();
+        private Point original;
+
+        public void movementStarted(Widget widget) {
+            Object object = findObject(widget);
+            if (isNode(object)) {
+                for (Object o : getSelectedObjects()) {
+                    if (isNode(o)) {
+                        Widget w = findWidget(o);
+                        if (w != null) {
+                            originals.put(w, w.getPreferredLocation());
+                        }
+                    }
+                }
+            } else {
+                originals.put(widget, widget.getPreferredLocation());
+            }
+        }
+
+        public void movementFinished(Widget widget) {
+            originals.clear();
+            original = null;
+        }
+
+        public Point getOriginalLocation(Widget widget) {
+            original = widget.getPreferredLocation();
+            return original;
+        }
+
+        public void setNewLocation(Widget widget, Point location) {
+            int dx = location.x - original.x;
+            int dy = location.y - original.y;
+            for (Map.Entry<Widget, Point> entry : originals.entrySet()) {
+                Point point = entry.getValue();
+                entry.getKey().setPreferredLocation(new Point(point.x + dx, point.y + dy));
+            }
+        }
     }
 }

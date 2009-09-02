@@ -56,6 +56,14 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
+                    <code-name-base>org.openide.dialogs</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>7.10.1</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.openide.nodes</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -88,6 +96,14 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
+                    <code-name-base>org.usermanagement</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>1.0</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.visualapi</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -97,7 +113,9 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
+                <package>factories</package>
                 <package>org.graphscene</package>
+                <package>org.vislogicengine</package>
             </public-packages>
         </data>
     </configuration>

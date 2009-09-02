@@ -8,19 +8,22 @@ import javax.persistence.EntityManager;
 
 /**
  *
- * @author Mateusza
+ * @author markos
  */
-public class EVisPlaceController extends EntityController {
+public class EVisTransitionController extends EntityController {
 
-    public EVisPlace getPlaceByName(String name) {
+    public void removeTransition(EVisTransition trans) {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-            EVisPlace v = (EVisPlace) em.createNamedQuery("EVisualization.getByName").setParameter("name", name).getSingleResult();
+            EVisTransition transToRemove = em.find(EVisTransition.class, trans.getId());
+            if (transToRemove != null) {
+                em.remove(transToRemove);
+            }
             em.getTransaction().commit();
-            return v;
         } finally {
             em.close();
         }
+
     }
 }

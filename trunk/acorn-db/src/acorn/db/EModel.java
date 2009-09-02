@@ -38,9 +38,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NamedQuery(name = "EModel.findByReadOnly", query = "SELECT e FROM EModel e WHERE e.readOnly = :readOnly"),
 @NamedQuery(name = "EModel.getChildrenByName", query = "SELECT e.eModelCollection FROM EModel e where e.name = :name"),
 @NamedQuery(name = "EModel.getChildrenByModel", query = "SELECT e.eModelCollection FROM EModel e where e = :model"),
-@NamedQuery(name = "EModel.getMethodData", query ="SELECT t.methodData from EModel e , ETask t WHERE t.model = e.id and e.name = :modelName"),
+@NamedQuery(name = "EModel.getMethodData", query ="SELECT t.methodData from EModel e , ETask t WHERE t.model = e.id and e = :model"),
 @NamedQuery(name = "EModel.isFba", query = "SELECT f from EFbaData f, EMethodData m where m.id = f.id and m = :method"),
-@NamedQuery(name = "EModel.getTask", query = "SELECT m.task from EModel m where m.name = :name")})
+@NamedQuery(name = "EModel.getTask", query = "SELECT m.task from EModel m where m = :model")})
 public class EModel implements Serializable {
 
     private static final long serialVersionUID = 1L;

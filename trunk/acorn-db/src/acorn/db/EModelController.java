@@ -1,6 +1,7 @@
 package acorn.db;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -269,7 +270,10 @@ public class EModelController extends EntityController {
     public List<EModel> getChildrenByName(String modelName) {
         EntityManager em = getEntityManager();
         try {
-            return em.createNamedQuery("EModel.getChildrenByName").setParameter("name", modelName).getResultList();
+            em.getTransaction().begin();
+            List<EModel> models = em.createNamedQuery("EModel.getChildrenByName").setParameter("name", modelName).getResultList();
+            em.getTransaction().commit();
+            return models;
         } finally {
             em.close();
         }
@@ -278,7 +282,10 @@ public class EModelController extends EntityController {
     public List<EModel> getChildrenByModel(EModel model) {
         EntityManager em = getEntityManager();
         try {
-            return em.createNamedQuery("EModel.getChildrenByModel").setParameter("model", model).getResultList();
+            em.getTransaction().begin();
+            List<EModel> models = em.createNamedQuery("EModel.getChildrenByModel").setParameter("model", model).getResultList();
+            em.getTransaction().commit();
+            return models;
         } finally {
             em.close();
         }
@@ -292,16 +299,20 @@ public class EModelController extends EntityController {
     public List<EModel> getChildrenByModelList(List<EModel> parentList) {
         List<EModel> children = new ArrayList<EModel>(0);
         for (EModel model : parentList) {
-            children.addAll(getChildrenByModel(model));
+//            children.addAll(getChildrenByModel(model));
+            children.addAll(model.getEModelCollection());
         }
         return children;
     }
 
-    public EMethodData getMethodType(String modelName) {
+    public EMethodData getMethodType(int modelId) {
         EntityManager em = getEntityManager();
         EMethodData method = null;
         try {
-            method = (EMethodData) em.createNamedQuery("EModel.getMethodData").setParameter("modelName", modelName).getSingleResult();
+            em.getTransaction().begin();
+            EModel model = em.find(EModel.class, modelId);
+            method = (EMethodData) em.createNamedQuery("EModel.getMethodData").setParameter("model", model).getSingleResult();
+            em.getTransaction().commit();
             return method;
         } catch (NoResultException ex) {
             return method;
@@ -310,23 +321,28 @@ public class EModelController extends EntityController {
         }
     }
 
-    public boolean isFbaTask(String modelName) {
-        EMethodData method = getMethodType(modelName);
+    public boolean isFbaTask(int modelId) {
+        EMethodData method = getMethodType(modelId);
         EntityManager em = getEntityManager();
         try {
+            em.getTransaction().begin();
             em.createNamedQuery("EModel.isFba").setParameter("method", method).getSingleResult();
+            em.getTransaction().commit();
             return true;
         } catch (NoResultException ex) {
             return false;
-        }finally{
+        } finally {
             em.close();
         }
     }
 
-    public boolean isDoneTask(String modelName) {
+    public boolean isDoneTask(int modelId) {
         EntityManager em = getEntityManager();
         try {
-            ETask task = (ETask) em.createNamedQuery("EModel.getTask").setParameter("name", modelName).getSingleResult();
+            em.getTransaction().begin();
+            EModel model = em.find(EModel.class, modelId);
+            ETask task = (ETask) em.createNamedQuery("EModel.getTask").setParameter("model", model).getSingleResult();
+            em.getTransaction().commit();
             if (task == null) {
                 return false;
             }
@@ -335,9 +351,38 @@ public class EModelController extends EntityController {
             }
         } catch (NoResultException ex) {
             return false;
-        }finally{
+        } finally {
             em.close();
         }
         return false;
+    }
+
+    /**
+     *
+     * @param modelId
+     * @return creactions
+     */
+    public Collection<EReaction> getDetachedReactions(int modelId) {
+        EntityManager em = getEntityManager();
+        ArrayList<EReaction> detachedReactions = new ArrayList<EReaction>(0);
+        try {
+            em.getTransaction().begin();
+            EModel model = getModel(modelId);
+
+    
+                Collection<EBounds> eboundColl = model.getEBoundsCollection();
+                for (EBounds bounds : eboundColl) {
+                    if (bounds.getLowerBound() == 0 && bounds.getUpperBound() == 0) {
+                        detachedReactions.add(bounds.getReaction());
+    
+                }
+            }
+            em.getTransaction().commit();
+        }catch(NoResultException ex){
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+        return detachedReactions;
     }
 }

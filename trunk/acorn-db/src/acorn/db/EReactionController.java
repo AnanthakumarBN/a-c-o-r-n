@@ -102,6 +102,26 @@ public class EReactionController extends EntityController {
         return r;
     }
 
+
+       public EReaction getByModelIdAndReactionSid(int modelId, String reactionSid) {
+        EntityManager em = getEntityManager();
+        EReaction r = null;
+        EModel m = null;
+        EMetabolism metabol = null;
+
+        try {
+            em.getTransaction().begin();
+            m = em.find(EModel.class, modelId);
+            metabol = m.getMetabolism();
+            r = (EReaction) em.createNamedQuery("EMetabolism.findByIDAndReactionSid").setParameter("id", metabol.getId()).setParameter("sid", reactionSid).getSingleResult();
+            em.getTransaction().commit();
+        } catch (NoResultException nre) {
+            return null;
+        } finally {
+            em.close();
+        }
+        return r;
+    }
     /**
      *
      * @param reactionSid  - sid of reaction
@@ -128,6 +148,7 @@ public class EReactionController extends EntityController {
 
     public List<EReaction> getByModelName(String modelName) {
         EntityManager em = getEntityManager();
+        EModelController mc = new EModelController();
         List<EReaction> reactionList = new ArrayList<EReaction>();
         EModel m = null;
         EMetabolism metabolism = null;
@@ -138,6 +159,35 @@ public class EReactionController extends EntityController {
             metabolism = m.getMetabolism();
             reactionList = (List<EReaction>) em.createNamedQuery("EReaction.findByMetabolism").setParameter("metabolism", metabolism).getResultList();
             em.getTransaction().commit();
+
+            //remove reactions that were removed from model
+            Collection<EReaction> detachedReactions = mc.getDetachedReactions(m.getId());
+            reactionList.removeAll(detachedReactions);
+        } catch (NoResultException nre) {
+            return null;
+        } finally {
+            em.close();
+        }
+        return reactionList;
+    }
+
+     public List<EReaction> getByModelId(int modelId) {
+        EntityManager em = getEntityManager();
+        EModelController mc = new EModelController();
+        List<EReaction> reactionList = new ArrayList<EReaction>();
+        EModel m = null;
+        EMetabolism metabolism = null;
+
+        try {
+            em.getTransaction().begin();
+            m = em.find(EModel.class, modelId);
+            metabolism = m.getMetabolism();
+            reactionList = (List<EReaction>) em.createNamedQuery("EReaction.findByMetabolism").setParameter("metabolism", metabolism).getResultList();
+            em.getTransaction().commit();
+
+            //remove reactions that were removed from model
+            Collection<EReaction> detachedReactions = mc.getDetachedReactions(m.getId());
+            reactionList.removeAll(detachedReactions);
         } catch (NoResultException nre) {
             return null;
         } finally {

@@ -87,6 +87,10 @@ Generate reactants/products source/target reactions
 26. Click "Add target nodes" for generating products (for reaction) or target reactions
  (for species)
 
+Multi move nodes
+27. Select nodes you want to move (by holding left mouse button).
+28. Catch one of selected nodes and move it. Other nodes also move.
+
 Useful hints:
 I. How to creat visualization:
     1. Draw transitions and places

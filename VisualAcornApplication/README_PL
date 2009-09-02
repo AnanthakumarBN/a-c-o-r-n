@@ -86,6 +86,10 @@ należy kliknąć "Add source nodes".
 26. Aby wygenerować reakcje docelowe (dla substancji) lub produkty (dla reakcji)
 należy kliknąć "Add target nodes".
 
+Przesuwanie wielu wezlow jednoczesnie:
+27. Zaznacz kusorem myszy (przytrzymując lewy przycisk) węzły które chcesz przesunąć
+28. Złap za jeden z nich i zmień jego położenie - wszystkie zaznaczone węzły będą zmieniać połozenie.
+
 Przydatne praktyki:
 I. Schemat postępowania przy tworzeniu wizualizacji:
     1. Najpierw rysuj tranzycje i miejsca
@@ -96,7 +100,7 @@ z tranzycją jako produkt, program będzie wiedział, że dane miejsce może naz
 nazwami substancji które są produktami danej reakcji).
 
 II. Przy pozostawieniu kursora myszki bez ruchu pojawiają się podpowiedzi (Tooltips)
-które mają za zadanie pomóc przy użytkowaniu aplikacji.
+które mają za zadanie pomóc w użytkowaniu aplikacji.
 
 Błędy programu:
 W razie błędu przesyłaj komunikat na adres: mateusz.markowski@gmail.com

@@ -1,10 +1,13 @@
-
 package acorn.drawing;
 
+import acorn.exception.DotFileException;
+import acorn.task.TaskDetailsBean;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -25,11 +28,14 @@ public class PictureServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException{
+
+//        TaskDetailsBean  detailsBean = new TaskDetailsBean();
+//        detailsBean.generateDrawing();
         response.setContentType("image/jpg");
         ServletOutputStream out = response.getOutputStream();
         String filepath = (String) request.getSession().getAttribute("PICTURE_PATH");
+        request.getSession().removeAttribute("PICTURE_PATH");
         BufferedImage image = ImageIO.read(new File(filepath));
         JPEGCodec.createJPEGEncoder(out).encode(image);
     }
@@ -43,8 +49,7 @@ public class PictureServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         processRequest(request, response);
     }
 
@@ -56,12 +61,11 @@ public class PictureServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
+            processRequest(request, response);
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
      * @return a String containing servlet description
      */

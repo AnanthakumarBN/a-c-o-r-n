@@ -370,6 +370,9 @@ public class TaskBean {
                 b.setReaction(c.getReaction());
 
                 model.getEBoundsCollection().add(b);
+                
+                // update LastChange date
+                model.setLastChange(new Date());
             }
 
             EMetabolismController me = new EMetabolismController();
@@ -383,6 +386,8 @@ public class TaskBean {
 
         d.originalConditions = copyConditionList(d.conditions);
 
+        EVisualizationController vc = new EVisualizationController();
+        vc.removeDetachedReactions(model.getId());
         return "";
     }
 
@@ -402,6 +407,8 @@ public class TaskBean {
             EModelController mo = new EModelController();
             mo.addModel(modelx);
 
+            modelx.setName(modelx.getName() + "_" + modelx.getId());
+            mo.mergeModel(modelx);
             /* Redirect */
             FacesContext fc = FacesContext.getCurrentInstance();
             fc.responseComplete();
@@ -556,7 +563,7 @@ public class TaskBean {
     private List<Species> justFetchSpecies(EModel m) {
         try {
             ESpeciesController sc = new ESpeciesController();
-            List<ESpecies> res = sc.getSpecies(m);
+            List<ESpecies> res = sc.getSpecies(m.getId());
 
             List<Species> list = new LinkedList<Species>();
             int ii = 0;

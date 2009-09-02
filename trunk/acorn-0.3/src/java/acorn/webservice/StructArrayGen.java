@@ -8,7 +8,7 @@ package acorn.webservice;
 import acorn.db.EReaction;
 import acorn.db.ESpecies;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import org.dbStructs.NameStruct;
 
 /**
@@ -17,7 +17,7 @@ import org.dbStructs.NameStruct;
  */
 public class StructArrayGen {
 
-    public static NameStruct[] getSortedSpeciesArray(List<ESpecies> list){
+    public static NameStruct[] getSortedSpeciesArray(Collection<ESpecies> list){
         NameStruct[] structArray = new NameStruct[list.size()];
         int i = 0;
         for(ESpecies spec: list){
@@ -27,7 +27,7 @@ public class StructArrayGen {
         return structArray;
     }
 
-    public static NameStruct[] getSortedReactionsArray(List<EReaction> list, String modelName){
+    public static NameStruct[] getSortedReactionsArray(Collection<EReaction> list){
         NameStruct[] structArray = new NameStruct[list.size()];
         int i = 0;
         for(EReaction spec: list){

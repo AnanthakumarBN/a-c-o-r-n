@@ -46,19 +46,12 @@
 
         <div class="RunButton">
 
-            <h:commandLink action="#{TaskDetailsBean.generateDrawing}" value="Generate drawing." >
+            <h:commandLink action="#{TaskDetailsBean.generateDrawing}" value="Generate drawing.">
                 <f:param name="taskID" value="#{param['taskID']}"/>
             </h:commandLink>
-            </div>
-            <% if (request.getSession().getAttribute("PICTURE_PATH") != null) {
-            %>
-                <a href="#" onclick="return popitup('/picture.jpg')">View</a>
-            <%        }
-            %>
+        </div>
 
-            <br/>
-
-
+        <br/>
         <div class="navigationBox">
 
             <a4j:commandLink styleClass="navArrow" reRender="visualizations" action="#{TaskDetailsBean.visualizationsFirstPage}">
@@ -103,8 +96,17 @@
             <f:facet name="header">
                 <h:outputText value="Name of visualization" />
             </f:facet>
-            <h:outputText escape="false" value="#{visualizations.name}"/>                          
+            <h:outputText escape="false" value="#{visualizations.name}"/>
         </h:column>
         </h:dataTable>
     </h:form>
 </div>
+
+<% if (request.getSession().getAttribute("PICTURE_PATH") != null) {
+            request.getSession().removeAttribute("PICTURE_PATH");
+%>
+
+<!--a href="#" onclick="return popitup('/picture.jpg')" >View</a-->
+<h:graphicImage value="#{TaskDetailsBean.pathForServlet}"/>
+<%      }
+%>

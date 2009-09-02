@@ -58,6 +58,8 @@ public class TaskDetailsBean {
     private int displayVisualizationsRowMax;
     private int dataCountMax;
     private int displayRowMax;
+    private String pathForServlet;
+    private final static String PREFIX = "/picture";
 
     public TaskDetailsBean() {
         task = null;
@@ -121,6 +123,16 @@ public class TaskDetailsBean {
         data.put(id, d);
         return true;
     }
+
+    /**
+     * 
+     * @return path for servlet to the jpg drawing
+     */
+    public String getPathForServlet() {
+        return pathForServlet;
+    }
+
+
 
     /** 
      * Fetches ESpecies from database
@@ -283,6 +295,7 @@ public class TaskDetailsBean {
         try {
             String path = db.draw();
             ((HttpServletRequest) context.getExternalContext().getRequest()).getSession().setAttribute("PICTURE_PATH", path);
+            this.pathForServlet =PREFIX+path;
         } catch (DotFileException dfe) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_FATAL,

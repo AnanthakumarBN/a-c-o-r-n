@@ -6,6 +6,7 @@ package acornwsclient.upload;
 
 import acorn.webservice.AcornWS;
 import acorn.webservice.AcornWSService;
+import acorn.webservice.AuthenticationException_Exception;
 import acorn.webservice.RepeatedVisualizationNameException_Exception;
 import acorn.webservice.VisValidationException_Exception;
 import java.beans.XMLEncoder;
@@ -26,23 +27,28 @@ public class DBDataUploader {
     private AcornWS port;
     private static String webServiceEncoding;
     private static String clientEncoding;
+    private String user;
+    private String MD5pass;
 
-    public DBDataUploader() {
+    public DBDataUploader(String usr, String ps) {
         acornService = new AcornWSService();
         port = acornService.getAcornWSPort();
-        webServiceEncoding = port.getEncoding();
+        this.user = usr;
+        this.MD5pass = ps;
+        webServiceEncoding = port.getEncoding(this.user, this.MD5pass);
 
         OutputStreamWriter out = new OutputStreamWriter(new ByteArrayOutputStream());
         clientEncoding = out.getEncoding();
     }
 
-    public boolean saveVisualization(String model, String visualizationName,
-            List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges) throws RepeatedVisualizationNameException_Exception, VisValidationException_Exception {
+    public boolean saveVisualization(int modelId, String visualizationName,
+            List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges) throws RepeatedVisualizationNameException_Exception, VisValidationException_Exception, AuthenticationException_Exception {
         String transitionsString = getXmlTransitionsSerialization(transitions);
         String placesString = getXmlPlacesSerialization(places);
         String edgesString = getXmlEdgesSerialization(edges);
 //        try {
-        return port.saveVisualization(model, visualizationName, transitionsString, placesString, edgesString, clientEncoding);
+        return port.saveVisualization(modelId, visualizationName, transitionsString, 
+                placesString, edgesString, clientEncoding, this.user, this.MD5pass);
 //        } catch (RepeatedVisualizationNameException_Exception ex) {
 //            throw new RepeatedVisualizationNameException(ex.getMessage());
 //        }

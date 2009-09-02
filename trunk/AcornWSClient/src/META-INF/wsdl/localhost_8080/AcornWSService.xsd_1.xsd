@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.1.3.1-hudson-417-SNAPSHOT. --><xs:schema xmlns:tns="http://webservice.acorn/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://webservice.acorn/">
+
+<xs:element name="RepeatedVisualizationNameException" type="tns:RepeatedVisualizationNameException"></xs:element>
+
+<xs:element name="VisValidationException" type="tns:VisValidationException"></xs:element>
+
+<xs:element name="getAllReactionsByModelName" type="tns:getAllReactionsByModelName"></xs:element>
+
+<xs:element name="getAllReactionsByModelNameResponse" type="tns:getAllReactionsByModelNameResponse"></xs:element>
+
+<xs:element name="getAllSpeciesByModelName" type="tns:getAllSpeciesByModelName"></xs:element>
+
+<xs:element name="getAllSpeciesByModelNameResponse" type="tns:getAllSpeciesByModelNameResponse"></xs:element>
+
+<xs:element name="getAllVisualizationNames" type="tns:getAllVisualizationNames"></xs:element>
+
+<xs:element name="getAllVisualizationNamesResponse" type="tns:getAllVisualizationNamesResponse"></xs:element>
+
+<xs:element name="getEncoding" type="tns:getEncoding"></xs:element>
+
+<xs:element name="getEncodingResponse" type="tns:getEncodingResponse"></xs:element>
+
+<xs:element name="getModels" type="tns:getModels"></xs:element>
+
+<xs:element name="getModelsResponse" type="tns:getModelsResponse"></xs:element>
+
+<xs:element name="getReactionsForSpecies" type="tns:getReactionsForSpecies"></xs:element>
+
+<xs:element name="getReactionsForSpeciesResponse" type="tns:getReactionsForSpeciesResponse"></xs:element>
+
+<xs:element name="getSpeciesForReaction" type="tns:getSpeciesForReaction"></xs:element>
+
+<xs:element name="getSpeciesForReactionResponse" type="tns:getSpeciesForReactionResponse"></xs:element>
+
+<xs:element name="removeVisualization" type="tns:removeVisualization"></xs:element>
+
+<xs:element name="removeVisualizationResponse" type="tns:removeVisualizationResponse"></xs:element>
+
+<xs:element name="saveVisualization" type="tns:saveVisualization"></xs:element>
+
+<xs:element name="saveVisualizationResponse" type="tns:saveVisualizationResponse"></xs:element>
+
+<xs:complexType name="getAllSpeciesByModelName">
+<xs:sequence>
+<xs:element name="modelName" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getAllSpeciesByModelNameResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="saveVisualization">
+<xs:sequence>
+<xs:element name="modelName" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="visualizationName" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="reactions" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="species" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="arcs" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="clientEncoding" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="saveVisualizationResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:boolean"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="RepeatedVisualizationNameException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="VisValidationException">
+<xs:sequence>
+<xs:element name="message" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getEncoding">
+<xs:sequence></xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getEncodingResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getReactionsForSpecies">
+<xs:sequence>
+<xs:element name="modelName" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="speciesSid" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="isSource" type="xs:boolean"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getReactionsForSpeciesResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getAllVisualizationNames">
+<xs:sequence></xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getAllVisualizationNamesResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getAllReactionsByModelName">
+<xs:sequence>
+<xs:element name="modelName" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getAllReactionsByModelNameResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getModels">
+<xs:sequence></xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getModelsResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="removeVisualization">
+<xs:sequence>
+<xs:element name="visualizationName" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="removeVisualizationResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:boolean"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getSpeciesForReaction">
+<xs:sequence>
+<xs:element name="modelName" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="reactionSid" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="isSource" type="xs:boolean"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getSpeciesForReactionResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

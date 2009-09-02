@@ -28,6 +28,7 @@
     <class>acorn.db.EVisArcReactant</class>
     <class>acorn.db.EVisArcpath</class>
     <class>acorn.db.EVisArc</class>
+    <class>acorn.db.EVisNode</class>
     <properties>
       <property name="toplink.jdbc.user" value="acorn"/>
       <property name="toplink.jdbc.password" value="acorn"/>

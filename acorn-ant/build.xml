@@ -4,6 +4,21 @@
     <property file="local-individual.properties" />
     <property name="local-root-dir" value="../../${local-root-name}" />
     <property name="local-db-dir" value="${local-root-dir}/acorn-db" />
+
+    <property name="vaapp-dir" value="${local-root-dir}/VisualAcornApplication" />
+    <property name="wsclient-dir" value="${local-root-dir}/AcornWSClient" />
+    <property name="wsclient-jax-ws-dir" value="${wsclient-dir}/nbproject" />
+    <property name="wsclient-wsdl-dir" value="${wsclient-dir}/xml-resources/web-service-references/AcornWSService/wsdl" />
+    <property name="wsclient-local-dir-to-wsdl" value="localhost_8080" />
+
+    <property name="wsclient-local-jax-ws" value="local-jax-ws.xml" />
+    <property name="wsclient-local-jaxws-build" value="local-jaxws-build.xml" />
+    <property name="wsclient-local-AcornWSService" value="local-AcornWSService.wsdl" />
+    <property name="wsclient-local-AcornWSService-xsd-1" value="local-AcornWSService.xsd_1.xsd" />
+
+    <property name="wsclient-local-acorn-AcornWSService" value="local-acorn-AcornWSService.wsdl" />
+    <property name="wsclient-local-acorn-AcornWSService-xsd-1" value="local-acorn-AcornWSService.xsd_1.xsd" />
+
     <property name="local-web-dir" value="${local-root-dir}/acorn-0.3" />
     <property name="local-WS-dir" value="${local-root-dir}/AcornWS" />
     <property name="local-worker-dir" value="${local-root-dir}/acorn-worker" />
@@ -17,7 +32,7 @@
     <property name="local-WS-file" value="${local-WS-dir}/dist/${local-WS-name}" />
     <property name="local-db-name" value="acorn-db.jar" />
     <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />
-    <property name="local-glassfish-asadmin" value="${local-glassfish-home}/bin/asadmin${local-script-extension}" />
+    <property name="local-glassfish-asadmin" value="${local-glassfish-home}/bin/asadmin" />
     <property name="local-db-persistence" value="local-db-persistence.xml" />
     <property name="local-worker-persistence" value="local-worker-persistence.xml" />
     <property name="local-worker-properties" value="local-worker-project.properties" />
@@ -420,10 +435,23 @@
                 -Dtoplink.jdbc.driver=${server-db-driver}
                 -Dacorn.worker.logfile=${server-worker-log-file}
                 -Dacorn.worker.amkfbaPath=${server-amkfba-run}
-                -Dorg.omg.CORBA.ORBInitialPort=${local-iiport} ${server-worker-file}"
+                -Dorg.omg.CORBA.ORBInitialPort=${server-iiport} ${server-worker-file}"
                 verbose="true">
         </sshexec>
     </target>
+
+    <target name="local-worker-on-server-run" depends="get-server-auth, get-server-db-auth" description="Run worker locally to compute server task">
+        <java jar="${local-worker-file}"
+              jvmargs="-Dtoplink.jdbc.user=${server-db-username}
+                -Dtoplink.jdbc.password=${server-db-password}
+                -Dtoplink.jdbc.url=${server-true-db-url}
+                -Dtoplink.jdbc.driver=${server-db-driver}
+                -Dacorn.worker.logfile=${local-worker-log-file}
+                -Dacorn.worker.amkfbaPath=${local-amkfba-run}
+                -Dorg.omg.CORBA.ORBInitialPort=${server-iiport}"
+        />
+    </target>
+
     <target name="local-amkfba-compile">
         <exec dir="${local-amkfba-dir}" executable="${local-make}">
             <arg value="Makefile"/>
@@ -445,5 +473,41 @@
                 command="kill -9 `ps -ef | grep Dtoplink.jdbc.url=jdbc:mysql://localhost:3306/acorn | grep -v grep | awk '{print $2}'`"
                 verbose="true">
         </sshexec>
+    </target>
+
+    <target name="wsclient-copy-jar-to-module">
+        <antcall target="-wsclient-delete-wsdl-dir" />
+        <mkdir dir="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/acorn"/>
+        <ant target="-wsclient-swap-local-configs"/>
+        <ant antfile="${wsclient-dir}/build.xml" target="clean" inheritall="false"/>
+            <!--property name="src.dir" value="${wsclient-dir}/src"/>
+        </ant-->
+        <ant antfile="${wsclient-dir}/build.xml" target="copy-jar-to-ws-client-module" inheritall="false" />
+    </target>
+
+    <target name="-wsclient-swap-local-configs" >
+        <copy overwrite="true" file="${wsclient-local-jax-ws}" tofile="${wsclient-jax-ws-dir}/jax-ws.xml" verbose="true"/>
+        <copy overwrite="true" file="${wsclient-local-jaxws-build}" tofile="${wsclient-jax-ws-dir}/jaxws-build.xml" verbose="true"/>
+
+        <copy overwrite="true" file="${wsclient-local-AcornWSService}" tofile="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/AcornWSService.wsdl" verbose="true"/>
+        <copy overwrite="true" file="${wsclient-local-AcornWSService-xsd-1}" tofile="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/AcornWSService.xsd_1.xsd" verbose="true"/>
+
+        <copy overwrite="true" file="${wsclient-local-acorn-AcornWSService}" tofile="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/acorn/AcornWSService.wsdl" verbose="true"/>
+        <copy overwrite="true" file="${wsclient-local-acorn-AcornWSService-xsd-1}" tofile="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/acorn/AcornWSService.xsd_1.xsd" verbose="true"/>
+
+    </target>
+
+    <target name="-wsclient-delete-wsdl-dir">
+        <delete includeEmptyDirs="true" dir="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}"/>
+    </target>
+
+    <target name="vaapp-run-all">
+        <ant target="wsclient-copy-jar-to-module"/>
+        <ant antfile="${vaapp-dir}/build.xml" target="clean" inheritall="false"/>
+        <ant antfile="${vaapp-dir}/build.xml" target="build" inheritall="false"/>
+        <ant antfile="${vaapp-dir}/build.xml" target="run" inheritall="false"/>
+    </target>
+    <target name="vaapp-run">
+        <ant antfile="${vaapp-dir}/build.xml" target="run" inheritall="false"/>
     </target>
 </project>

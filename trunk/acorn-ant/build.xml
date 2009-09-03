@@ -29,6 +29,7 @@
     <property name="local-worker-name" value="acorn-worker.jar" />
     <property name="local-WS-name" value="AcornWSApplication.jar" />
     <property name="local-worker-file" value="${local-worker-dir}/dist/${local-worker-name}" />
+    <property name="local-worker-ext-libs" value="${local-worker-dir}/external-libs/complib/JMS-1.1/classpath/" />
     <property name="local-WS-file" value="${local-WS-dir}/dist/${local-WS-name}" />
     <property name="local-db-name" value="acorn-db.jar" />
     <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />
@@ -396,6 +397,18 @@
             file="${local-worker-file}"
             todir="${server-username}:${server-password}@${server-name}:${server-worker-dir}"
           />
+    </target>
+    <target name="copy-libs-to-server" depends="get-server-auth">
+        <scp
+            trust="true"
+            host="${server-name}"
+            username="${server-username}"
+            password="${server-password}"
+            verbose="true"
+            todir="${server-username}:${server-password}@${server-name}:${server-worker-dir}/lib/"
+          >
+              <fileset dir="${local-worker-ext-libs}" includes="*.jar"/>
+          </scp>
     </target>
     <target name="copy-WS-to-server" depends="get-server-auth">
         <scp

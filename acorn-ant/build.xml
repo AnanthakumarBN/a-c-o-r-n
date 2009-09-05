@@ -8,16 +8,12 @@
     <property name="vaapp-dir" value="${local-root-dir}/VisualAcornApplication" />
     <property name="wsclient-dir" value="${local-root-dir}/AcornWSClient" />
     <property name="wsclient-jax-ws-dir" value="${wsclient-dir}/nbproject" />
-    <property name="wsclient-wsdl-dir" value="${wsclient-dir}/xml-resources/web-service-references/AcornWSService/wsdl" />
-    <property name="wsclient-local-dir-to-wsdl" value="localhost_8080" />
 
     <property name="wsclient-local-jax-ws" value="local-jax-ws.xml" />
     <property name="wsclient-local-jaxws-build" value="local-jaxws-build.xml" />
-    <property name="wsclient-local-AcornWSService" value="local-AcornWSService.wsdl" />
-    <property name="wsclient-local-AcornWSService-xsd-1" value="local-AcornWSService.xsd_1.xsd" />
 
-    <property name="wsclient-local-acorn-AcornWSService" value="local-acorn-AcornWSService.wsdl" />
-    <property name="wsclient-local-acorn-AcornWSService-xsd-1" value="local-acorn-AcornWSService.xsd_1.xsd" />
+    <property name="wsclient-server-jax-ws" value="server-jax-ws.xml" />
+    <property name="wsclient-server-jaxws-build" value="server-jaxws-build.xml" />
 
     <property name="local-web-dir" value="${local-root-dir}/acorn-0.3" />
     <property name="local-WS-dir" value="${local-root-dir}/AcornWS" />
@@ -64,7 +60,7 @@
     <property name="server-glassfish-home" value="/usr/local/glassfish" />
     <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin" />
     <property name="server-domain-name" value="domain1" />
-    <property name="server-domain-dir" value="${server-glassfish-home}/domains/${local-domain-name}" />
+    <property name="server-domain-dir" value="${server-glassfish-home}/domains/${server-domain-name}" />
     <property name="server-worker-log-file" value="${server-root-dir}/worker.log" />
     <property name="server-db-driver" value="com.mysql.jdbc.Driver" />
     <property name="server-db-url" value="jdbc:mysql://localhost:3306/acorn-db" />
@@ -273,7 +269,7 @@
             password="${server-password}" 
             username="${server-username}"
             host="${server-name}"
-            command="${server-glassfish-asadmin} create-jms-resource --restype javax.jms.QueueConnectionFactory --property imqConsumerFlowLimit=1 jms/taskQueueFactory" 
+            command="${server-glassfish-asadmin} create-jms-resource --restype javax.jms.QueueConnectionFactory --property imqConsumerFlowLimit=1 --user admin --passwordfile ~/.adminpass jms/taskQueueFactory"
             failonerror=""
         />
         <sshexec
@@ -313,11 +309,18 @@
     <target name="local-worker-run-all" depends="local-worker-compile" description="Compile and run worker on localhost">
         <ant target="local-worker-run" />
     </target>
-    <!--
-    <target name="server-copy-acorn-config" >
-        <copy file="${local-acornConfig}" todir="${local-glassfish-home}/domains/${local-domain-name}/config" />
-    </target>    
-    -->
+    <target name="server-copy-acorn-config" depends="get-server-auth">
+        <scp
+            trust="true"
+            host="${server-name}"
+            username="${server-username}"
+            password="${server-password}"
+            verbose="true"
+            file="${server-acornConfig}"
+            todir="${server-username}:${server-password}@${server-name}:${server-domain-dir}/config/acornConfig.xml"
+          />
+    </target>
+    
     <target name="local-create-apass-file">
         <touch file="${local-domain-dir}/.aspass" />
         <concat destfile="${local-domain-dir}/.aspass">AS_ADMIN_PASSWORD=adminadmin
@@ -488,34 +491,36 @@
         </sshexec>
     </target>
 
-    <target name="wsclient-copy-jar-to-module">
-        <antcall target="-wsclient-delete-wsdl-dir" />
-        <mkdir dir="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/acorn"/>
+    <target name="wsclient-copy-local-jar-to-module">
         <ant target="-wsclient-swap-local-configs"/>
         <ant antfile="${wsclient-dir}/build.xml" target="clean" inheritall="false"/>
-            <!--property name="src.dir" value="${wsclient-dir}/src"/>
-        </ant-->
         <ant antfile="${wsclient-dir}/build.xml" target="copy-jar-to-ws-client-module" inheritall="false" />
     </target>
 
+    <target name="wsclient-copy-server-jar-to-module">
+        <ant target="-wsclient-swap-server-configs"/>
+        <ant antfile="${wsclient-dir}/build.xml" target="clean" inheritall="false"/>
+        <ant antfile="${wsclient-dir}/build.xml" target="copy-jar-to-ws-client-module" inheritall="false" />
+    </target>
     <target name="-wsclient-swap-local-configs" >
         <copy overwrite="true" file="${wsclient-local-jax-ws}" tofile="${wsclient-jax-ws-dir}/jax-ws.xml" verbose="true"/>
         <copy overwrite="true" file="${wsclient-local-jaxws-build}" tofile="${wsclient-jax-ws-dir}/jaxws-build.xml" verbose="true"/>
-
-        <copy overwrite="true" file="${wsclient-local-AcornWSService}" tofile="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/AcornWSService.wsdl" verbose="true"/>
-        <copy overwrite="true" file="${wsclient-local-AcornWSService-xsd-1}" tofile="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/AcornWSService.xsd_1.xsd" verbose="true"/>
-
-        <copy overwrite="true" file="${wsclient-local-acorn-AcornWSService}" tofile="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/acorn/AcornWSService.wsdl" verbose="true"/>
-        <copy overwrite="true" file="${wsclient-local-acorn-AcornWSService-xsd-1}" tofile="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}/acorn/AcornWSService.xsd_1.xsd" verbose="true"/>
-
     </target>
 
-    <target name="-wsclient-delete-wsdl-dir">
-        <delete includeEmptyDirs="true" dir="${wsclient-wsdl-dir}/${wsclient-local-dir-to-wsdl}"/>
+    <target name="-wsclient-swap-server-configs" >
+        <copy overwrite="true" file="${wsclient-server-jax-ws}" tofile="${wsclient-jax-ws-dir}/jax-ws.xml" verbose="true"/>
+        <copy overwrite="true" file="${wsclient-server-jaxws-build}" tofile="${wsclient-jax-ws-dir}/jaxws-build.xml" verbose="true"/>
     </target>
 
-    <target name="vaapp-run-all">
-        <ant target="wsclient-copy-jar-to-module"/>
+    <target name="vaapp-run-all-on-local-server">
+        <ant target="wsclient-copy-local-jar-to-module"/>
+        <ant target="-vaapp-build-and-run"/>
+    </target>
+    <target name="vaapp-run-all-on-sysbio-server">
+        <ant target="wsclient-copy-server-jar-to-module"/>
+        <ant target="-vaapp-build-and-run"/>
+    </target>
+    <target name="-vaapp-build-and-run">
         <ant antfile="${vaapp-dir}/build.xml" target="clean" inheritall="false"/>
         <ant antfile="${vaapp-dir}/build.xml" target="build" inheritall="false"/>
         <ant antfile="${vaapp-dir}/build.xml" target="run" inheritall="false"/>

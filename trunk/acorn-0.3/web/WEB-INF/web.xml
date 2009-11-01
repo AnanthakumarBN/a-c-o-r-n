@@ -30,8 +30,8 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>
-        <servlet-name>PictureServlet</servlet-name>
-        <servlet-class>acorn.drawing.PictureServlet</servlet-class>
+        <servlet-name>PictureServletEmbedded</servlet-name>
+        <servlet-class>acorn.drawing.PictureServletEmbedded</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
@@ -56,8 +56,8 @@
         <url-pattern>/jcaptcha</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>PictureServlet</servlet-name>
-        <url-pattern>/picture.jpg</url-pattern>
+        <servlet-name>PictureServletEmbedded</servlet-name>
+        <url-pattern>/acorn/picture/*</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

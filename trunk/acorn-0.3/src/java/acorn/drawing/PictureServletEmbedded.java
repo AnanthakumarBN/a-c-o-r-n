@@ -26,17 +26,15 @@ public class PictureServletEmbedded extends HttpServlet {
      // Constants ----------------------------------------------------------------------------------
 
     private static final int DEFAULT_BUFFER_SIZE = 10240; // 10KB.
-    private static final String PREFIX = "/picture";
+  
 
     // Properties ---------------------------------------------------------------------------------
 
-    private String imagePath;
+  
 
     // Actions ------------------------------------------------------------------------------------
 
     public void init() throws ServletException {
-
-        this.imagePath = System.getProperty("user.home") + "/drawing";
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -44,7 +42,6 @@ public class PictureServletEmbedded extends HttpServlet {
     {
         // Get requested image by path info.
         String requestedImage = request.getPathInfo();
-
 //        System.out.println("REQUEST.GETPATHINFO:" + requestedImage);
         // Check if file name is actually supplied to the request URI.
         if (requestedImage == null) {
@@ -55,8 +52,6 @@ public class PictureServletEmbedded extends HttpServlet {
         }
 
         // Decode the file name (might contain spaces and on) and prepare file object.
-//        System.out.println("PARENT PATH:" + imagePath);
-//        System.out.println("CHILD PATH:"+URLDecoder.decode(requestedImage, "UTF-8"));
         File image = new File(URLDecoder.decode(requestedImage, "UTF-8"));
 
         // Check if file actually exists in filesystem.

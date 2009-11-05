@@ -32,7 +32,7 @@
     <servlet>
         <servlet-name>PictureServletEmbedded</servlet-name>
         <servlet-class>acorn.drawing.PictureServletEmbedded</servlet-class>
-    </servlet>
+        </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.jsf</url-pattern>
@@ -57,7 +57,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PictureServletEmbedded</servlet-name>
-        <url-pattern>/acorn/picture/*</url-pattern>
+        <url-pattern>/picture/*</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

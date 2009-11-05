@@ -105,8 +105,6 @@
 <% if (request.getSession().getAttribute("PICTURE_PATH") != null) {
             request.getSession().removeAttribute("PICTURE_PATH");
 %>
-
-<!--a href="#" onclick="return popitup('/picture.jpg')" >View</a-->
 <h:graphicImage value="#{TaskDetailsBean.pathForServlet}"/>
 <%      }
 %>

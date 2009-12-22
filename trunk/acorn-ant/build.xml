@@ -302,8 +302,9 @@
               jvmargs="-Dtoplink.jdbc.user=${local-db-username} 
                 -Dtoplink.jdbc.password=${local-db-password}
                 -Dacorn.worker.logfile=${local-worker-log-file}
+                -Dacorn.worker.printInput=${local-worker-debug}
                 -Dacorn.worker.amkfbaPath=${local-amkfba-run}
-                -Dorg.omg.CORBA.ORBInitialPort=${local-iiport}" 
+                -Dorg.omg.CORBA.ORBInitialPort=${local-iiport}"
         />
     </target>
     <target name="local-worker-run-all" depends="local-worker-compile" description="Compile and run worker on localhost">

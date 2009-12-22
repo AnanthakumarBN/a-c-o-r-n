@@ -16,13 +16,13 @@ import acorn.db.EProduct;
 import acorn.db.EReactant;
 import acorn.db.EReaction;
 import acorn.db.ESpecies;
+import acorn.worker.main.AcornLogger;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 
 /**
@@ -238,6 +238,21 @@ public class AdapterAmkfba {
 
         BufferedWriter output = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
         BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+        //first write to log
+        StringWriter loggerWriter = new StringWriter();
+        BufferedWriter loggerOutput = new BufferedWriter(loggerWriter);
+        writeModel(loggerOutput, model, bounds, useRmodel);
+        String prefix = "Amkfba input start------------------------------------\n";
+        String suffix = "Amkfba output start------------------------------------\n";
+        AcornLogger.getInstance().logInput(prefix + loggerWriter.toString() + suffix);
+        try {
+            loggerWriter.close();
+        } catch (IOException e) {
+            throw new AmkfbaException("runObjstat: IOException");
+        }
+
+        //then do the real work
         writeModel(output, model, bounds, useRmodel);
 
         try {
@@ -316,7 +331,7 @@ public class AdapterAmkfba {
         System.out.println("WRITE");
 
         writeModel(output, model, bounds, useRmodel);
-        
+
 // Added by Andrzej Kierzek to reproduce amkfba crash
 //        try {
 //            FileWriter tmp = new FileWriter(new File("/tmp/yeast"));

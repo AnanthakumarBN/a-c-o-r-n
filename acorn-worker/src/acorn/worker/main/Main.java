@@ -19,6 +19,7 @@ public class Main {
 
         String amkfbaPath;
         String logfile;
+        boolean printInputToLogfile;
         FileHandler fh;
         Properties p = System.getProperties();
         
@@ -30,6 +31,8 @@ public class Main {
             AcornLogger.getInstance().addHandler(fh);
         }
         AcornLogger.getInstance().addHandler(new ConsoleHandler());
+        printInputToLogfile = p.getProperty("acorn.worker.printInput").equals("true");
+        AcornLogger.getInstance().setPrintInputToFile(printInputToLogfile);
         
         amkfbaPath = p.getProperty("acorn.worker.amkfbaPath");
         if (amkfbaPath != null) {

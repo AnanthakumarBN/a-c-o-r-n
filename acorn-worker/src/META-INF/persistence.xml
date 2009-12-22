@@ -28,6 +28,7 @@
     <class>acorn.db.EfvaResultElement</class>
     <class>acorn.db.ErscanResultElement</class>
     <class>acorn.db.EVisArcProduct</class>
+    <class>acorn.db.EVisNode</class>
     <properties>
       <property name="toplink.jdbc.user" value="acorn"/>
       <property name="toplink.jdbc.password" value="acorn"/>

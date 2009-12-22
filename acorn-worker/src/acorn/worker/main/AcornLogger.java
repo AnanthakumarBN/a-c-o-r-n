@@ -38,6 +38,7 @@ public class AcornLogger extends Logger {
         printInputToFile = value;
     }
     public static void logInput(String s) {
-        singleton.logError(s);
+        if (printInputToFile)
+            singleton.logError(s);
     }
 }

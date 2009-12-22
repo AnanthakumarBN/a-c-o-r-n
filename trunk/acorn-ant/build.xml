@@ -29,7 +29,7 @@
     <property name="local-WS-file" value="${local-WS-dir}/dist/${local-WS-name}" />
     <property name="local-db-name" value="acorn-db.jar" />
     <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />
-    <property name="local-glassfish-asadmin" value="${local-glassfish-home}/bin/asadmin" />
+    <property name="local-glassfish-asadmin" value="${local-glassfish-home}/bin/asadmin${local-script-extension}" />
     <property name="local-db-persistence" value="local-db-persistence.xml" />
     <property name="local-worker-persistence" value="local-worker-persistence.xml" />
     <property name="local-worker-properties" value="local-worker-project.properties" />
@@ -58,7 +58,7 @@
     <property name="server-amkfba-dir" value="${server-root-dir}/amkfba" />
     <property name="server-amkfba-run" value="${server-amkfba-dir}/amkfba" />
     <property name="server-glassfish-home" value="/usr/local/glassfish" />
-    <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin" />
+    <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin$" />
     <property name="server-domain-name" value="domain1" />
     <property name="server-domain-dir" value="${server-glassfish-home}/domains/${server-domain-name}" />
     <property name="server-worker-log-file" value="${server-root-dir}/worker.log" />
@@ -129,8 +129,8 @@
         <ant antfile="${local-db-dir}/build.xml" target="clean" inheritall="false" />
         <antcall target="swap-to-local-db" />
     </target>
-    <target name="local" depends="local-copy-acorn-config"><!--local-create-resources-->
-        <ant target="local-web-deploy-all"/>
+    <target name="local" depends="local-copy-acorn-config, local-stop-domain, local-clean-all"><!--local-create-resources-->
+        <ant target="local-web-deploy"/>
     </target>
     <target name="local-web-compile" depends="local-web-clean, local-db-compile">
         <ant antfile="${local-web-dir}/build.xml" target="dist" inheritall="false" />

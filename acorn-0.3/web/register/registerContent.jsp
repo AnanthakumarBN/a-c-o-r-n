@@ -74,7 +74,7 @@
             <h:message for="create:passwordConfirmation" style="color: red"/>
         </h:panelGrid>
         
-        <h:graphicImage url="/jcaptcha" />
+<%--        <h:graphicImage url="/jcaptcha" />
         
         <h:panelGrid columns="3" border="0">
          
@@ -87,7 +87,7 @@
             </h:inputText>
             <h:message for="create:captchaText" style="color: red"/>
         </h:panelGrid>
-            
+--%>
         <h:commandButton id="submit" 
                          value="Create"
                          action="#{UserManager.createUser}"/>

@@ -22,7 +22,6 @@ import javax.faces.validator.ValidatorException;
 public class UserManager {
 
     public static String statusGuest = "guest";
-
     private String login;
     private String password;
     private String passwordConfirmation;
@@ -34,33 +33,32 @@ public class UserManager {
     private String registerOutcome;
     public static final String USER_SESSION_KEY = "user";
     private static Semaphore mutex = new Semaphore(1);
-            
+
     public UserManager() {
         super();
     }
 
-    private Boolean isVerificationStringCorrect() {
-        FacesContext context = FacesContext.getCurrentInstance();
+//    private Boolean isVerificationStringCorrect() {
+//        FacesContext context = FacesContext.getCurrentInstance();
+//
+//        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+//
+//        /* remember that we need an id to validate */
+//
+//        String captchaId = request.getSession().getId();
+//
+//        /* Call the Service method */
+//        try {
+//            //return CaptchaServiceSingleton.getInstance().validateResponseForID(captchaId, captchaText);
+//            return true;
+//        } catch (CaptchaServiceException e) {
+//            /* should not happen, may be thrown if the id is not valid */
+//            return false;
+//        }
+//    }
 
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-
-        /* remember that we need an id to validate */
-
-        String captchaId = request.getSession().getId();
-
-        /* Call the Service method */
-        try {
-            //return CaptchaServiceSingleton.getInstance().validateResponseForID(captchaId, captchaText);
-            return true;
-        } catch (CaptchaServiceException e) {
-            /* should not happen, may be thrown if the id is not valid */
-            return false;
-        }
-    }
-    
     public void passwordConfirmationValidator(FacesContext context, UIComponent component, Object value)
-        throws ValidatorException
-    {
+            throws ValidatorException {
         // Obtain the client ID of the first password field from f:attribute.
         String passwordId = (String) component.getAttributes().get("passwordId");
 
@@ -74,12 +72,15 @@ public class UserManager {
         String confirmString = (String) value;
 
         // Check if the first password is actually entered and compare it with second password.
-        if (confirmString != null && confirmString.length() < 3)
+        if (confirmString != null && confirmString.length() < 3) {
             throw new ValidatorException(new FacesMessage("Must be at least 3 characters long"));
-        if (confirmString != null && confirmString.length() > 255)
+        }
+        if (confirmString != null && confirmString.length() > 255) {
             throw new ValidatorException(new FacesMessage("Must be at most 255 characters long"));
-        if (confirmString != null && !confirmString.equals(passwordString))
+        }
+        if (confirmString != null && !confirmString.equals(passwordString)) {
             throw new ValidatorException(new FacesMessage("Passwords are not equal."));
+        }
     }
 
     private Boolean validateRegistrationForm(FacesContext context) {
@@ -132,35 +133,32 @@ public class UserManager {
         }
         EUser existingUser;
         EUser user = createNewUser();
-        
+
         try {
             /* We need to have a mutex, as there is no SELECT FOR UPDATE in JPA to make proper locking */
             mutex.acquire();
 
             existingUser = getUser();
-            
+
             EUserController uc = new EUserController();
 
             if (uc.getUsers().size() == 0) {
                 //creating the first user - he gets admin priviledges
                 user.setStatus(EUser.statusAdmin);
-            } 
+            }
 
             if (existingUser == null) { /* we add an user only if he does not exist */
                 uc.addUser(user);
             }
-            
+
             mutex.release();
-        } 
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "Error creating user!",
                     "Unexpected error when creating your account.  Please contact the system Administrator");
             context.addMessage(null, message);
             return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             mutex.release();
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "Error creating user!",
@@ -180,7 +178,7 @@ public class UserManager {
          * In this version user is active after making the acount, no email is needed
          * The code below may be helpful to make sending emails
          */
-        
+
         /*try {
         String emailContent = "http://localhost:17095/acorn-0.1/ActivateUser?code=" + wuser.getActivationCode() + "\nHave a nice day";
         EmailSender.sendEmail(wuser.getEmail(), "kuba@radunica.net", "Confirm your e-mail", emailContent);
@@ -198,8 +196,8 @@ public class UserManager {
         context.addMessage(null, message);
         return null;
         }*/
-        
-        
+
+
         setRegisterOutcome("Your account has been successfully created");
         return "login";
     }
@@ -341,10 +339,11 @@ public class UserManager {
         /* Call the Service method */
         try {
             isCorrect = CaptchaServiceSingleton.getInstance().validateResponseForID(captchaId, captchaResponse);
-
+            //for now catcha is turned off
+            isCorrect = true;
         } catch (CaptchaServiceException e) {
             isCorrect = false;
-        /* should not happen, may be thrown if the id is not valid */
+            /* should not happen, may be thrown if the id is not valid */
         }
         if (!isCorrect) {
             ((UIInput) toValidate).setValid(false);

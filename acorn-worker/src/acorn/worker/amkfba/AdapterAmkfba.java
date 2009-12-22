@@ -236,15 +236,12 @@ public class AdapterAmkfba {
         }
         p = execAmkfba(args);
 
-        BufferedWriter output = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
-        BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
         //first write to log
         StringWriter loggerWriter = new StringWriter();
         BufferedWriter loggerOutput = new BufferedWriter(loggerWriter);
         writeModel(loggerOutput, model, bounds, useRmodel);
         String prefix = "Amkfba input start------------------------------------\n";
-        String suffix = "Amkfba output start------------------------------------\n";
+        String suffix = "Amkfba input end--------------------------------------\n";
         AcornLogger.getInstance().logInput(prefix + loggerWriter.toString() + suffix);
         try {
             loggerWriter.close();
@@ -253,6 +250,8 @@ public class AdapterAmkfba {
         }
 
         //then do the real work
+        BufferedWriter output = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
+        BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
         writeModel(output, model, bounds, useRmodel);
 
         try {
@@ -270,10 +269,23 @@ public class AdapterAmkfba {
 
         Process p = execAmkfba("-p fba -obj " + objectiveFunction);
 
+        //first write to log
+        StringWriter loggerWriter = new StringWriter();
+        BufferedWriter loggerOutput = new BufferedWriter(loggerWriter);
+        writeModel(loggerOutput, model, bounds, false);
+        String prefix = "Amkfba input start------------------------------------\n";
+        String suffix = "Amkfba input end--------------------------------------\n";
+        AcornLogger.getInstance().logInput(prefix + loggerWriter.toString() + suffix);
+        try {
+            loggerWriter.close();
+        } catch (IOException e) {
+            throw new AmkfbaException("runObjstat: IOException");
+        }
+
+        //then do the real work
         BufferedWriter output = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
         BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
         BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
         writeModel(output, model, bounds, false);
 
         try {

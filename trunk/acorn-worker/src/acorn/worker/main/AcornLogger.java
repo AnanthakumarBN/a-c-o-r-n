@@ -13,6 +13,7 @@ import java.util.logging.Logger;
  */
 public class AcornLogger extends Logger {
     private static AcornLogger singleton = new AcornLogger();
+    private static boolean printInputToFile = false;
     AcornLogger()
     {
         super(null, null);
@@ -32,5 +33,11 @@ public class AcornLogger extends Logger {
     public static void logInfo(String s)
     {
         singleton.info(s);
+    }
+    public static void setPrintInputToFile(boolean value) {
+        printInputToFile = value;
+    }
+    public static void logInput(String s) {
+        singleton.logError(s);
     }
 }

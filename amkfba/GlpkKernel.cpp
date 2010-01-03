@@ -88,6 +88,7 @@ void GlpkKernel::set_row_bnds(int i, int type, double lb, double ub)
 
 void GlpkKernel::set_col_bnds(int i, int type, double lb, double ub)
 {
+        if(type==LPX_DB && (ub-lb)<0.001) ub+=0.001;
 	lpx_set_col_bnds(lp,i,type,lb,ub);
 }
 

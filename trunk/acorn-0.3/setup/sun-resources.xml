@@ -7,7 +7,7 @@
     <property name="PortNumber" value="1527"/>
     <property name="DatabaseName" value="acorn-db"/>
     <property name="User" value="acorn"/>
-    <property name="Password" value="dilbert"/>
+    <property name="Password" value="acorn"/>
     <property name="URL" value="jdbc:derby://localhost:1527/acorn-db"/>
     <property name="driverClass" value="org.apache.derby.jdbc.ClientDriver"/>
   </jdbc-connection-pool>

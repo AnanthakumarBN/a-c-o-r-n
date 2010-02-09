@@ -27,53 +27,26 @@ import javax.persistence.EntityTransaction;
 public class FvaMethod {
 
     private static void persistResults(ETask task, LinkedList<EfvaResultElement> results) {
-        int tries = 10;
         EntityManager em = PersistenceManager.getInstance().getEntityManagerFactory().createEntityManager();
         EntityTransaction et = em.getTransaction();
         EMetabolism met;
 
-        tries = 10;
-        while(tries > 0)
-        {
-            try {
-                
-                et.begin();
-        
+        et.begin();
 
-                task = (ETask) em.createNamedQuery("ETask.findById").setHint("toplink.refresh", true).
-                        setParameter("id", task.getId()).getSingleResult();
+        task = (ETask) em.createNamedQuery("ETask.findById").setHint("toplink.refresh", true).
+                setParameter("id", task.getId()).getSingleResult();
 
-                if (task.getStatus().equals(ETask.statusSysError)) {
-                    et.commit();
-                    em.close();
-                    return;
-                }
-
-                for (EfvaResultElement result : results) {
-                    em.persist(result);
-                }
-
-                float allReactions, completedReactions;
-
-                met = task.getModel().getMetabolism();
-                allReactions = (float) met.getEReactionCollection().size();
-                completedReactions = (float)task.getEfvaResultElementCollection().size();
-                if (allReactions == completedReactions) {
-                    task.setStatus(ETask.statusDone);
-                    task.setInfo("");
-                } else {
-                    task.setInfo(String.format("%.2f %% completed.", 100.0 * completedReactions / allReactions));
-                    task.setStatus(ETask.statusInProgress);
-                }
-                et.commit();
-                
-                break;
-                
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                tries --;
-            }
+        if (task.getStatus().equals(ETask.statusSysError)) {
+            et.commit();
+            em.close();
+            return;
         }
+
+        for (EfvaResultElement result : results) {
+            em.persist(result);
+        }
+
+        et.commit();
         em.close();
 
     }
@@ -85,7 +58,7 @@ public class FvaMethod {
 
         EReaction reaction;
         EntityManager em = PersistenceManager.getInstance().getEntityManagerFactory().createEntityManager();
-        
+
         for (Integer rid : msg.getReactionIds()) {
             reaction = em.find(EReaction.class, rid);
 

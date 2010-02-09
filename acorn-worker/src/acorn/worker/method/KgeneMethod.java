@@ -34,7 +34,6 @@ public class KgeneMethod {
         task = (ETask) em.createNamedQuery("ETask.findById").setHint("toplink.refresh", true).
                 setParameter("id", task.getId()).getSingleResult();
         results.setTask(task);
-        task.setStatus(ETask.statusDone);
         task.setCommonResults(results);
         et.commit();
     }

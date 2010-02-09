@@ -53,7 +53,6 @@ public class FbaMethod {
             resultElement.setReaction(reactionsMap.get(outputLine.getReactionName()));
             em.persist(resultElement);
         }
-        task.setStatus(ETask.statusDone);
 
         et.commit();
 

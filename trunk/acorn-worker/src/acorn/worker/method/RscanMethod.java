@@ -38,6 +38,7 @@ public class RscanMethod {
 
         if (task.getStatus().equals(ETask.statusSysError)) {
             et.commit();
+            em.close();
             return;
         }
 
@@ -45,23 +46,6 @@ public class RscanMethod {
             em.persist(result);
         }
 
-        et.commit();
-        
-        et.begin();
-        float allReactions, completedReactions;
-
-        met = task.getModel().getMetabolism();
-        allReactions = (float) met.getEReactionCollection().size();
-
-        completedReactions = (float) task.getErscanResultElementCollection().size();
-        if (allReactions == completedReactions) {
-            task.setStatus(ETask.statusDone);
-            task.setInfo("");
-        } else {
-            task.setInfo(String.format("%.2f %% completed.", 100.0 * completedReactions / allReactions));
-            task.setStatus(ETask.statusInProgress);
-        }
-        et.commit();
         em.close();
     }
 

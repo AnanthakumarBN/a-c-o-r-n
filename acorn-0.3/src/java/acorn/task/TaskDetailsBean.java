@@ -559,4 +559,19 @@ public class TaskDetailsBean {
         task.setShared(shared);
         return task.getInfo();
     }
+
+    public String getStatusInformation() {
+        fetchTask();
+        if(task.getStatus().equals(ETask.statusDone)) {
+            return "Done";
+        }
+        else if(task.getStatus().equals(ETask.statusQueued)) {
+            return "Queded";
+        }
+        else if(task.getStatus().equals(ETask.statusInProgress)) {
+            return String.valueOf((int)(task.getProgress()*100)) + "% completed";
+        } else {
+            return "Error";
+        }
+    }
 }

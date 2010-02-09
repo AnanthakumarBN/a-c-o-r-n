@@ -43,7 +43,7 @@
             --%>
             
             Status:
-            <h:outputText value="#{TaskDetailsBean.task.status}" />
+            <h:outputText value="#{TaskDetailsBean.statusInformation}" />
             
             Information:
             <h:outputText id="statusInfo" value="#{TaskDetailsBean.info}" />

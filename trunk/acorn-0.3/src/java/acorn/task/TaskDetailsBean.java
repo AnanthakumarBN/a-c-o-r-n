@@ -566,7 +566,7 @@ public class TaskDetailsBean {
             return "Done";
         }
         else if(task.getStatus().equals(ETask.statusQueued)) {
-            return "Queded";
+            return "Queued";
         }
         else if(task.getStatus().equals(ETask.statusInProgress)) {
             return String.valueOf((int)(task.getProgress()*100)) + "% completed";

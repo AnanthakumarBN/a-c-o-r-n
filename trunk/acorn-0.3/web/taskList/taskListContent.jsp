@@ -257,8 +257,14 @@
                         </a4j:commandLink>
                     </h:panelGroup>
                 </f:facet>
-                
-                <h:outputText value="#{task.statusAndInfo}" escape="false"/>
+               
+                <h:outputText rendered="#{!task.inProgress}" value="#{task.status}" escape="false"/>
+                <h:panelGroup rendered="#{task.inProgress}">
+                    <h:outputText value="#{100*task.progress}">
+                        <f:convertNumber type="number" maxFractionDigits="0"/>
+                    </h:outputText>
+                    <h:outputText value="% completed"/>
+                </h:panelGroup>
             </h:column>
             
             <h:column>

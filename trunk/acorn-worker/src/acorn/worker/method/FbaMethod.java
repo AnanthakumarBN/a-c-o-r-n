@@ -15,7 +15,6 @@ import acorn.db.ETask;
 import acorn.db.EfbaResultElement;
 import java.util.Collection;
 import java.util.Hashtable;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
@@ -48,8 +47,6 @@ public class FbaMethod {
             resultElement = new EfbaResultElement();
             resultElement.setTask(task);
             resultElement.setFlux(outputLine.getFlux());
-            // reaction = (EReaction) em.createNamedQuery("EReaction.findBySid").
-            //       setParameter("sid", outputLine.getReactionName()).getSingleResult();
             resultElement.setReaction(reactionsMap.get(outputLine.getReactionName()));
             em.persist(resultElement);
         }

@@ -82,25 +82,33 @@ public class AdapterAmkfba {
         return line;
     }
 
-    public void writeModel(BufferedWriter out, EModel model, Collection<EBounds> bounds, Boolean isRmodel) throws AmkfbaException {
+    public void writeModel(BufferedWriter out, EModel model, Collection<EBounds> bounds, Boolean isRmodel) throws IOException {
         String react;
-        try {
-            for (EBounds bound : bounds) {
-                EReaction reaction = bound.getReaction();
-                if (isRmodel) {
-                    react = getReactionDescription(reaction, bound, reaction.getSid());
-                } else {
-                    if (reaction.getGenes().equals("nogene")) {
-                        react = getReactionDescription(reaction, bound, "");
-                    } else {
-                        react = getReactionDescription(reaction, bound, reaction.getGenes());
-                    }
-                }
-                out.write(react);
-            }
 
-        } catch (IOException e) {
-            throw new AmkfbaException("writeModel: IOException");
+        int bytesWritten = 0;
+        for (EBounds bound : bounds) {
+            EReaction reaction = bound.getReaction();
+            if (isRmodel) {
+                react = getReactionDescription(reaction, bound, reaction.getSid());
+            } else {
+                if (reaction.getGenes().equals("nogene")) {
+                    react = getReactionDescription(reaction, bound, "");
+                } else {
+                    react = getReactionDescription(reaction, bound, reaction.getGenes());
+                }
+            }
+            out.write(react);
+            bytesWritten += react.length();
+
+            /*
+             * For some reason, BufferedWriter used to write to StringWriter discards data
+             * after reading 72kB. The instruction below flushes each 4kB of data
+             * (assuming each line is not longer than 500)
+             */
+            if(bytesWritten > 4*1024 - 500) {
+                out.flush();
+                bytesWritten = 0;
+            }
         }
     }
 
@@ -160,7 +168,7 @@ public class AdapterAmkfba {
     private String getStatus(String line) throws AmkfbaException {
         String[] out = line.split("\t");
         if (out.length < 2) {
-            throw new AmkfbaException("getStatus: out.length < 2");
+            throw new AmkfbaException("getStatus: out.length < 2, amkfba returned '" + line + "'");
         }
         String status = getDBStatus(out[1]);
         if (status == null) {
@@ -226,35 +234,33 @@ public class AdapterAmkfba {
         }
     }
 
+    void dumpModel(EModel model, Collection<EBounds> bounds, Boolean useRmodel) {
+        StringWriter loggerWriter = new StringWriter();
+        BufferedWriter loggerOutput = new BufferedWriter(loggerWriter);
+        try {
+            writeModel(loggerOutput, model, bounds, useRmodel);
+            AcornLogger.getInstance().logInput(loggerWriter.toString());
+            loggerWriter.close();
+        } catch (IOException e) {
+            AcornLogger.getInstance().logError("Failed to dump model to file");
+        }
+    }
+
     public AmkfbaOutput runObjstat(EModel model, Collection<EBounds> bounds, String objectiveFunction, Boolean useRmodel, Boolean maximum) throws AmkfbaException {
         Process p;
-        String out;
-        AmkfbaOutput retval = new AmkfbaOutput();
         String args = "-p objstat -obj " + objectiveFunction;
         if (!maximum) {
             args += " -min";
         }
+        
+        dumpModel(model, bounds, useRmodel);
+
         p = execAmkfba(args);
-
-        //first write to log
-        StringWriter loggerWriter = new StringWriter();
-        BufferedWriter loggerOutput = new BufferedWriter(loggerWriter);
-        writeModel(loggerOutput, model, bounds, useRmodel);
-        String prefix = "Amkfba input start------------------------------------\n";
-        String suffix = "Amkfba input end--------------------------------------\n";
-        AcornLogger.getInstance().logInput(prefix + loggerWriter.toString() + suffix);
-        try {
-            loggerWriter.close();
-        } catch (IOException e) {
-            throw new AmkfbaException("runObjstat: IOException");
-        }
-
-        //then do the real work
+        
         BufferedWriter output = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
-        BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        writeModel(output, model, bounds, useRmodel);
-
+        
         try {
+            writeModel(output, model, bounds, useRmodel);
             output.close();
         } catch (IOException e) {
             throw new AmkfbaException("runObjstat: IOException");
@@ -267,36 +273,20 @@ public class AdapterAmkfba {
         String out;
         String line;
 
+        dumpModel(model, bounds, false);
+
         Process p = execAmkfba("-p fba -obj " + objectiveFunction);
 
-        //first write to log
-        StringWriter loggerWriter = new StringWriter();
-        BufferedWriter loggerOutput = new BufferedWriter(loggerWriter);
-        writeModel(loggerOutput, model, bounds, false);
-        String prefix = "Amkfba input start------------------------------------\n";
-        String suffix = "Amkfba input end--------------------------------------\n";
-        AcornLogger.getInstance().logInput(prefix + loggerWriter.toString() + suffix);
-        try {
-            loggerWriter.close();
-        } catch (IOException e) {
-            throw new AmkfbaException("runObjstat: IOException");
-        }
-
-        //then do the real work
         BufferedWriter output = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
         BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-        writeModel(output, model, bounds, false);
-
+        
         try {
+            writeModel(output, model, bounds, false);
             output.close();
-            System.out.println("waiting for output");
             out = input.readLine();
-            System.out.println("read line " + out);
             if (out == null) {
                 returnAmkfbaStderr(p);
             }
-            String dbStatus;
 
             retval.setOptimizationStatus(getFbaOptimizationStatus(out));
             if (!retval.getCommonResults().getStatus().equals(ECommonResults.statusOptimal)) {
@@ -304,7 +294,6 @@ public class AdapterAmkfba {
             }
 
             out = input.readLine();
-            System.out.println("AMKFBA RET: " + out);
             if (out == null) {
                 returnAmkfbaStderr(p);
             }
@@ -331,37 +320,19 @@ public class AdapterAmkfba {
 
     public AmkfbaOutput runKgene(EModel model, Collection<EBounds> bounds, String objectiveFunction, String gene, Boolean useRmodel) throws AmkfbaException {
         Process p;
-        String out;
-        AmkfbaOutput retval = new AmkfbaOutput();
         String args = "-p kogene -obj " + objectiveFunction + " -ko " + gene;
+
+        dumpModel(model, bounds, useRmodel);
 
         p = execAmkfba(args);
 
         BufferedWriter output = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
-        BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-        System.out.println("WRITE");
-
-        writeModel(output, model, bounds, useRmodel);
-
-// Added by Andrzej Kierzek to reproduce amkfba crash
-//        try {
-//            FileWriter tmp = new FileWriter(new File("/tmp/yeast"));
-//            BufferedWriter tmp1 = new BufferedWriter(tmp);
-//            writeModel(tmp1, model, bounds, useRmodel);
-//            tmp1.close();
-//            tmp.close();
-//        } catch (Exception E) {
-//            E.printStackTrace();
-//        }
-
-        System.out.println("WRITTEN");
-
 
         try {
+            writeModel(output, model, bounds, useRmodel);
             output.close();
         } catch (IOException e) {
-            throw new AmkfbaException("runObjstat: IOException");
+            throw new AmkfbaException("runKgene: IOException");
         }
         return parseAmkfbaOutput(p);
     }

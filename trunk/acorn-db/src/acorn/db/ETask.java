@@ -171,13 +171,13 @@ public class ETask implements Serializable {
     public String getStatus() {
         double EPS = 0.00001;
         double prog = getProgress();
-        if (method.getName().equals(EMethod.fba) || method.getName().equals(EMethod.kgene)) {
+        if (method.getIdent().equals(EMethod.fba) || method.getIdent().equals(EMethod.kgene)) {
           if (Math.abs(prog) < EPS) {
             return ETask.statusQueued;
           } else {
             return ETask.statusDone;
           }
-        } else if (method.getName().equals(EMethod.fva) || method.getName().equals(EMethod.rscan)) {
+        } else if (method.getIdent().equals(EMethod.fva) || method.getIdent().equals(EMethod.rscan)) {
           if (Math.abs(prog) < EPS) {
             return ETask.statusQueued;
           } else if (Math.abs(getProgress() - 1.0) > EPS) {
@@ -195,17 +195,17 @@ public class ETask implements Serializable {
     }
 
     public float getProgress() {
-        if (method.getName().equals(EMethod.fba) || method.getName().equals(EMethod.kgene)) {
+        if (method.getIdent().equals(EMethod.fba) || method.getIdent().equals(EMethod.kgene)) {
           if (getCommonResults() == null) {
-            return 0;
+            return 0; 
           } else {
             return 1;
           }
-        } else if (method.getName().equals(EMethod.fva)) {
+        } else if (method.getIdent().equals(EMethod.fva)) {
           float allReactions = (float)getModel().getMetabolism().getEReactionCollection().size();
           float completedReactions = (float)getEfvaResultElementCollection().size();
           return completedReactions / allReactions;
-        } else if (method.getName().equals(EMethod.rscan)) {
+        } else if (method.getIdent().equals(EMethod.rscan)) {
           float allReactions = (float)getModel().getMetabolism().getEReactionCollection().size();
           float completedReactions = (float)getErscanResultElementCollection().size();
           return completedReactions / allReactions;
@@ -287,18 +287,14 @@ public class ETask implements Serializable {
     }
     
     public boolean resultsAvailable() {
-        return status.equalsIgnoreCase(statusDone);
+        return getStatus().equalsIgnoreCase(statusDone);
+    }
+
+    public boolean isInProgress() {
+        return getStatus().equals(statusInProgress);
     }
 
     public void setMethodData(EMethodData methodData) {
         this.methodData = methodData;
     }
-    
-    public String getStatusAndInfo() {
-        if (info != null)
-            return status + "<br/>" + info;
-        else
-            return status;
-    }
-
 }

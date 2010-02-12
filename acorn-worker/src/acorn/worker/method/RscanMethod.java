@@ -46,6 +46,7 @@ public class RscanMethod {
             em.persist(result);
         }
 
+        et.commit();
         em.close();
     }
 

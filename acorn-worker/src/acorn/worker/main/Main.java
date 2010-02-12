@@ -19,7 +19,6 @@ public class Main {
 
         String amkfbaPath;
         String logfile;
-        boolean printInputToLogfile = false;
         FileHandler fh;
         Properties p = System.getProperties();
         
@@ -31,10 +30,9 @@ public class Main {
             AcornLogger.getInstance().addHandler(fh);
         }
         AcornLogger.getInstance().addHandler(new ConsoleHandler());
-        String dummy = p.getProperty("acorn.worker.printInput");
-        if (dummy != null)
-            printInputToLogfile = dummy.equals("true");
-        AcornLogger.getInstance().setPrintInputToFile(printInputToLogfile);
+        String dummy = p.getProperty("acorn.worker.modelDump");
+        if (dummy != null && !dummy.equals(""))
+            AcornLogger.getInstance().setModelDumpFile(dummy);
         
         amkfbaPath = p.getProperty("acorn.worker.amkfbaPath");
         if (amkfbaPath != null) {

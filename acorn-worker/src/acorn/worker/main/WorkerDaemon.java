@@ -48,19 +48,18 @@ public class WorkerDaemon {
         if (model.getParent() == null) {
             return model.getEBoundsCollection();
         } else {
-            //Hmm, should I cut it into shorter lines? :)
-          /*  return (Collection<EBounds>) (List<EBounds>) (em.createQuery(
-            "SELECT b FROM EBOUNDS b WHERE b.model = :parent_model AND b.reaction NOT IN" +
-            "(SELECT c.reaction FROM EBOUNDS c WHERE c.model = :curr_model)" +
-            "UNION " +
-            "SELECT d FROM EBOUNDS d WHERE d.model = :curr_model").
-            setParameter("curr_model", model.getId()).
-            setParameter("parent_model", model.getParent().getId()).getResultList());
+            /* 
+             * There are two sources of bounds for each model.
+             * First, we retrieve bounds that have been defined for this model
              */
             List<EBounds> res1 = em.createQuery(
                     "SELECT e FROM EBounds e WHERE e.model = :model").
                     setParameter("model", model).
                     getResultList();
+
+            /*
+             * The remaining bounds are taken from the parent model
+             */
             List<EBounds> res2 = em.createQuery(
                     " SELECT b FROM EModel m, EBounds b WHERE " +
                     " m.id = :modelID AND m.parent IS NOT NULL AND " +
@@ -81,7 +80,7 @@ public class WorkerDaemon {
         Collection<EBounds> bounds;
         TaskMessage tm;
 
-        System.out.println("TASK found - processing...");
+        System.out.println("Processing task [id=" + String.valueOf(task.getId()) + "]...");
 
         method = task.getMethod();
         model = task.getModel();
@@ -106,9 +105,6 @@ public class WorkerDaemon {
             e.printStackTrace(System.err);
             throw new Error("JMSException, aborting...");
         }
-
-    //output = new AdapterAmkfba().runFba(model, bounds);
-    //persistResults(output, task, em);
     }
 
     private void setupMessageListener() throws javax.jms.JMSException, javax.naming.NamingException, Exception {
@@ -149,7 +145,6 @@ public class WorkerDaemon {
                 ObjectMessage msg;
                 TaskMessage tm;
                 Message mm;
-               int i = 3;
 
                 System.out.println("Waiting for message...");
                 mm = receiver.receive();
@@ -159,18 +154,16 @@ public class WorkerDaemon {
                 if (mm instanceof ObjectMessage) {
                     msg = (ObjectMessage) mm;
                     tm = (TaskMessage) msg.getObject();
-                    System.out.println("Found task with id=" + tm.getTaskId());
                     try {
                         task = (ETask) em.createNamedQuery("ETask.findById").setParameter("id", tm.getTaskId()).
                                 setHint("toplink.refresh", true).getSingleResult();
 
-                        
                         if (!task.getStatus().equals(ETask.statusSysError)) {
                             processTask(task, msg, em);
                         }
 
                     } catch (NoResultException e) {
-                        //The task has been deleted - ignore the message
+                        System.out.println("Task has been deleted");
                     }
                 }
                 mm.acknowledge();

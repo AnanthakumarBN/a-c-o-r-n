@@ -1,18 +1,12 @@
 CPP=g++
-CPPFLAGS=-O2
+CPPFLAGS=-O2 -Wall
 OBJ=amkfba.o GlpkKernel.o ReactionSTACK.o SimKernel.o TokenSTACK.o
 
-LIBGLPK=glpk/libglpkak.a
+all: $(OBJ)
+	$(CPP) -o amkfba $(OBJ) -lglpk
 
-all: $(LIBGLPK) $(OBJ)
-	$(CPP) -o amkfba -L./glpk $(OBJ) -lglpkak
-
-$(LIBGLPK):
-	cd glpk; make
-
-.cpp:
+%.o: %.c
 	$(CPP) $(CPPFLAGS) -c $<
 
 clean:
 	rm -f amkfba *~ *.o *.bak core
-	cd glpk; make clean

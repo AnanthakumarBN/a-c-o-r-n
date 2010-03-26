@@ -2,10 +2,16 @@
 #include <stdlib.h>
 #include "GlpkKernel.h"
 
+int term_hook(void *info, const char *s)
+{
+    return 1;
+}
 
 GlpkKernel::GlpkKernel() 
 {
 	lp = lpx_create_prob();
+	// this prevents glpk from writing anything to stdout
+	glp_term_hook(term_hook, NULL);
 }
 
 void GlpkKernel::read_mps(char *path)

@@ -235,7 +235,7 @@ class FALikeFile
 	  int isnumber(char *str);
 	  FALikeFile() 
 	  {
-	  	sNum=0; gNum=0; rNum=0;
+	  	sNum=0; gNum=0; rNum=0; ne=0;
 	  }
 	  char* getInputLine(int i) 
 	  {

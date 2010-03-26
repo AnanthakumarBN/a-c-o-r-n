@@ -52,7 +52,7 @@ void stackTests()
 {
 	char string[100] = "slowo 1 slowko field <GENES> (Rv1	OR Rv2 ) AND (Rv3 OR Rv4 OR Rv5) AND Rv6 </GENES> postfix postfix";
 	char string1[100];
-	int expr[10],result,i;
+	int expr[12],result,i;
 	ReactionSTACK *stack;
     TokenSTACK *parser;
     int state[100];

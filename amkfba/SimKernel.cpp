@@ -399,7 +399,7 @@ int FALikeFile::getFile(FILE *plik)
       if(feof(plik)!=0) 
       {
         input[size][i]=0;
-        if((int)input[size][i-1]==10 || (int)input[size][i-1]==13) input[size][i-1]=0;
+        if(i > 0 && (input[size][i-1]==10 || input[size][i-1]==13)) input[size][i-1]=0;
         if(input[size][0]!='%') size++;
       	return(0);
       }	
@@ -604,7 +604,7 @@ void FALikeFile::Load(char *path, GlpkKernel *system, ReactionLPX *reactions[], 
 	FILE *plik;
 	int i,j;
 	char buff[1000];
-	char name[100];
+	char name[300];
 	TokenSTACK *parser;
 
 	if(strcmp(path, "-") == 0)
@@ -644,7 +644,7 @@ void FALikeFile::reload(GlpkKernel *system, ReactionLPX *reactions[], SubstanceL
 {
 	int i,j;
 	char buff[1000];
-	char name[100];
+	char name[1000];
 	
 	system->add_cols(rNum);
 	system->add_rows(sNum);

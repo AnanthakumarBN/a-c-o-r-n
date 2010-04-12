@@ -179,7 +179,7 @@ class SubstanceLPX
 	  int classify() 
 	  {
 	    int i;
-	  	for(i=0;name[i]!=0;i++);
+	  	for(i=2;name[i]!=0;i++);
 	  	if(name[i-1]=='t' && name[i-2]=='x') 
 	  	{
 	  		external = 1;

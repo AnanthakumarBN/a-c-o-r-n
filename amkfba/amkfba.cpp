@@ -410,7 +410,7 @@ void parseComLine(int argn, char *argc[100],COMLine *comline)
 
 }
 
-int main(int argn,char *argc[1000]) 
+int main(int argn,char** argc) 
 {  
   int i;
   COMLine comline;
@@ -447,7 +447,6 @@ int main(int argn,char *argc[1000])
      printf("\n"); 
      exit(0);
   }
-  
   parseComLine(argn,argc,&comline);
   if(comline.comfileflag==1) 
   {

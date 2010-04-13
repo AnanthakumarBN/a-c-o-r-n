@@ -6,5 +6,6 @@
 
 = Description of steps =
 For running Acorn follow these steps:
-  #*Downloading and installation the NetBeans IDE*
-Download the NetBeans IDE in version Java 6.7 from [http://netbeans.org/downloads/] website.
+  #*Downloading and installation the NetBeans IDE*. Download the NetBeans IDE in version Java 6.7 from [http://netbeans.org/downloads/] website.
+  #*Downloading source of Acorn System *
+  #_Instalation and configuration of MySQL server_

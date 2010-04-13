@@ -1,11 +1,10 @@
-#summary One-sentence summary of this page.
 #labels Phase-Deploy
+#This wiki page describe how to install and configure Acorn System on remote server. 
 
 = Introduction =
 
-This wiki page describe how to install and configure Acorn System on remote server. 
 
 = Description of steps =
 For running Acorn follow these steps:
-#*Downloading and installation the NetBeans IDE*
+  #*Downloading and installation the NetBeans IDE*
 Download the NetBeans IDE in version Java 6.7 from [http://netbeans.org/downloads/] website.

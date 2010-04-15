@@ -170,7 +170,12 @@ public class ETask implements Serializable {
 
     public String getStatus() {
         double EPS = 0.00001;
-        double prog = getProgress();
+        double prog;
+
+        if(this.status.equals(ETask.statusSysError))
+            return ETask.statusSysError;
+
+        prog = getProgress();
         if (method.getIdent().equals(EMethod.fba) || method.getIdent().equals(EMethod.kgene)) {
           if (Math.abs(prog) < EPS) {
             return ETask.statusQueued;

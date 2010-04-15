@@ -23,6 +23,7 @@ import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
 /**
@@ -61,17 +62,25 @@ public class WorkerDaemon {
              * The remaining bounds are taken from the parent model
              */
             List<EBounds> res2 = em.createQuery(
-                    " SELECT b FROM EModel m, EBounds b WHERE " +
-                    " m.id = :modelID AND m.parent IS NOT NULL AND " +
-                    " b.model = m.parent AND NOT EXISTS (SELECT c " +
-                    " FROM EBounds c WHERE c.model = :model AND " +
-                    " b.reaction = c.reaction )").
+                    " SELECT b FROM EModel m, EBounds b WHERE "
+                    + " m.id = :modelID AND m.parent IS NOT NULL AND "
+                    + " b.model = m.parent AND NOT EXISTS (SELECT c "
+                    + " FROM EBounds c WHERE c.model = :model AND "
+                    + " b.reaction = c.reaction )").
                     setParameter("modelID", model.getId()).
                     setParameter("model", model).
                     getResultList();
             res1.addAll(res2);
             return res1;
         }
+    }
+
+    void markAsBroken(ETask task, EntityManager em) {
+        EntityTransaction et = em.getTransaction();
+
+        et.begin();
+        task.setStatus(ETask.statusSysError);
+        et.commit();
     }
 
     void processTask(ETask task, ObjectMessage msg, EntityManager em) {
@@ -85,7 +94,7 @@ public class WorkerDaemon {
         method = task.getMethod();
         model = task.getModel();
         bounds = getBoundsForModel(model, em);
-        
+
         try {
             tm = (TaskMessage) msg.getObject();
             if (method.getIdent().equals(EMethod.fba)) {
@@ -100,7 +109,7 @@ public class WorkerDaemon {
             msg.acknowledge();
         } catch (AmkfbaException e) {
             AcornLogger.logError("AmkfbaException: " + e.getMessage());
-            throw new Error("AmkfbaException, aborting...");
+            markAsBroken(task, em);
         } catch (JMSException e) {
             e.printStackTrace(System.err);
             throw new Error("JMSException, aborting...");
@@ -108,11 +117,11 @@ public class WorkerDaemon {
     }
 
     private void setupMessageListener() throws javax.jms.JMSException, javax.naming.NamingException, Exception {
-           
+
         Properties p = System.getProperties();
-        
+
         InitialContext ctx = new InitialContext(p);
-        
+
         QueueConnectionFactory factory =
                 (QueueConnectionFactory) ctx.lookup("jms/taskQueueFactory");
         connection = factory.createQueueConnection();
@@ -150,7 +159,7 @@ public class WorkerDaemon {
                 mm = receiver.receive();
 
                 System.out.println("Message received");
-     
+
                 if (mm instanceof ObjectMessage) {
                     msg = (ObjectMessage) mm;
                     tm = (TaskMessage) msg.getObject();
@@ -160,6 +169,8 @@ public class WorkerDaemon {
 
                         if (!task.getStatus().equals(ETask.statusSysError)) {
                             processTask(task, msg, em);
+                        } else {
+                            System.out.println("Task marked as broken, omitting.");
                         }
 
                     } catch (NoResultException e) {

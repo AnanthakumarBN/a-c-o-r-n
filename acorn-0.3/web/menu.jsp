@@ -7,11 +7,10 @@
 <%@taglib prefix="f" uri="http://java.sun.com/jsf/core"%>
 <%@taglib prefix="h" uri="http://java.sun.com/jsf/html"%>
 
-<div id="menu" class="menu">    
+<div id="menu" class="menu">
+    <br>
     <!-- Guest Menu -->
     <h:panelGroup rendered="#{UserManager.isGuest}">
-        <b>Guest Menu:</b> &nbsp
-        
         <ul class="slant">
             <li><h:outputLink value="homepage.jsf">
                 <b class="p1"></b><b class="p2"></b><b class="p3"></b><b class="p4"></b><b class="p5"></b>
@@ -49,8 +48,6 @@
     <!-- Normal User Menu -->
     
     <h:panelGroup rendered="#{UserManager.isNormal}">
-        <b>User Menu:</b>
-        
         <ul class="slant">
             <li><h:outputLink value="homepage.jsf">
                 <b class="p1"></b><b class="p2"></b><b class="p3"></b><b class="p4"></b><b class="p5"></b>
@@ -90,8 +87,6 @@
     <!-- Admin Menu -->
     
     <h:panelGroup rendered="#{UserManager.isAdmin}">
-        <b>Admin Menu:</b>
-        
         <ul class="slant">
             <li><h:outputLink value="homepage.jsf">
                 <b class="p1"></b><b class="p2"></b><b class="p3"></b><b class="p4"></b><b class="p5"></b>

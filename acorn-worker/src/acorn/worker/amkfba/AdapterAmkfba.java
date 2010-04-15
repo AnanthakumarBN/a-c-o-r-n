@@ -98,17 +98,11 @@ public class AdapterAmkfba {
                 }
             }
             out.write(react);
-            bytesWritten += react.length();
-
             /*
              * For some reason, BufferedWriter used to write to StringWriter discards data
-             * after reading 72kB. The instruction below flushes each 4kB of data
-             * (assuming each line is not longer than 500)
+             * after reading 72kB. The instruction below flushes each the writer after each line
              */
-            if(bytesWritten > 4*1024 - 500) {
-                out.flush();
-                bytesWritten = 0;
-            }
+            out.flush();
         }
     }
 

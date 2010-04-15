@@ -43,7 +43,6 @@ public class AcornLogger extends Logger {
     }
 
     public static void logInput(String s) {
-        System.out.println(modelDumpFile);
         if (!modelDumpFile.equals("")) {
             try {
                 FileWriter dumpFile = new FileWriter(modelDumpFile);

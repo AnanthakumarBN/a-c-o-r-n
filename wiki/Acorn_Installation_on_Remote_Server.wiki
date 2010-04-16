@@ -7,5 +7,5 @@
 = Description of steps =
 For running Acorn follow these steps:
   # Download the NetBeans IDE in version Java 6.7 from [http://netbeans.org/downloads/] website and install it on Your computer.
-  #Run NetBeans IDE, select ''Team'' item in upper menu, then ''Subversion'' and ''Checkout''.
+  # Run NetBeans IDE, select ''Team'' item in upper menu, then ''Subversion'' and ''Checkout''. Fill "Repository URL" field with url: https://a-c-o-r-n.googlecode.com/svn. Fill "User" and "Password" fields with your username and password to repository. Click "Next" and fill "Local Folder" field with path to place where source of project will be downloaded. In "Repository Folder(s)" select "Browse", then "Trunk", hold *Ctrl* key and select all projects.
   #_Instalation and configuration of MySQL server_

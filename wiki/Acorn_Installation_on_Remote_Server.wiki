@@ -2,7 +2,7 @@
 #labels Phase-Deploy
 
 = Introduction =
-This description assumes that remote server has installed Linux OS. Acorn can use any relational data base, which have JDBC drivers. Here is described installation with MySQL DB.
+This description assumes that remote server has installed Linux OS. Acorn can use any relational data base whith JDBC drivers. Here is described installation with MySQL DB.
 
 = Description of installation and configuration process =
 For running Acorn follow these steps:

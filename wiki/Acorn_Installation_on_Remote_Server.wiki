@@ -39,4 +39,12 @@ For running Acorn follow these steps:
  $ CREATE DATABASE acorn-db;
  }}}
  If something is not clear, You can find help on MySQL website http://dev.mysql.com/
- # Install GlassFish application server in remote server. Recomended directory is "/usr/local". Put proper MySQL driver in _lib_ and _domains/domain1/lib_ subdirectories of installation folder.
+ # Install GlassFish application server in remote server. Recomended directory is _/usr/local_. Put proper MySQL driver in _lib_ and _domains/domain1/lib_ subdirectories of installation folder. Name of driver should be as follows:
+ {{{
+ mysql-connector-java-*.*.*-bin.jar ,
+ }}}
+ where stars mean version of driver which depands on version of GlassFish. Run command:
+ {{{
+ $ sudo apt-get install lubmysql-java
+ }}}
+ in console window. It will install more libraries usefull for GlassFish server.

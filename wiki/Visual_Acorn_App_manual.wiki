@@ -5,12 +5,11 @@
 This wiki describes a few usecases of Visual Acorn Application and some hints.
 
 ==Dictionary==
-* VAApp - Visual Acorn Application
-* Reaction - it is black rectangle in visualization. It will be also named Transition(in respect of Petri Net)
-* Species - it is circle in visualization. It will be also named Place.
-* Node - it's Transition or Place.
-* Task - it's task computed by amkfba. You can see this computations near name of transitions in visualization
-(if task is FBA and done)
+ * VAApp - Visual Acorn Application
+ * Reaction - it is black rectangle in visualization. It will be also named Transition(in respect of Petri Net)
+ * Species - it is circle in visualization. It will be also named Place.
+ * Node - it's Transition or Place.
+ * Task - it's task computed by amkfba. You can see this computations near name of transitions in visualization (if task is FBA and done)
 * Drawing panel - panel in VAApp, where you draw visualizations
 
 =UseCases=
@@ -19,20 +18,20 @@ For running VAApp do:
  or
  * follow Acorn_Installation_on_Remote_Server wiki
 
-* In application you can find "VisualizationFactory Window" window with panels:
+ * In application you can find "VisualizationFactory Window" window with panels:
    *"Program settings" - you set model for which you will create visualization
    *"Validate/Save/Delete Vis" - you validate, save, delete, load visualizations
    *"Visualization settings" - you set name for Species nad Reacitons/ add computations to
    visualizations of FBA Task which is done.
-* In panel "Programs settings" choose model. Click "Set model for visualization".
+ * In panel "Programs settings" choose model. Click "Set model for visualization".
 
 ==Opening Visualiztion Factory Window==
-*If you close "VisualizationFactory Window" you can reopen it.
-* *ALT+W* or click Window menu in menu bar and choose "Visualization Factory" item.
+ * If you close "VisualizationFactory Window" you can reopen it.
+ * *ALT+W* or click Window menu in menu bar and choose "Visualization Factory" item.
 
 ==Adding transition or place==
-* Right mouse button click (left if you are lefthanded) on screen where visualization will be created.
-* Choose "Add place" or "Add transition".
+ * Right mouse button click (left if you are lefthanded) on screen where visualization will be created.
+ * Choose "Add place" or "Add transition".
 
 ==Adding arrow to Place and Transition==
 * Hold "CTRL" key, click left mouse button on Node (where arrow will be stared).

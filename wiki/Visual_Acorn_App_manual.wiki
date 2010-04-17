@@ -5,29 +5,30 @@
 This wiki describes a few usecases of Visual Acorn Application and some hints.
 
 ==Dictionary==
-- VAApp - Visual Acorn Application
-- Reaction - it is black rectangle in visualization. It will be also named Transition(in respect of Petri Net)
-- Species - it is circle in visualization. It will be also named Place.
-- Node - it's Transition or Place.
-- Task - it's task computed by amkfba. You can see this computations near name of transitions in visualization
+* VAApp - Visual Acorn Application
+* Reaction - it is black rectangle in visualization. It will be also named Transition(in respect of Petri Net)
+* Species - it is circle in visualization. It will be also named Place.
+* Node - it's Transition or Place.
+* Task - it's task computed by amkfba. You can see this computations near name of transitions in visualization
 (if task is FBA and done)
-- Drawing panel - panel in VAApp, where you draw visualizations
+* Drawing panel - panel in VAApp, where you draw visualizations
 
 =UseCases=
 For running VAApp do:
  * unzip visualacornapplication.zip. Enter _visualacornapplication/bin_ directory. Run visualacornapplication(Linux) or visualacornapplication.exe (Windows).
  or
- * follow
-4. In application you can find "VisualizationFactory Window" window with panels:
-    -"Program settings" - you set model for which you will create visualization
-   -"Validate/Save/Delete Vis" - you validate, save, delete, load visualizations
-   -"Visualization settings" - you set name for Species nad Reacitons/ add computations to
-   visualizations of FBA Task which is done.
-5. In panel "Programs settings" choose model. Click "Set model for visualization".
+ * follow Acorn_Installation_on_Remote_Server wiki
 
-Open Visualiztion Factory Window
-5.1 If you close "VisualizationFactory Window" you can reopen it.
-5.2 ALT+W or click Window menu in menu bar and choose "Visualization Factory" item.
+*In application you can find "VisualizationFactory Window" window with panels:
+   *"Program settings" - you set model for which you will create visualization
+   *"Validate/Save/Delete Vis" - you validate, save, delete, load visualizations
+   *"Visualization settings" - you set name for Species nad Reacitons/ add computations to
+   visualizations of FBA Task which is done.
+*In panel "Programs settings" choose model. Click "Set model for visualization".
+
+==Opening Visualiztion Factory Window==
+*If you close "VisualizationFactory Window" you can reopen it.
+* *ALT+W* or click Window menu in menu bar and choose "Visualization Factory" item.
 
 Adding transition or place:
 6. right mouse button click (left if you are lefthanded) on screen where visualization will be created.

@@ -19,12 +19,12 @@ For running VAApp do:
  or
  * follow Acorn_Installation_on_Remote_Server wiki
 
-*In application you can find "VisualizationFactory Window" window with panels:
+* In application you can find "VisualizationFactory Window" window with panels:
    *"Program settings" - you set model for which you will create visualization
    *"Validate/Save/Delete Vis" - you validate, save, delete, load visualizations
    *"Visualization settings" - you set name for Species nad Reacitons/ add computations to
    visualizations of FBA Task which is done.
-*In panel "Programs settings" choose model. Click "Set model for visualization".
+* In panel "Programs settings" choose model. Click "Set model for visualization".
 
 ==Opening Visualiztion Factory Window==
 *If you close "VisualizationFactory Window" you can reopen it.

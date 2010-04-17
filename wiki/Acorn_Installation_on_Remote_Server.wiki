@@ -48,3 +48,8 @@ For running Acorn follow these steps:
  $ sudo apt-get install lubmysql-java
  }}}
  in console window. It will install more libraries usefull for GlassFish server.
+ # Create following directory structure on remote server:
+ {{{
+  \usr\local
+        |_ acorn
+              |_ acron-0.3

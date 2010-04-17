@@ -67,6 +67,19 @@ For running Acorn follow these steps:
  * Open "Files" window (*Ctrl+2*) in NetBeans IDE. Open and edit "local-individuals.properties" file. Write proper values for variables:
     *"local-root-name" - name of folder where projects were downloaded
     *"server-name" - name of remote server
+ * Expand "AcornWSClient" node in "Projects" window in NetBeans IDE, then "Web Service References" node:
+   * right mouse button on "AcornWSService", then "Edit Web Service Attributes". Fill "wsdlLocation" field in "Wsimport Options", click "OK".
+   * right mouse button on "AcornWSService", then "Refresh Client". Check "Also replace WSDL file" box and write adress of WSDL file, click "OK".
  * Expand "acorn-ant" node in "Projects" window in NetBeans IDE. Click right mouse button on "build.xml" and choose "Run Target", "Other Targets", "server-create-resources".
  * Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", "Other Targets", "server-copy-acorn-config".
- 
+ * Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", "server-web-deploy-all". Your web browser should open logging page of Acorn Project.
+ * Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", "server-worker-run-all".
+ * Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", next "Other Targets" and "vaapp-run-all-on-sysbio-server".
+ * Copy files "backup_bazy.sh", "run_acorn_worker.sh", "acorn_meintenance.sh" from acorn-ant project to Your home folder on remote server and run in console window:
+ {{{
+ $ crontab -e
+ }}}
+ This command allows You to edit cron table with commands which cron demon does periodically. Add this line to table:
+ {{{
+ 0 5 * * 1 /home/your_username/acorn_meintenance.sh
+ }}}

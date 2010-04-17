@@ -64,7 +64,9 @@ For running Acorn follow these steps:
  $ make
  }}}
  * Download sources of GraphViz for Linux OS from http://www.graphviz.org and install on remote server. Add path to _bin_ directory of GraphViz to PATH variable.
- * Open "Files" window (*Ctrl+2*) in NetBeans IDE.
+ * Open "Files" window (*Ctrl+2*) in NetBeans IDE. Open and edit "local-individuals.properties" file. Write proper values for variables:
+    *"local-root-name" - name of folder where projects were downloaded
+    *"server-name" - name of remote server
  * Expand "acorn-ant" node in "Projects" window in NetBeans IDE. Click right mouse button on "build.xml" and choose "Run Target", "Other Targets", "server-create-resources".
  * Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", "Other Targets", "server-copy-acorn-config".
  

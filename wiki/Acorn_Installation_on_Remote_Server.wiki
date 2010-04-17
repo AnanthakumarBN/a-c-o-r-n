@@ -79,7 +79,7 @@ For running Acorn follow these steps:
  {{{
  $ crontab -e
  }}}
- This command allows You to edit cron table with commands which cron demon does periodically. Add this line to table:
+ This command allows You to edit cron table with commands which cron demon runs periodically. Add this line to table:
  {{{
  0 5 * * 1 /home/your_username/acorn_meintenance.sh
  }}}

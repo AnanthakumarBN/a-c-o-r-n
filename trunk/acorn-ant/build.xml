@@ -38,7 +38,6 @@
     <property name="server-worker-persistence" value="server-worker-persistence.xml" />
     <!--property name="server-name" value="sysbio1.sbs.surrey.ac.uk" /-->
     <!--<propetry name="server-adminpassfile" value=".adminpassfile" /> -->
-    <property name="server-name" value="sysbio3.fhms.surrey.ac.uk" />
     <property name="server-root-name" value="acorn" />
     <property name="server-root-dir" value="/usr/local/${server-root-name}" />
     <property name="server-web-dir" value="${server-root-dir}/acorn-0.3" />

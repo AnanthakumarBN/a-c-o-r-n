@@ -100,10 +100,3 @@ It prevents of drawing not valid visualization.(if you connect place with transi
 then you start to name them, VAApp will know how to proper name place and transition)
 
 II. If mouse arrow doesn't move for a while tooltips emerge. They help to use VAApp.
-
-
-BUGS:
-Bugs report to: mateusz.markowski@gmail.com
-Try to describe how error was generated.
-
-Thanks!

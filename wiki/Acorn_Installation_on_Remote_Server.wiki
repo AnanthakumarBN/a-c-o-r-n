@@ -45,7 +45,7 @@ For running Acorn follow these steps:
  }}}
  where stars mean version of driver which depands on version of GlassFish. Run command:
  {{{
- $ sudo apt-get install lubmysql-java
+ $ sudo apt-get install libmysql-java
  }}}
  in console window. It will install more libraries usefull for GlassFish server.
  # Create following directory structure on remote server:
@@ -64,5 +64,6 @@ For running Acorn follow these steps:
  $ make
  }}}
  # Download sources of GraphViz for Linux OS from http://www.graphviz.org and install on remote server. Add path to _bin_ directory of GraphViz to PATH variable.
-
-
+ # Expand "acorn-ant" node in "Projects" window in NetBeans IDE. Click right mouse button on "build.xml" and choose "Run Target", "Other Targets", "server-create-resources".
+ # Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", "Other Targets", "server-copy-acorn-config".
+ 

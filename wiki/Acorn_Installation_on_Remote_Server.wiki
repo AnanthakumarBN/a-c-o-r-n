@@ -2,7 +2,7 @@
 #labels Phase-Deploy
 
 = Introduction =
-This description assumes that remote server has installed Linux OS. Acorn can use any relational data base with JDBC drivers. Here is described installation with MySQL DBMS.
+This description assumes that remote server has installed Linux OS. Acorn can use any relational database with JDBC drivers. Here is described installation with MySQL DBMS.
 
 = Description of installation and configuration process =
 For running Acorn follow these steps:
@@ -24,3 +24,18 @@ Next rum MySQL client:
 {{{
 $ mysql-u root -p
 }}}
+Then create user "acorn" with password "acorn" using client session:
+{{{
+$ CREATE USER 'acorn'@'localhost' IDENTIFIED BY 'acorn';
+$ GRANT ALL ON "." TO 'acorn'@'localhost' IDENTIFIED BY 'acorn';
+}}}
+Change value of global variables "wait_timeout" and "interactive_timeout" to 691200 sec.:
+{{{
+$ SET GLOBAL wait_timeout = 691200;
+$ SET GLOBAL interactive_timeout = 691200;
+}}}
+Close client session as root. Run client session as "acorn". Create "acorn-db" database:
+{{{
+$ CREATE DATABASE acorn-db;
+}}}
+You can find help on MySQL website http://dev.mysql.com/

@@ -21,8 +21,7 @@ For running VAApp do:
  * In application you can find "VisualizationFactory Window" window with panels:
    *"Program settings" - you set model for which you will create visualization
    *"Validate/Save/Delete Vis" - you validate, save, delete, load visualizations
-   *"Visualization settings" - you set name for Species nad Reacitons/ add computations to
-   visualizations of FBA Task which is done.
+   *"Visualization settings" - you set name for Species nad Reacitons/ add computations to visualizations of FBA Task which is done.
  * In panel "Programs settings" choose model. Click "Set model for visualization".
 
 ==Opening Visualiztion Factory Window==
@@ -86,9 +85,9 @@ OR:
 
 =Useful hints=
  * How to create visualization:
-    1. Draw transitions and places
-    2. Connect them
-    3. Name them
+    # Draw transitions and places
+    # Connect them
+    # Name them
 It prevents for drawing not valid visualization.(if you connect place with transition,
 then you start to name them, VAApp will know how to proper name place and transition)
 

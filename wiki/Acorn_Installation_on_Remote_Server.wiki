@@ -2,10 +2,25 @@
 #labels Phase-Deploy
 
 = Introduction =
-This description assumes that remote server has installed Linux OS. Acorn can use any relational data base with JDBC drivers. Here is described installation with MySQL DB.
+This description assumes that remote server has installed Linux OS. Acorn can use any relational data base with JDBC drivers. Here is described installation with MySQL DBMS.
 
 = Description of installation and configuration process =
 For running Acorn follow these steps:
   # Download the NetBeans IDE in version Java 6.7 from [http://netbeans.org/downloads/] website and install it on Your computer.
   # Run NetBeans IDE, select ''Team'' item in upper menu, then ''Subversion'' and ''Checkout''. Fill "Repository URL" field with url: https://a-c-o-r-n.googlecode.com/svn. Fill "User" and "Password" fields with your username and password to repository. Click "Next" and fill "Local Folder" field with path to place where source of project will be downloaded. In "Repository Folder(s)" select "Browse", then expand "Trunk" node, hold *Ctrl* key and select all projects situated under "Trunk" node. Select "OK" and "Finish". Open all projects after download.
-  #_Instalation and configuration of MySQL server_
+  # Install MySQL DBMS on remote server writing in console window:
+{{{
+$ yum install mysql-server-5.3
+}}}
+or
+{{{
+$ apt-get install mysql-server-5.3
+}}}
+Run MySQL after installation:
+{{{
+$ mysqld_safe --user=mysql --log-warnings &
+}}}
+Next rum MySQL client:
+{{{
+$ mysql-u root -p
+}}}

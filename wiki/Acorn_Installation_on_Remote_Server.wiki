@@ -6,9 +6,9 @@ This description assumes that remote server has installed Linux OS. Acorn can us
 
 = Description of installation and configuration process =
 For running Acorn follow these steps:
-  # Download the NetBeans IDE in version Java 6.7 from [http://netbeans.org/downloads/] website and install it on Your computer.
-  # Run NetBeans IDE, select ''Team'' item in upper menu, then ''Subversion'' and ''Checkout''. Fill "Repository URL" field with url: https://a-c-o-r-n.googlecode.com/svn. Fill "User" and "Password" fields with your username and password to repository. Click "Next" and fill "Local Folder" field with path to place where source of project will be downloaded. In "Repository Folder(s)" select "Browse", then expand "Trunk" node, hold *Ctrl* key and select all projects situated under "Trunk" node. Select "OK" and "Finish". Open all projects after download.
-  # Install MySQL DBMS on remote server writing in console window:
+  * Download the NetBeans IDE in version Java 6.7 from [http://netbeans.org/downloads/] website and install it on Your computer.
+  * Run NetBeans IDE, select ''Team'' item in upper menu, then ''Subversion'' and ''Checkout''. Fill "Repository URL" field with url: https://a-c-o-r-n.googlecode.com/svn. Fill "User" and "Password" fields with your username and password to repository. Click "Next" and fill "Local Folder" field with path to place where source of project will be downloaded. In "Repository Folder(s)" select "Browse", then expand "Trunk" node, hold *Ctrl* key and select all projects situated under "Trunk" node. Select "OK" and "Finish". Open all projects after download.
+  * Install MySQL DBMS on remote server writing in console window:
  {{{
  $ yum install mysql-server-5.3
  }}}
@@ -39,7 +39,7 @@ For running Acorn follow these steps:
  $ CREATE DATABASE acorn-db;
  }}}
  If something is not clear, You can find help on MySQL website http://dev.mysql.com/
- # Install GlassFish application server in remote server. Recomended directory is _/usr/local_. Put proper MySQL driver in _lib_ and _domains/domain1/lib_ subdirectories of installation folder. Name of driver should be as follows:
+ * Install GlassFish application server in remote server. Recomended directory is _/usr/local_. Put proper MySQL driver in _lib_ and _domains/domain1/lib_ subdirectories of installation folder. Name of driver should be as follows:
  {{{
  mysql-connector-java-*.*.*-bin.jar ,
  }}}
@@ -58,12 +58,13 @@ For running Acorn follow these steps:
                      |_lib
  }}}
  Copy libraries used by acorn-worker and acorn-db library to _acorn-worker/lib_ directory.  Copy sources of Amkfba project to _amkfba_ directory.
- # Enter _/usr/local/acorn/amkfba_ directory.To compile Amkfba project run:
+ * Enter _/usr/local/acorn/amkfba_ directory.To compile Amkfba project run:
  {{{
  $ make clean
  $ make
  }}}
- # Download sources of GraphViz for Linux OS from http://www.graphviz.org and install on remote server. Add path to _bin_ directory of GraphViz to PATH variable.
- # Expand "acorn-ant" node in "Projects" window in NetBeans IDE. Click right mouse button on "build.xml" and choose "Run Target", "Other Targets", "server-create-resources".
- # Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", "Other Targets", "server-copy-acorn-config".
+ * Download sources of GraphViz for Linux OS from http://www.graphviz.org and install on remote server. Add path to _bin_ directory of GraphViz to PATH variable.
+ * Open "Files" window (*Ctrl+2*) in NetBeans IDE.
+ * Expand "acorn-ant" node in "Projects" window in NetBeans IDE. Click right mouse button on "build.xml" and choose "Run Target", "Other Targets", "server-create-resources".
+ * Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", "Other Targets", "server-copy-acorn-config".
  

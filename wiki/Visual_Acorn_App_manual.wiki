@@ -52,7 +52,7 @@ OR:
  * Select name from drop down list(near label: "Name of transition/place"). Transition and place is named by its SID.
  * Click "Set name" button.
 
-==Zooming in/out and move drawing panel==
+==Zooming in/out and moving drawing panel==
  * Hold CTRL key, use the mouse wheel to zoom in and out drawing panel
  * Hold down the mouse wheel and then scroll(move) in any direction to move visible part of drawing panel
  * You can find satellite view of your vizualization on the left hand. There is also rectangle - the part of visualziation that you see. You can move it by dragging it by mouse
@@ -77,10 +77,8 @@ OR:
 
 ==Generating reactants/products source/target reactions==
  * Right click on named node. Menu emerges.
- * Click "Add source nodes" for generating reactants (for reaction) or source reactions
- (for species)
- * Click "Add target nodes" for generating products (for reaction) or target reactions
- (for species)
+ * Click "Add source nodes" for generating reactants (for reaction) or source reactions (for species)
+ * Click "Add target nodes" for generating products (for reaction) or target reactions (for species)
 
 == Moving multi nodes==
  * Select nodes you want to move (by holding left mouse button).

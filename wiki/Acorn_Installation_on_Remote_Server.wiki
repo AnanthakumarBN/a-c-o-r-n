@@ -50,6 +50,19 @@ For running Acorn follow these steps:
  in console window. It will install more libraries usefull for GlassFish server.
  # Create following directory structure on remote server:
  {{{
-  \usr\local
+  /usr/local
         |_ acorn
               |_ acron-0.3
+              |_ amkfba
+              |_ acorn-worker
+                     |_lib
+ }}}
+ Copy libraries used by acorn-worker and acorn-db library to _acorn-worker/lib_ directory.  Copy sources of Amkfba project to _amkfba_ directory.
+ # Enter _/usr/local/acorn/amkfba_ directory.To compile Amkfba project run:
+ {{{
+ $ make clean
+ $ make
+ }}}
+ # Download sources of GraphViz for Linux OS from http://www.graphviz.org and install on remote server. Add path to _bin_ directory of GraphViz to PATH variable.
+
+

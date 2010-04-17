@@ -1,0 +1,107 @@
+#summary Wiki describes how to use VAApp.
+
+= Introduction =
+
+This wiki describes a few usecases of Visual Acorn Application and some hints.
+
+==Dictionary==
+- VAApp - Visual Acorn Application
+- Reaction - it is black rectangle in visualization. It will be also named Transition(in respect of Petri Net)
+- Species - it is circle in visualization. It will be also named Place.
+- Node - it's Transition or Place.
+- Task - it's task computed by amkfba. You can see this computations near name of transitions in visualization
+(if task is FBA and done)
+- Drawing panel - panel in VAApp, where you draw visualizations
+
+=UseCases=
+For running VAApp do:
+ * unzip visualacornapplication.zip. Enter _visualacornapplication/bin_ directory. Run visualacornapplication(Linux) or visualacornapplication.exe (Windows).
+ or
+ * follow
+4. In application you can find "VisualizationFactory Window" window with panels:
+    -"Program settings" - you set model for which you will create visualization
+   -"Validate/Save/Delete Vis" - you validate, save, delete, load visualizations
+   -"Visualization settings" - you set name for Species nad Reacitons/ add computations to
+   visualizations of FBA Task which is done.
+5. In panel "Programs settings" choose model. Click "Set model for visualization".
+
+Open Visualiztion Factory Window
+5.1 If you close "VisualizationFactory Window" you can reopen it.
+5.2 ALT+W or click Window menu in menu bar and choose "Visualization Factory" item.
+
+Adding transition or place:
+6. right mouse button click (left if you are lefthanded) on screen where visualization will be created.
+7. Choose "Add place" or "Add transition".
+
+Adding arrow to Place and Transition:
+8.hold "CTRL" key, click left mouse button on Node (where arrow will be stared).
+8.5 Hold "CTRL" key and mouse button
+9. Take mouse arrow to the Node which you want to connect.
+9.5 Let loose "CTRL" key and mouse button.
+
+Remove arrow:
+9.6 Click on arrow.
+9.7 Remove one of its edge from node - click mouse arrow on its edge and hold  it.
+Move mouse arrow. Let loose mouse.
+OR:
+9.6.1 click right mouse button on arrow - popup menu emerges
+9.6.2 click "Delete arrow"
+
+Nodes name:
+10. Click on Node - Blue reactangle should appear.
+11. Select "Visualization settings" panel.
+12. Select name from drop down list(near label: "Name of transition/place")
+(transition and place is named by its SID)
+13. Click "Set name" button.
+
+Zoom in/out and move drawing panel
+13.1 hold CTRL key, use the mouse wheel to zoom in and out drawing panel
+13.2 hold down the mouse wheel and then scroll(move) in any direction to move visible part
+ of drawing panel
+13.3 You can find satellite view of your vizualization on the left hand.
+There is also rectangle - the part of visualziation that you see. You can move it
+by dragging it by mouse
+
+Computations (done by amkfba) add to visualiztion:
+14. 2 radio buttons are on right hand In "Visualization settings" panel
+15. If Task which model you selected is FBA and done these buttons are active.
+16. Select this radio which you want.
+
+Save/Resave:
+17. In panel "validate/Save/Delete Vis" in text field near "visualization's name"
+label write name of visualization
+18. Click "Save to database" or "Erase old and Save" for saving.
+atabase" lub "Erase old and Save" aby zapisać.
+
+Visualization validate / clear visualization:
+19. In panel "validate/Save/Delete Vis" click "Validate visualization" button for
+validation. If visualization is not valid hints, how to make it valid, will emerge.
+20. Click "Clear Visualization" button if you want to remove visualziation from 
+ drawing panel - clear it.
+
+Load/ Remove visualizations from Acorn web system:
+[You can load visualizations which are connected to model you chose or its descendants]
+21. In panel "validate/Save/Delete Vis" on right hand from drop down list select visualization name.
+22. Click "Load Visualization" Button if you want to edit visualization
+23. Click "Delete Visualization" if you want to delete it from Acorn web system
+
+Generate reactants/products source/target reactions
+24. Right click on named node. Menu emerges.
+25. Click "Add source nodes" for generating reactants (for reaction) or source reactions
+ (for species)
+26. Click "Add target nodes" for generating products (for reaction) or target reactions
+ (for species)
+
+Multi move nodes
+27. Select nodes you want to move (by holding left mouse button).
+28. Catch one of selected nodes and move it. Other nodes also move.
+
+Useful hints:
+I. How to creat visualization:
+    1. Draw transitions and places
+    2. Connect them
+    3. Name them
+It prevents of drawing not valid visualization.(if you connect place with transition,
+then you start to name them, VAApp will know how to proper name place and transition)
+
+II. If mouse arrow doesn't move for a while tooltips emerge. They help to use VAApp.

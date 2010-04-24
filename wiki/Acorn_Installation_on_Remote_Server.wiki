@@ -1,14 +1,14 @@
-#summary This wiki page describe how to install and configure Acorn System on remote server.
+#summary This wiki page describes how to install and configure Acorn on a remote server.
 #labels Phase-Deploy
 
 = Introduction =
-This description assumes that remote server has installed Linux OS. Acorn can use any relational database with JDBC drivers. Here is described installation with MySQL DBMS.
+This description assumes that the remote server is running Linux. Although Acorn can use any relational database with JDBC drivers, here we provide instructions for MySQL DBMS.
 
-= Description of installation and configuration process =
-For running Acorn follow these steps:
-  * Download the NetBeans IDE in version Java 6.7 from [http://netbeans.org/downloads/] website and install it on Your computer.
-  * Run NetBeans IDE, select ''Team'' item in upper menu, then ''Subversion'' and ''Checkout''. Fill "Repository URL" field with url: https://a-c-o-r-n.googlecode.com/svn. Fill "User" and "Password" fields with your username and password to repository. Click "Next" and fill "Local Folder" field with path to place where source of project will be downloaded. In "Repository Folder(s)" select "Browse", then expand "Trunk" node, hold *Ctrl* key and select all projects situated under "Trunk" node. Select "OK" and "Finish". Open all projects after download.
-  * Install MySQL DBMS on remote server writing in console window:
+= Installation and configuration process =
+For deploying Acorn follow these steps:
+  * Download the NetBeans IDE Java 6.7.1 from [http://netbeans.org/downloads/6.7.1/index.html] and install it on Your computer.
+  * Run NetBeans IDE, select ''Team'' from the upper menu, then ''Subversion'' and ''Checkout''. Fill "Repository URL" field with url: http://a-c-o-r-n.googlecode.com/svn/trunk/. Leave the "User" and "Password" fields empty. Click "Next" and fill "Local Folder" field with path to the place where source of project will be downloaded. In "Repository Folder(s)" select "Browse", then expand "Trunk" node, hold *Ctrl* key and select all projects situated under "Trunk" node. Select "OK" and "Finish". Open all projects after download.
+  * Install MySQL DBMS on the remote server by writing in the console window:
  {{{
  $ yum install mysql-server-5.3
  }}}
@@ -39,16 +39,16 @@ For running Acorn follow these steps:
  $ CREATE DATABASE acorn-db;
  }}}
  If something is not clear, You can find help on MySQL website http://dev.mysql.com/
- * Install GlassFish application server on remote server. Recomended directory is _/usr/local_. Put proper MySQL driver in _lib_ and _domains/domain1/lib_ subdirectories of installation folder. Name of driver should be as follows:
+ * Install GlassFish application server on the remote server. Recommended directory is _/usr/local_. Put proper MySQL driver in _lib_ and _domains/domain1/lib_ subdirectories of installation folder. Name of driver should be as follows:
  {{{
  mysql-connector-java-*.*.*-bin.jar ,
  }}}
- where stars mean version of driver which depands on version of GlassFish. Run command:
+ where * should be substituted by the version of the driver. Run:
  {{{
  $ sudo apt-get install libmysql-java
  }}}
- in console window. It will install more libraries usefull for GlassFish server.
- * Create following directory structure on remote server:
+ in console window. It will install more libraries needed by the GlassFish server to communicate with MySQL.
+ * Create following directory structure:
  {{{
   /usr/local
         |_ acorn
@@ -58,12 +58,12 @@ For running Acorn follow these steps:
                      |_lib
  }}}
  Copy libraries used by acorn-worker and acorn-db library to _acorn-worker/lib_ directory.  Copy sources of Amkfba project to _amkfba_ directory.
- * Enter _/usr/local/acorn/amkfba_ directory.To compile Amkfba project run:
+ * Enter _/usr/local/acorn/amkfba_ directory. To compile Amkfba project run:
  {{{
  $ make clean
  $ make
  }}}
- * Download sources of GraphViz for Linux OS from http://www.graphviz.org and install on remote server. Add path to _bin_ directory of GraphViz to PATH variable.
+ * Download sources of GraphViz for Linux from http://www.graphviz.org and install on the remote server. Add path to _bin_ directory of GraphViz to PATH variable.
  * Open "Files" window (*Ctrl+2*) in NetBeans IDE. Open and edit "local-individuals.properties" file. Write proper values for variables:
     *"local-root-name" - name of folder where projects were downloaded
     *"server-name" - name of remote server
@@ -79,7 +79,7 @@ For running Acorn follow these steps:
  {{{
  $ crontab -e
  }}}
- This command allows You to edit cron table with commands which cron demon runs periodically. Add this line to table:
+ which allows to edit cron table with commands to be run periodically. Add this line to table:
  {{{
  0 5 * * 1 /home/your_username/acorn_meintenance.sh
  }}}

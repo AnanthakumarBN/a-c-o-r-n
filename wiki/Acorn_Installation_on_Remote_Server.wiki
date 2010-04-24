@@ -43,7 +43,7 @@ For deploying Acorn follow these steps:
  {{{
  mysql-connector-java-*.*.*-bin.jar ,
  }}}
- where * should be substituted by the version of the driver. Run:
+ where stars should be substituted by the version of the driver. Run:
  {{{
  $ sudo apt-get install libmysql-java
  }}}

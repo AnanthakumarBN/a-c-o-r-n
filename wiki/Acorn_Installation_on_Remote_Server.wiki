@@ -58,7 +58,7 @@ For deploying Acorn follow these steps:
                      |_lib
  }}}
  Copy libraries used by acorn-worker and acorn-db library to _acorn-worker/lib_ directory.  Copy sources of Amkfba project to _amkfba_ directory.
- * Chenge directory to_/usr/local/acorn/amkfba_. To compile Amkfba project run:
+ * Depending on your servers architecture You may have to recompile the part of the system that does linear programming optimisation and for speed is written in C/C++. I this is necessary change directory to_/usr/local/acorn/amkfba_. And run:
  {{{
  $ make clean
  $ make

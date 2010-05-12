@@ -42,7 +42,8 @@ For deploying Acorn follow these steps:
  * Install Sun GlassFish Enterprise Server v2.1.1 (GlassFish V2.1.1) on the remote server. Recommended directory is _/usr/local_. Download proper MySQL connector for JDBC from http://dev.mysql.com/downloads/connector/j/. Name of driver should be as follows:
  {{{
  mysql-connector-java-5.1.12-bin.jar
- }}}. Put it in _lib_ and _domains/domain1/lib_ subdirectories of installation folder.
+ }}}. 
+Put it in _lib_ and _domains/domain1/lib_ subdirectories of installation folder.
  Run:
  {{{
  $ sudo apt-get install libmysql-java

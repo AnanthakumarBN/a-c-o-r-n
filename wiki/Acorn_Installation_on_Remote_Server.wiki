@@ -76,11 +76,11 @@ For deploying Acorn follow these steps:
  * Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", "server-web-deploy-all". Your web browser should open logging page of Acorn Project.
  * Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", "server-worker-run-all".
  * Expand "acorn-ant" node, click right mouse button on "build.xml", next choose "Run Target", next "Other Targets" and "vaapp-run-all-on-sysbio-server".
- * Copy files "backup_bazy.sh", "run_acorn_worker.sh", "acorn_meintenance.sh" from acorn-ant project to Your home folder on the remote server and run in console window:
+ * Copy files "db_backup.sh", "run_acorn_worker.sh", "acorn_meintenance.sh" from acorn-ant project to some folder on the remote server. Change values of variables used in these scripts. Run in console window:
  {{{
  $ crontab -e
  }}}
  which allows to edit cron table with commands to be run periodically. Add this line to table:
  {{{
- 0 5 * * 1 /home/your_username/acorn_meintenance.sh
+ 0 5 * * 1 /path_to_folder_where_scripts_were_copied/acorn_meintenance.sh
  }}}

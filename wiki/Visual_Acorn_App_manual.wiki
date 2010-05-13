@@ -33,10 +33,10 @@ For running VAApp do:
  * Choose "Add place" or "Add transition".
 
 ==Adding arrow to Place and Transition==
- * Hold "CTRL" key, click left mouse button on Node (where arrow will be stared).
- * Hold "CTRL" key and mouse button
+ * Hold *CTRL* key, click left mouse button on Node (where arrow will be stared).
+ * Hold *CTRL* key and mouse button
  * Take mouse arrow to the Node which you want to connect.
- * Let loose "CTRL" key and mouse button.
+ * Let loose *CTRL* key and mouse button.
 
 ==Removing arrow==
  * Click on arrow.

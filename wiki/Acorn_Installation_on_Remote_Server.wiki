@@ -81,13 +81,13 @@ For deploying Acorn follow these steps:
    * _where_ -- directory where weekly backup of database will be stored
    * _root_user_ -- MySql root username
    * _root_pass_ -- password for MySql root
-   * _db_user_ --
-   * _db_pass_ --
-   * _iiop_port_ --
-   * _logFile_ --
-   * _amkfbaPath_ --
-   * _jarfile_ --
-   * _path_to_jdk_ --
+   * _db_user_ -- MySql username
+   * _db_pass_ -- MySql password
+   * _iiop_port_ -- number of iiop port
+   * _logFile_ -- directory where Acorn Worker will store log files
+   * _amkfbaPath_ -- path to Amkfba directory with compiled sources
+   * _jarfile_ -- path to worker jarfile
+   * _path_to_jdk_ -- path to installation folder of jdk
  Run in console window:
  {{{
  $ crontab -e

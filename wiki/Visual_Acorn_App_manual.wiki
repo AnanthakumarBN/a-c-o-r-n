@@ -88,7 +88,7 @@ OR:
     # Draw transitions and places
     # Connect them
     # Name them
-It prevents for drawing not valid visualization.(if you connect place with transition,
+It prevents from drawing invalid visualization.(if you connect place with transition,
 then you start to name them, VAApp will know how to proper name place and transition)
 
  * If mouse arrow doesn't move for a while tooltips emerge. They help to use VAApp.

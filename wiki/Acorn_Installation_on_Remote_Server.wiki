@@ -79,8 +79,15 @@ For deploying Acorn follow these steps:
  * Copy files "db_backup.sh", "run_acorn_worker.sh", "acorn_meintenance.sh" from acorn-ant project to some folder on the remote server. Change values of variables used in these scripts:
    * _gf_dir_ -- directory to GlassFish instalation folder
    * _where_ -- directory where weekly backup of database will be stored
-   * _user_ -- MySql username
-   * _pass_ -- password for MySql username
+   * _root_user_ -- MySql root username
+   * _root_pass_ -- password for MySql root
+   * _db_user_ --
+   * _db_pass_ --
+   * _iiop_port_ --
+   * _logFile_ --
+   * _amkfbaPath_ --
+   * _jarfile_ --
+   * _path_to_jdk_ --
  Run in console window:
  {{{
  $ crontab -e

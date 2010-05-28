@@ -9,8 +9,16 @@
 #include<utility>
 #include<string>
 #include<vector>
+#include"GeneExpression.h"
+
 using std::pair;
 using std::vector;
+
+const char* kUpperBoundParameterId = "UPPER_BOUND";
+const char* kLowerBoundParameterId = "LOWER_BOUND";
+const double kUpperBoundUnlimited = 999999.0;
+const double kLowerBoundUnlimited = -999999.0;
+const double kBoundEpsilon = 1e-8;
 
 MetabolicSimulation::MetabolicSimulation() : linear_problem(NULL),
     model(NULL), internal_metabolites_count(0) { }
@@ -35,7 +43,7 @@ void MetabolicSimulation::findInternalMetabolites() {
     internal_metabolites_count = species_count;
 }
 
-void MetabolicSimulation::addStoichiometry(int column,
+void MetabolicSimulation::getStoichiometryData(int column,
         const ListOfSpeciesReferences& species, double scale,
         vector<pair<int, double > >* stoichiometry_data) {
     for (unsigned i = 0; i < species.size(); i++) {
@@ -67,8 +75,12 @@ void MetabolicSimulation::setColumnBounds(int column,
             lower_bound = parameters.get(i) -> getValue();
     }
 
-    glp_set_col_bnds(linear_problem, column+1, GLP_DB, lower_bound,
-            upper_bound);
+    if (upper_bound - lower_bound < kBoundEpsilon)
+        glp_set_col_bnds(linear_problem, column+1, GLP_FX,
+                lower_bound, lower_bound);
+    else
+        glp_set_col_bnds(linear_problem, column+1, GLP_DB,
+                lower_bound, upper_bound);
 }
 
 void MetabolicSimulation::setColumnValues(int column,
@@ -86,6 +98,9 @@ void MetabolicSimulation::setColumnValues(int column,
         value[i+1] = stoichiometry_data[i].second;
     }
     glp_set_mat_col(linear_problem, column+1, len, row_number, value);
+
+    delete [] row_number;
+    delete [] value;
 }
 
 void MetabolicSimulation::buildColumns() {
@@ -95,9 +110,9 @@ void MetabolicSimulation::buildColumns() {
         const Reaction& reaction = *reactions.get(column);
         vector<pair<int, double> > stoichiometry;
 
-        addStoichiometry(column, *reaction.getListOfReactants(), -1.0,
+        getStoichiometryData(column, *reaction.getListOfReactants(), -1.0,
                 &stoichiometry);
-        addStoichiometry(column, *reaction.getListOfProducts(), 1.0,
+        getStoichiometryData(column, *reaction.getListOfProducts(), 1.0,
                 &stoichiometry);
 
         setColumnValues(column, stoichiometry);
@@ -114,67 +129,134 @@ void MetabolicSimulation::boundRows() {
 }
 
 bool MetabolicSimulation::validateReactionBounds(const Reaction& reaction) {
-    if (!reaction.isSetKineticLaw())
+    if (!reaction.isSetKineticLaw()) {
+        model_errors.push_back("Reaction '" + reaction.getId() +
+                "' has no kinetic law");
         return false;
+    }
 
     const ListOfParameters& parameters = *reaction.getKineticLaw()->
         getListOfParameters();
 
-    bool is_upper_boun_set = false, is_lower_bound_set = false;
+    bool is_upper_bound_set = false, is_lower_bound_set = false;
 
     for (unsigned i = 0; i < parameters.size(); i++) {
         if (parameters.get(i)->getId() == kUpperBoundParameterId)
-            is_upper_boun_set = true;
+            is_upper_bound_set = true;
         if (parameters.get(i)->getId() == kLowerBoundParameterId)
             is_lower_bound_set = true;
     }
-    return is_upper_boun_set && is_lower_bound_set;
+
+    if (!is_upper_bound_set)
+        model_errors.push_back("No upper bound set for reaction '" +
+                reaction.getId() + "'");
+    if (!is_lower_bound_set)
+        model_errors.push_back("No lower bound set for reaction '" +
+                reaction.getId() + "'");
+
+    return is_upper_bound_set && is_lower_bound_set;
 }
 
 bool MetabolicSimulation::validateSpeciesReferences(
         const ListOfSpeciesReferences& species) {
+    bool ret = true;
     for (unsigned i = 0; i < species.size(); i++) {
         const SpeciesReference& species_reference =
             *reinterpret_cast<const SpeciesReference*>(species.get(i));
 
-        if (!species_reference.isSetSpecies())
-            return false;
+        if (!species_reference.isSetSpecies()) {
+            model_errors.push_back(
+                    "Species reference has no 'species' attribute");
+            ret = false;
+        }
     }
-    return true;
+    return ret;
 }
 
-bool MetabolicSimulation::validateModel(const Model* mod) {
-    for (unsigned i = 0; i < mod->getNumSpecies(); i++) {
-        if (!mod->getSpecies(i)->isSetId())
-            return false;
+bool MetabolicSimulation::validateModel() {
+    bool ret = true;
+    for (unsigned i = 0; i < model->getNumSpecies(); i++) {
+        if (!model->getSpecies(i)->isSetId()) {
+            model_errors.push_back("Species has no id");
+            ret = false;
+        }
     }
 
-    for (unsigned i = 0; i < mod->getNumReactions(); i++) {
-        const Reaction& reaction = *mod->getReaction(i);
+    for (unsigned i = 0; i < model->getNumReactions(); i++) {
+        const Reaction& reaction = *model->getReaction(i);
 
-        if (!validateReactionBounds(reaction) || !reaction.isSetId())
-            return false;
+        if (!validateReactionBounds(reaction))
+            ret = false;
+
+        if (!reaction.isSetId()) {
+            model_errors.push_back("Reaction has no id");
+            ret = false;
+        }
 
         if (!validateSpeciesReferences(*reaction.getListOfReactants()) ||
                 !validateSpeciesReferences(*reaction.getListOfProducts())) {
-            return false;
+            ret = false;
         }
     }
-    return true;
+    return ret;
 }
 
-void MetabolicSimulation::loadModel(const Model* mod) {
-    // TODO(me) check if not init'ed earlier
+GeneExpression MetabolicSimulation::getGeneExpressionFromNotes(
+        const XMLNode& notes) {
+    GeneExpression gexp;
+    for (unsigned j = 0; j < notes.getNumChildren(); j++) {
+        const XMLNode& note = notes.getChild(j);
+        if (note.getNumChildren() == 1) {
+            const string& note_string = note.getChild(0).toXMLString();
+            if (gexp.looksLikeGeneExpression(note_string)) {
+                gexp.loadExpression(note_string);
+                break;
+            }
+        }
+    }
+    return gexp;
+}
+
+void MetabolicSimulation::getGenes() {
+    for (unsigned i = 0; i < model->getNumReactions(); i++) {
+        GeneExpression gexp;
+        Reaction& reaction = *model->getReaction(i);
+        if (reaction.isSetNotes()) {
+            gexp = getGeneExpressionFromNotes(*reaction.getNotes());
+        }
+        genes.push_back(gexp);
+
+        gexp.getAllGenes(&all_genes);
+    }
+}
+
+bool MetabolicSimulation::loadModel(const Model* mod) {
+    assert(linear_problem == NULL);
+    assert(model == NULL);
+
     linear_problem = glp_create_prob();
 
     model = mod->clone();
+    printf("%s", model->toSBML());
+
+    if (!validateModel())
+    {
+        printf("%s\n", model_errors[0].c_str());
+        return false;
+    }
     findInternalMetabolites();
 
     glp_add_cols(linear_problem, model->getNumReactions());
     glp_add_rows(linear_problem, internal_metabolites_count);
 
+    printf("%d %d\n", model->getNumReactions(), internal_metabolites_count);
+
     boundRows();
     buildColumns();
+
+    getGenes();
+
+    return true;
 }
 
 void MetabolicSimulation::setObjectiveReaction(const string& rid) {
@@ -210,6 +292,7 @@ void MetabolicSimulation::setObjectiveSpecies(const string& sid) {
 
 bool MetabolicSimulation::setObjective(const string& objective) {
     assert(model != NULL);
+    assert(linear_problem != NULL);
 
     if (model->getReaction(objective) != NULL)
         setObjectiveReaction(objective);
@@ -222,12 +305,46 @@ bool MetabolicSimulation::setObjective(const string& objective) {
 }
 
 void MetabolicSimulation::runSimulation() {
+    assert(linear_problem != NULL);
+
     glp_set_obj_dir(linear_problem, GLP_MAX);
     if (glp_simplex(linear_problem, NULL) != 0)
         assert(false);  // TODO(me)
 }
 
 double MetabolicSimulation::getObjectiveFunctionValue() {
+    assert(linear_problem);
     return glp_get_obj_val(linear_problem);
 }
 
+
+void MetabolicSimulation::disableReaction(unsigned rnum) {
+    assert(rnum < model->getNumReactions());
+
+    glp_set_col_bnds(linear_problem, rnum+1, GLP_FX, 0.0, 0.0);
+}
+
+bool MetabolicSimulation::disableReaction(const string& reaction_id) {
+    for (unsigned i = 0; i < model->getNumReactions(); i++) {
+        if (model->getReaction(i)->getId() == reaction_id) {
+            disableReaction(i);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool MetabolicSimulation::disableGene(const string& gene) {
+    if (all_genes.find(gene) == all_genes.end())
+       return false;
+
+    disabled_genes.insert(gene);
+    for (unsigned i = 0; i < model->getNumReactions(); i++) {
+        if (!genes[i].evaluate(disabled_genes)) {
+            disableReaction(i);
+            return true;
+        }
+    }
+
+    return true;
+}

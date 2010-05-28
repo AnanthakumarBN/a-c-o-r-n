@@ -28,7 +28,7 @@ class StringTokenizer {
     string currentToken();
     void nextToken();
     void moveToFirstToken();
-    bool tokensRemaining();
+    bool hasRemainingTokens();
     void parse(const string& str);
 };
 
@@ -49,6 +49,7 @@ class GeneExpression {
     bool looksLikeGeneExpression(const string& expr);
     bool evaluate(const set<string>& disabled_genes);
     bool loadExpression(const string& expr);
+    void getAllGenes(set<string>* genes);
 };
 
 #endif  // JWLFBA_GENEEXPRESSION_H_

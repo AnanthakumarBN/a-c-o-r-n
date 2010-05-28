@@ -1,4 +1,5 @@
 #include"MetabolicSimulation.h"
+#include"ModelBuilder.h"
 #include<sbml/SBMLTypes.h>
 #include<iostream>
 #include<cstdio>
@@ -6,7 +7,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    SBMLDocument* document = readSBML(argv[1]);
+/*    SBMLDocument* document = readSBML(argv[1]);
     unsigned int errors = document->getNumErrors();
 
     cout << endl;
@@ -14,12 +15,20 @@ int main(int argc, char* argv[])
     cout << "  error(s): " << errors  << endl;
     cout << endl;
 
-    if (errors > 0) document->printErrors(cerr);
+    if (errors > 0) document->printErrors(cerr);*/
+
+    ModelBuilder mb;
+    FileLineReader rd;
+    rd.loadFile(argv[1]);
+    Model* mod = mb.loadFromAmkfbaFile(&rd);
+
+    if (mod == NULL)
+        printf("%s\n", mb.getError().c_str());
 
     MetabolicSimulation ms;
 
-    ms.loadModel(document->getModel());
-    ms.setObjective("R_biomass_SC4_bal");
+    ms.loadModel(mod);
+    ms.setObjective("BIOMASS2");
     ms.runSimulation();
 
     printf("%lf\n", ms.getObjectiveFunctionValue());

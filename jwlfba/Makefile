@@ -1,7 +1,7 @@
 CPPFLAGS=-g
 LIBS=-lsbml -lglpk
 
-sources=MetabolicSimulation.cpp GeneExpression.cpp 
+sources=MetabolicSimulation.cpp GeneExpression.cpp ModelBuilder.cpp
 objects=$(sources:.cpp=.o)
 
 %.o: %.cpp %.h

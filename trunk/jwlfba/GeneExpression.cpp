@@ -14,32 +14,53 @@ using std::string;
 using std::stack;
 using std::vector;
 
-bool GeneExpression::loadExpression(const std::string& expr) {
+const char* kAndToken = "and";
+const char* kOrToken = "or";
+const char* kLeftBracket = "(";
+const char* kRightBracket = ")";
+
+void StringTokenizer::parse(const string& str) {
+    tokens.clear();
+
     string current;
-    for (unsigned i = 0; i < expr.size(); i++) {
-        if (isspace(expr[i]) && !current.empty()) {
+    for (unsigned i = 0; i < str.size(); i++) {
+        if (isspace(str[i]) && !current.empty()) {
             tokens.push_back(current);
             current = "";
-        } else if (!isspace(expr[i])) {
-            current += expr[i];
+        } else if (!isspace(str[i])) {
+            current += str[i];
         }
     }
     if (!current.empty())
         tokens.push_back(current);
-
-    return transformToRPN();
 }
 
-void GeneExpression::nextToken() {
+StringTokenizer::StringTokenizer() : current_token_number(0) { }
+
+void StringTokenizer::nextToken() {
     current_token_number++;
 }
 
-void GeneExpression::moveToFirstToken() {
+void StringTokenizer::moveToFirstToken() {
     current_token_number = 0;
 }
 
-bool GeneExpression::tokensRemaining() {
-return current_token_number < tokens.size();
+bool StringTokenizer::tokensRemaining() {
+    return current_token_number < tokens.size();
+}
+
+string StringTokenizer::currentToken() {
+    if (current_token_number < tokens.size())
+        return tokens[current_token_number];
+    else
+        return "";
+}
+
+bool GeneExpression::loadExpression(const string& expr) {
+    StringTokenizer tokenizer;
+    tokenizer.parse(expr);
+    rpn_expression.clear();
+    return transformToRPN(&tokenizer);
 }
 
 bool GeneExpression::isGeneName(const string& gene) {
@@ -51,51 +72,52 @@ bool GeneExpression::isOperatorToken(const string& token) {
     return token == kAndToken || token == kOrToken;
 }
 
-bool GeneExpression::transformExpressionToRPN(string expected_operator) {
-    if (currentToken() == kLeftBracket) {
-        nextToken();
-        if (!transformExpressionToRPN("") || currentToken() != kRightBracket)
+bool GeneExpression::transformExpressionToRPN(StringTokenizer* tokenizer,
+        string expected_operator) {
+    if (tokenizer->currentToken() == kLeftBracket) {
+        tokenizer->nextToken();
+        if (!transformExpressionToRPN(tokenizer, "")
+                || tokenizer->currentToken() != kRightBracket) {
             return false;
-        nextToken();
-    } else if (isGeneName(currentToken())) {
-        rpn_expression.push_back(currentToken());
-        nextToken();
+        }
+        tokenizer->nextToken();
+    } else if (isGeneName(tokenizer->currentToken())) {
+        rpn_expression.push_back(tokenizer->currentToken());
+        tokenizer->nextToken();
+    } else {
+        return false;
     }
 
-    if (!tokensRemaining() || currentToken() == kRightBracket)
+    if (!tokenizer->tokensRemaining() ||
+            tokenizer->currentToken() == kRightBracket)
        return true;
 
-    if (expected_operator.empty() && currentToken() != expected_operator)
+    if (!isOperatorToken(tokenizer->currentToken()))
+        return false;
+
+    if (!expected_operator.empty() &&
+            tokenizer->currentToken() != expected_operator)
         return false;
     else
-        expected_operator = currentToken();
+        expected_operator = tokenizer->currentToken();
 
-    nextToken();
+    tokenizer->nextToken();
 
-    if (!transformExpressionToRPN(expected_operator))
+    if (!transformExpressionToRPN(tokenizer, expected_operator))
         return false;
 
     rpn_expression.push_back(expected_operator);
-    nextToken();
-
     return true;
 }
 
-bool GeneExpression::transformToRPN() {
-    moveToFirstToken();
+bool GeneExpression::transformToRPN(StringTokenizer* tokenizer) {
+    tokenizer->moveToFirstToken();
 
-    if (!tokensRemaining())
+    if (!tokenizer->tokensRemaining())
         return true;
-    if (!transformExpressionToRPN(""))
+    if (!transformExpressionToRPN(tokenizer, ""))
         return false;
-    return !tokensRemaining();
-}
-
-string GeneExpression::currentToken() {
-    if (current_token_number < tokens.size())
-        return tokens[current_token_number];
-    else
-        return "";
+    return !tokenizer->tokensRemaining();
 }
 
 bool GeneExpression::geneValue(const string& gene,
@@ -114,6 +136,9 @@ bool GeneExpression::evaluate(bool val1, const string& oper, bool val2) {
 
 bool GeneExpression::evaluate(const set<string>& disabledGenes) {
     stack<bool> rpn_stack;
+
+    if (rpn_expression.empty())
+        return true;
 
     for (unsigned i = 0; i < rpn_expression.size(); i++) {
         if (isOperatorToken(rpn_expression[i])) {

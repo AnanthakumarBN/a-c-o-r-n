@@ -14,21 +14,27 @@ using std::vector;
 using std::set;
 using std::string;
 
-const char* kAndToken = "and";
-const char* kOrToken = "or";
-const char* kLeftBracket = "(";
-const char* kRightBracket = ")";
+extern const char* kAndToken;
+extern const char* kOrToken;
+extern const char* kLeftBracket;
+extern const char* kRightBracket;
 
-class GeneExpression {
+class StringTokenizer {
  private:
     vector<string> tokens;
-    vector<string> rpn_expression;
     unsigned current_token_number;
-
+ public:
+    StringTokenizer();
     string currentToken();
     void nextToken();
     void moveToFirstToken();
     bool tokensRemaining();
+    void parse(const string& str);
+};
+
+class GeneExpression {
+ private:
+    vector<string> rpn_expression;
 
     bool isGeneName(const string& gene);
     bool isOperatorToken(const string& token);
@@ -36,8 +42,9 @@ class GeneExpression {
     bool evaluateExpression();
     bool geneValue(const string& token, const set<string>& disabled_genes);
     bool evaluate(bool val1, const string& oper, bool val2);
-    bool transformToRPN();
-    bool transformExpressionToRPN(string expected_operator);
+    bool transformToRPN(StringTokenizer* tokenizer);
+    bool transformExpressionToRPN(StringTokenizer* tokenizer,
+            string expected_operator);
  public:
     bool looksLikeGeneExpression(const string& expr);
     bool evaluate(const set<string>& disabled_genes);

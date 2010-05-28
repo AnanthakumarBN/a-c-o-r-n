@@ -113,16 +113,66 @@ void MetabolicSimulation::boundRows() {
         glp_set_row_bnds(linear_problem, row+1, GLP_FX, 0.0, 0.0);
 }
 
+bool MetabolicSimulation::validateReactionBounds(const Reaction& reaction) {
+    if (!reaction.isSetKineticLaw())
+        return false;
+
+    const ListOfParameters& parameters = *reaction.getKineticLaw()->
+        getListOfParameters();
+
+    bool is_upper_boun_set = false, is_lower_bound_set = false;
+
+    for (unsigned i = 0; i < parameters.size(); i++) {
+        if (parameters.get(i)->getId() == kUpperBoundParameterId)
+            is_upper_boun_set = true;
+        if (parameters.get(i)->getId() == kLowerBoundParameterId)
+            is_lower_bound_set = true;
+    }
+    return is_upper_boun_set && is_lower_bound_set;
+}
+
+bool MetabolicSimulation::validateSpeciesReferences(
+        const ListOfSpeciesReferences& species) {
+    for (unsigned i = 0; i < species.size(); i++) {
+        const SpeciesReference& species_reference =
+            *reinterpret_cast<const SpeciesReference*>(species.get(i));
+
+        if (!species_reference.isSetSpecies())
+            return false;
+    }
+    return true;
+}
+
+bool MetabolicSimulation::validateModel(const Model* mod) {
+    for (unsigned i = 0; i < mod->getNumSpecies(); i++) {
+        if (!mod->getSpecies(i)->isSetId())
+            return false;
+    }
+
+    for (unsigned i = 0; i < mod->getNumReactions(); i++) {
+        const Reaction& reaction = *mod->getReaction(i);
+
+        if (!validateReactionBounds(reaction) || !reaction.isSetId())
+            return false;
+
+        if (!validateSpeciesReferences(*reaction.getListOfReactants()) ||
+                !validateSpeciesReferences(*reaction.getListOfProducts())) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void MetabolicSimulation::loadModel(const Model* mod) {
     // TODO(me) check if not init'ed earlier
     linear_problem = glp_create_prob();
 
     model = mod->clone();
-
     findInternalMetabolites();
 
     glp_add_cols(linear_problem, model->getNumReactions());
     glp_add_rows(linear_problem, internal_metabolites_count);
+
     boundRows();
     buildColumns();
 }
@@ -174,7 +224,7 @@ bool MetabolicSimulation::setObjective(const string& objective) {
 void MetabolicSimulation::runSimulation() {
     glp_set_obj_dir(linear_problem, GLP_MAX);
     if (glp_simplex(linear_problem, NULL) != 0)
-        assert(false);
+        assert(false);  // TODO(me)
 }
 
 double MetabolicSimulation::getObjectiveFunctionValue() {

@@ -40,7 +40,9 @@ class MetabolicSimulation {
     void buildColumns();
     void boundRows();
 
-    void validateModel();
+    bool validateReactionBounds(const Reaction& reaction);
+    bool validateSpeciesReferences(const ListOfSpeciesReferences& species);
+    bool validateModel(const Model* mod);
     void setObjectiveReaction(const string& objective);
     void setObjectiveSpecies(const string& objective);
     void setObjectiveForColumn(const string& sid, int column,

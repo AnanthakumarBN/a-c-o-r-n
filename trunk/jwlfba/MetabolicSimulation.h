@@ -7,32 +7,44 @@
 
 #include<glpk/glpk.h>
 #include<map>
+#include<set>
 #include<string>
 #include<vector>
 
 using std::string;
+using std::set;
 using std::map;
 using std::pair;
 using std::vector;
 
-const char kUpperBoundParameterId[] = "UPPER_BOUND";
-const char kLowerBoundParameterId[] = "LOWER_BOUND";
-const double kUpperBoundUnlimited = 999999.0;
-const double kLowerBoundUnlimited = -999999.0;
+extern const char* kUpperBoundParameterId;
+extern const char* kLowerBoundParameterId;
+extern const double kUpperBoundUnlimited;
+extern const double kLowerBoundUnlimited;
+extern const double kBoundEpsilon;
 
 class Model;
 class Reaction;
 class ListOfSpeciesReferences;
+class GeneExpression;
+class XMLNode;
 
 class MetabolicSimulation {
  private:
     glp_prob* linear_problem;
     Model* model;
     map<string, int> species_row;
-    int internal_metabolites_count;
 
-    void addStoichiometry(int column, const ListOfSpeciesReferences& species,
-            double scale, vector<pair<int, double> >* stoichiometry_data);
+    set<string> all_genes;
+    set<string> disabled_genes;
+    vector<GeneExpression> genes;
+
+    int internal_metabolites_count;
+    vector<string> model_errors;
+
+    void getStoichiometryData(int column,
+            const ListOfSpeciesReferences& species, double scale,
+            vector<pair<int, double> >* stoichiometry_data);
     void setColumnValues(int column,
             const vector<pair<int, double> >& stoichiometry_data);
     void setColumnBounds(int column, const Reaction& reaction);
@@ -40,21 +52,25 @@ class MetabolicSimulation {
     void buildColumns();
     void boundRows();
 
+    GeneExpression getGeneExpressionFromNotes(const XMLNode& notes);
+    void getGenes();
+
     bool validateReactionBounds(const Reaction& reaction);
     bool validateSpeciesReferences(const ListOfSpeciesReferences& species);
-    bool validateModel(const Model* mod);
+    bool validateModel();
     void setObjectiveReaction(const string& objective);
     void setObjectiveSpecies(const string& objective);
     void setObjectiveForColumn(const string& sid, int column,
             const ListOfSpeciesReferences& species, double scale);
+    void disableReaction(unsigned rnum);
  public:
     MetabolicSimulation();
     ~MetabolicSimulation();
 
-    void loadModel(const Model* model);
+    bool loadModel(const Model* model);
 
-    void disableReaction(const string& reaction_id);
-    void disableGene(const string& gene_id);
+    bool disableReaction(const string& reaction_id);
+    bool disableGene(const string& gene_id);
     bool setObjective(const string& objective);
 
     void runSimulation();

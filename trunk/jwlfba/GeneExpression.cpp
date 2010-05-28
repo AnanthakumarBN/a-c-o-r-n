@@ -18,6 +18,7 @@ const char* kAndToken = "and";
 const char* kOrToken = "or";
 const char* kLeftBracket = "(";
 const char* kRightBracket = ")";
+const char* kGeneExpressionPrefix = "GENE_EXPRESSION:";
 
 void StringTokenizer::parse(const string& str) {
     tokens.clear();
@@ -45,7 +46,7 @@ void StringTokenizer::moveToFirstToken() {
     current_token_number = 0;
 }
 
-bool StringTokenizer::tokensRemaining() {
+bool StringTokenizer::hasRemainingTokens() {
     return current_token_number < tokens.size();
 }
 
@@ -56,9 +57,22 @@ string StringTokenizer::currentToken() {
         return "";
 }
 
+bool GeneExpression::looksLikeGeneExpression(const string& expr) {
+    if (expr.empty())
+        return false;
+
+    return expr.compare(0, sizeof(kGeneExpressionPrefix),
+            kGeneExpressionPrefix) == 0;
+}
+
 bool GeneExpression::loadExpression(const string& expr) {
     StringTokenizer tokenizer;
     tokenizer.parse(expr);
+
+    if (tokenizer.currentToken() != kGeneExpressionPrefix)
+       return false;
+
+    tokenizer.nextToken();
     rpn_expression.clear();
     return transformToRPN(&tokenizer);
 }
@@ -88,7 +102,7 @@ bool GeneExpression::transformExpressionToRPN(StringTokenizer* tokenizer,
         return false;
     }
 
-    if (!tokenizer->tokensRemaining() ||
+    if (!tokenizer->hasRemainingTokens() ||
             tokenizer->currentToken() == kRightBracket)
        return true;
 
@@ -113,11 +127,11 @@ bool GeneExpression::transformExpressionToRPN(StringTokenizer* tokenizer,
 bool GeneExpression::transformToRPN(StringTokenizer* tokenizer) {
     tokenizer->moveToFirstToken();
 
-    if (!tokenizer->tokensRemaining())
+    if (!tokenizer->hasRemainingTokens())
         return true;
     if (!transformExpressionToRPN(tokenizer, ""))
         return false;
-    return !tokenizer->tokensRemaining();
+    return !tokenizer->hasRemainingTokens();
 }
 
 bool GeneExpression::geneValue(const string& gene,
@@ -157,4 +171,11 @@ bool GeneExpression::evaluate(const set<string>& disabledGenes) {
     }
     assert(rpn_stack.size() == 1);
     return rpn_stack.top();
+}
+
+void GeneExpression::getAllGenes(set<string>* genes) {
+    for (unsigned i = 0; i < rpn_expression.size(); i++) {
+        if (isGeneName(rpn_expression[i]))
+            genes->insert(rpn_expression[i]);
+    }
 }

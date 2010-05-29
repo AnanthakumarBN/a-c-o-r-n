@@ -27,18 +27,11 @@ int main(int argc, char* argv[])
 
     MetabolicSimulation ms;
 
-    ms.loadModel(mod);
-    ms.setObjective("BIOMASS2");
+    bool r1 = ms.loadModel(mod);
+    bool r2 = ms.setObjective("_R__biomass__SC4__bal");
+    //printf("%d %d\n", (int)r1, (int)r2);
     ms.runSimulation();
 
     printf("%lf\n", ms.getObjectiveFunctionValue());
 }
-
-/*
--1        1
--1        1
- 1  -1  
-       
-        -17
-*/
 

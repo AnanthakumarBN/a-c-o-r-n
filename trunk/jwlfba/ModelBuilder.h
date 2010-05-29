@@ -42,7 +42,16 @@ class ModelBuilder {
     string error;
     set<string> species;
 
-    string createValidSBMLId(const string& sid);
+    const static char* kReactantsProductsSeparator;
+    const static char* kReactionEndToken;
+    const static char* kSpeciesSeparator;
+    const static char* kBoundsStartToken;
+    const static char* kExternalMetaboliteSuffix;
+    const static char* kGenesBeginToken;
+    const static char* kGenesEndToken;
+    const static char* kAmkfbaAndToken;
+    const static char* kAmkfbaOrToken;
+
     void addSpecies(Model* model, const string& species);
     bool getDouble(StringTokenizer* st, double* val);
     bool getStoichiometry(StringTokenizer* st, double* coefficient,
@@ -51,7 +60,13 @@ class ModelBuilder {
     bool addProducts(Model* model, StringTokenizer* st);
     bool addBounds(Reaction* reaction, StringTokenizer* st);
     bool addReaction(Model* model, StringTokenizer* st);
+    bool addGenes(Reaction* reaction, StringTokenizer* st);
+    bool isValidSBMLDIdChar(char c);
+    string encodeChar(char c);
+    string createValidSBMLId(const string& sid);
  public:
+    static string decodeSBMLId(const string& id);
+    const static char* kCreatedFromAmkfbaFile;
     string getError() { return error; }
 
     Model* loadFromAmkfbaFile(LineReader* reader);

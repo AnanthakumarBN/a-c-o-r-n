@@ -237,19 +237,14 @@ bool MetabolicSimulation::loadModel(const Model* mod) {
     linear_problem = glp_create_prob();
 
     model = mod->clone();
-    printf("%s", model->toSBML());
 
     if (!validateModel())
-    {
-        printf("%s\n", model_errors[0].c_str());
         return false;
-    }
+
     findInternalMetabolites();
 
     glp_add_cols(linear_problem, model->getNumReactions());
     glp_add_rows(linear_problem, internal_metabolites_count);
-
-    printf("%d %d\n", model->getNumReactions(), internal_metabolites_count);
 
     boundRows();
     buildColumns();

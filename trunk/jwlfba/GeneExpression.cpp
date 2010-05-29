@@ -14,11 +14,11 @@ using std::string;
 using std::stack;
 using std::vector;
 
-const char* kAndToken = "and";
-const char* kOrToken = "or";
-const char* kLeftBracket = "(";
-const char* kRightBracket = ")";
-const char* kGeneExpressionPrefix = "GENE_EXPRESSION:";
+const char* GeneExpression::kAndToken = "and";
+const char* GeneExpression::kOrToken = "or";
+const char* GeneExpression::kLeftBracket = "(";
+const char* GeneExpression::kRightBracket = ")";
+const char* GeneExpression::kGeneExpressionPrefix = "GENE_ASSOCIATION:";
 
 void StringTokenizer::parse(const string& str) {
     tokens.clear();
@@ -62,7 +62,7 @@ bool GeneExpression::looksLikeGeneExpression(const string& expr) {
         return false;
 
     return expr.compare(0, sizeof(kGeneExpressionPrefix),
-            kGeneExpressionPrefix) == 0;
+            kGeneExpressionPrefix, sizeof(kGeneExpressionPrefix)) == 0;
 }
 
 bool GeneExpression::loadExpression(const string& expr) {

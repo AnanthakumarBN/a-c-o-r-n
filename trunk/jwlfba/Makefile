@@ -1,14 +1,14 @@
-CPPFLAGS=-g
+CPPFLAGS=-O2
 LIBS=-lsbml -lglpk
 
 sources=MetabolicSimulation.cpp GeneExpression.cpp ModelBuilder.cpp
 objects=$(sources:.cpp=.o)
 
 %.o: %.cpp %.h
-	g++ -Wall -c $< -o $@
+	g++ -Wall $(CPPFLAGS) -c $< -o $@
 
-jwlfba: $(objects)
-	g++ $(LIBS) $(CPPFLAGS) main.cpp $^ -o $@
+jwlfba: $(objects) main.cpp
+	g++ $(LIBS) $(CPPFLAGS) $^ -o $@
 
 TEST_LIBS=-lboost_unit_test_framework
 

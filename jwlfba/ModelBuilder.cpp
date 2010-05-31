@@ -3,8 +3,8 @@
  */
 
 #include"ModelBuilder.h"
-#include<string>
 #include<sbml/SBMLTypes.h>
+#include<string>
 #include"GeneExpression.h"
 #include"MetabolicSimulation.h"
 
@@ -33,12 +33,12 @@ void FileLineReader::fetchLine() {
     if (!next_line.empty())
         return;
 
-    while(!newline_reached && fgets(buf, kFileLineReaderBuffer, file)) {
+    while (!newline_reached && fgets(buf, kFileLineReaderBuffer, file)) {
         int len = strlen(buf);
         if (buf[len-1] == '\n') {
             buf[len-1] = '\0';
             newline_reached = true;
-        } 
+        }
         next_line += buf;
     }
 }
@@ -85,8 +85,7 @@ bool ModelBuilder::isValidSBMLDIdChar(char c) {
     return isalnum(c) || c == '_';
 }
 
-string ModelBuilder::encodeChar(char c)
-{
+string ModelBuilder::encodeChar(char c) {
     string ret = "_";
     ret += 'a' + c % 16;
     ret += 'a' + c / 16;
@@ -99,7 +98,7 @@ string ModelBuilder::createValidSBMLId(const string& sid) {
     for (unsigned i = 0; i < sid.size(); i++) {
         if (isValidSBMLDIdChar(sid[i]) && sid[i] != '_')
             ret += sid[i];
-        else if(sid[i] == '_')
+        else if (sid[i] == '_')
             ret += "__";
         else
             ret += encodeChar(sid[i]);
@@ -132,12 +131,11 @@ string ModelBuilder::decodeSBMLId(const string& id) {
 
 bool ModelBuilder::getStoichiometry(StringTokenizer* st, double* coefficient,
         string* species) {
-
     if (!getDouble(st, coefficient)) {
         error = "Bad coefficient";
         return false;
     }
-    
+
     if (!st->hasRemainingTokens())
         return false;
 
@@ -149,10 +147,10 @@ bool ModelBuilder::getStoichiometry(StringTokenizer* st, double* coefficient,
 void ModelBuilder::addSpecies(Model* model, const string& species_id) {
     if (species.find(species_id) != species.end())
         return;
-    
+
     Species* species = model->createSpecies();
     species->setId(species_id);
-    if (species_id.size() > 3 && 
+    if (species_id.size() > 3 &&
             species_id.substr(species_id.size() - 3) == "_xt") {
         species->setBoundaryCondition(true);
     }
@@ -171,12 +169,12 @@ bool ModelBuilder::addReactants(Model* model, StringTokenizer* st) {
         SpeciesReference* species_reference = model->createReactant();
         species_reference->setSpecies(species);
         species_reference->setStoichiometry(coefficient);
-        
+
         addSpecies(model, species);
-        
+
         if (st->currentToken() == kSpeciesSeparator)
             st->nextToken();
-    } while(st->currentToken() != kReactantsProductsSeparator);
+    } while (st->currentToken() != kReactantsProductsSeparator);
     st->nextToken();
     return true;
 }
@@ -197,7 +195,7 @@ bool ModelBuilder::addProducts(Model* model, StringTokenizer* st) {
 
         if (st->currentToken() == kSpeciesSeparator)
             st->nextToken();
-    } while(st->currentToken() != kReactionEndToken);
+    } while (st->currentToken() != kReactionEndToken);
     st->nextToken();
     return true;
 }
@@ -214,7 +212,7 @@ bool ModelBuilder::addBounds(Reaction* reaction, StringTokenizer* st) {
     Parameter* parameter = kinetic_law->createParameter();
     parameter->setId(kLowerBoundParameterId);
     parameter->setValue(lower_bound);
-    
+
     parameter = kinetic_law->createParameter();
     parameter->setId(kUpperBoundParameterId);
     parameter->setValue(upper_bound);
@@ -230,12 +228,12 @@ bool ModelBuilder::addGenes(Reaction* reaction, StringTokenizer* st) {
         return false;
     }
     st->nextToken();
-    
+
     while (st->hasRemainingTokens() && st->currentToken() != kGenesEndToken) {
         genes += ' ';
         if (st->currentToken() == kAmkfbaOrToken)
             genes += GeneExpression::kOrToken;
-        else if(st->currentToken() == kAmkfbaAndToken)
+        else if (st->currentToken() == kAmkfbaAndToken)
             genes += GeneExpression::kAndToken;
         else
             genes += st->currentToken();
@@ -248,7 +246,8 @@ bool ModelBuilder::addGenes(Reaction* reaction, StringTokenizer* st) {
         return false;
     }
 
-    XMLNode* ptr = XMLNode::convertStringToXMLNode(string("<p>") + genes + "</p>");
+    XMLNode* ptr = XMLNode::convertStringToXMLNode(string("<p>") +
+            genes + "</p>");
     reaction->setNotes(ptr);
 
     return true;
@@ -290,8 +289,8 @@ Model* ModelBuilder::loadFromAmkfbaFile(LineReader* reader) {
     Model* model = sbmlDoc->createModel();
 
     model->setNotes(kCreatedFromAmkfbaFile);
-    
-    while(reader->hasRemainingLines()) {
+
+    while (reader->hasRemainingLines()) {
         StringTokenizer st;
         string line = reader->readLine();
         st.parse(line);

@@ -14,11 +14,9 @@
 using std::pair;
 using std::vector;
 
-const char* kUpperBoundParameterId = "UPPER_BOUND";
-const char* kLowerBoundParameterId = "LOWER_BOUND";
-const double kUpperBoundUnlimited = 999999.0;
-const double kLowerBoundUnlimited = -999999.0;
-const double kBoundEpsilon = 1e-8;
+const char* MetabolicSimulation::kUpperBoundParameterId = "UPPER_BOUND";
+const char* MetabolicSimulation::kLowerBoundParameterId = "LOWER_BOUND";
+const double MetabolicSimulation::kBoundEpsilon = 1e-8;
 
 MetabolicSimulation::MetabolicSimulation() : linear_problem(NULL),
     model(NULL), internal_metabolites_count(0) { }
@@ -28,6 +26,14 @@ MetabolicSimulation::~MetabolicSimulation() {
         glp_delete_prob(linear_problem);
 
     delete model;
+}
+
+void MetabolicSimulation::addError(const string& error) {
+    model_errors.push_back(error);
+}
+
+const vector<string>& MetabolicSimulation::getErrors() {
+    return model_errors;
 }
 
 void MetabolicSimulation::findInternalMetabolites() {
@@ -43,8 +49,8 @@ void MetabolicSimulation::findInternalMetabolites() {
     internal_metabolites_count = species_count;
 }
 
-void MetabolicSimulation::getStoichiometryData(int column,
-        const ListOfSpeciesReferences& species, double scale,
+void MetabolicSimulation::getStoichiometryData(
+     const ListOfSpeciesReferences& species, double scale,
         vector<pair<int, double > >* stoichiometry_data) {
     for (unsigned i = 0; i < species.size(); i++) {
         const SpeciesReference& species_reference =
@@ -110,9 +116,9 @@ void MetabolicSimulation::buildColumns() {
         const Reaction& reaction = *reactions.get(column);
         vector<pair<int, double> > stoichiometry;
 
-        getStoichiometryData(column, *reaction.getListOfReactants(), -1.0,
+        getStoichiometryData(*reaction.getListOfReactants(), -1.0,
                 &stoichiometry);
-        getStoichiometryData(column, *reaction.getListOfProducts(), 1.0,
+        getStoichiometryData(*reaction.getListOfProducts(), 1.0,
                 &stoichiometry);
 
         setColumnValues(column, stoichiometry);
@@ -130,8 +136,7 @@ void MetabolicSimulation::boundRows() {
 
 bool MetabolicSimulation::validateReactionBounds(const Reaction& reaction) {
     if (!reaction.isSetKineticLaw()) {
-        model_errors.push_back("Reaction '" + reaction.getId() +
-                "' has no kinetic law");
+        addError("Reaction '" + reaction.getId() + "' has no kinetic law");
         return false;
     }
 
@@ -148,11 +153,9 @@ bool MetabolicSimulation::validateReactionBounds(const Reaction& reaction) {
     }
 
     if (!is_upper_bound_set)
-        model_errors.push_back("No upper bound set for reaction '" +
-                reaction.getId() + "'");
+        addError("No upper bound set for reaction '" + reaction.getId() + "'");
     if (!is_lower_bound_set)
-        model_errors.push_back("No lower bound set for reaction '" +
-                reaction.getId() + "'");
+        addError("No lower bound set for reaction '" + reaction.getId() + "'");
 
     return is_upper_bound_set && is_lower_bound_set;
 }
@@ -164,9 +167,10 @@ bool MetabolicSimulation::validateSpeciesReferences(
         const SpeciesReference& species_reference =
             *reinterpret_cast<const SpeciesReference*>(species.get(i));
 
+        // TODO(me) check if species exists
+
         if (!species_reference.isSetSpecies()) {
-            model_errors.push_back(
-                    "Species reference has no 'species' attribute");
+            addError("Species reference has no 'species' attribute");
             ret = false;
         }
     }
@@ -177,7 +181,7 @@ bool MetabolicSimulation::validateModel() {
     bool ret = true;
     for (unsigned i = 0; i < model->getNumSpecies(); i++) {
         if (!model->getSpecies(i)->isSetId()) {
-            model_errors.push_back("Species has no id");
+            addError("Species has no id");
             ret = false;
         }
     }
@@ -189,7 +193,7 @@ bool MetabolicSimulation::validateModel() {
             ret = false;
 
         if (!reaction.isSetId()) {
-            model_errors.push_back("Reaction has no id");
+            addError("Reaction has no id");
             ret = false;
         }
 
@@ -269,9 +273,10 @@ void MetabolicSimulation::setObjectiveForColumn(const string& sid, int column,
     for (unsigned i = 0; i < species.size(); i++) {
         const SpeciesReference& species_reference =
             *reinterpret_cast<const SpeciesReference*>(species.get(i));
-
+        
         if (species_reference.getSpecies() == sid)
-            glp_set_obj_coef(linear_problem, column+1, scale);
+            glp_set_obj_coef(linear_problem, column+1,
+                    scale*species_reference.getStoichiometry());
     }
 }
 

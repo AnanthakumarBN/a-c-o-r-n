@@ -7,7 +7,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-/*    SBMLDocument* document = readSBML(argv[1]);
+    SBMLDocument* document = readSBML(argv[1]);
     unsigned int errors = document->getNumErrors();
 
     cout << endl;
@@ -15,21 +15,25 @@ int main(int argc, char* argv[])
     cout << "  error(s): " << errors  << endl;
     cout << endl;
 
-    if (errors > 0) document->printErrors(cerr);*/
+    if (errors > 0) document->printErrors(cerr);
 
-    ModelBuilder mb;
+/*    ModelBuilder mb;
     FileLineReader rd;
     rd.loadFile(argv[1]);
-    Model* mod = mb.loadFromAmkfbaFile(&rd);
+    Model* mod = mb.loadFromAmkfbaFile(&rd);*/
+    Model* mod = document->getModel();
 
-    if (mod == NULL)
-        printf("%s\n", mb.getError().c_str());
+//    if (mod == NULL)
+ //       printf("%s\n", mb.getError().c_str());
 
     MetabolicSimulation ms;
 
-    bool r1 = ms.loadModel(mod);
-    bool r2 = ms.setObjective("_R__biomass__SC4__bal");
-    //printf("%d %d\n", (int)r1, (int)r2);
+    bool r2, r1 = ms.loadModel(mod);
+    for (int i=0; i<ms.getErrors().size(); i++)
+        printf("%s\n", ms.getErrors()[i].c_str());
+
+   // r2 = ms.setObjective("R_13DPGt");
+    printf("%d %d\n", (int)r1, (int)r2);
     ms.runSimulation();
 
     printf("%lf\n", ms.getObjectiveFunctionValue());

@@ -2,8 +2,8 @@
  * Copyright 2010 Jakub Łącki
  */
 
-#ifndef JWLFBA_MODELDATABASE_H_
-#define JWLFBA_MODELDATABASE_H_
+#ifndef JWLFBA_MODELBUILDER_H_
+#define JWLFBA_MODELBUILDER_H_
 
 #include<string>
 #include<set>
@@ -42,15 +42,15 @@ class ModelBuilder {
     string error;
     set<string> species;
 
-    const static char* kReactantsProductsSeparator;
-    const static char* kReactionEndToken;
-    const static char* kSpeciesSeparator;
-    const static char* kBoundsStartToken;
-    const static char* kExternalMetaboliteSuffix;
-    const static char* kGenesBeginToken;
-    const static char* kGenesEndToken;
-    const static char* kAmkfbaAndToken;
-    const static char* kAmkfbaOrToken;
+    static const char* kReactantsProductsSeparator;
+    static const char* kReactionEndToken;
+    static const char* kSpeciesSeparator;
+    static const char* kBoundsStartToken;
+    static const char* kExternalMetaboliteSuffix;
+    static const char* kGenesBeginToken;
+    static const char* kGenesEndToken;
+    static const char* kAmkfbaAndToken;
+    static const char* kAmkfbaOrToken;
 
     void addSpecies(Model* model, const string& species);
     bool getDouble(StringTokenizer* st, double* val);
@@ -66,11 +66,11 @@ class ModelBuilder {
     string createValidSBMLId(const string& sid);
  public:
     static string decodeSBMLId(const string& id);
-    const static char* kCreatedFromAmkfbaFile;
+    static const char* kCreatedFromAmkfbaFile;
     string getError() { return error; }
 
     Model* loadFromAmkfbaFile(LineReader* reader);
     string getErrorDescription();
 };
 
-#endif  // JWLFBA_MODELDATABASE_H_
+#endif  // JWLFBA_MODELBUILDER_H_

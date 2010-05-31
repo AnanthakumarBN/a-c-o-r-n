@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(OneTokenTest) {
     st.parse("abc");
     BOOST_CHECK_EQUAL(st.currentToken(), "abc");
     st.nextToken();
-    BOOST_CHECK(!st.tokensRemaining());
+    BOOST_CHECK(!st.hasRemainingTokens());
 }
 
 BOOST_AUTO_TEST_CASE(WhitespacesTest) {
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(WhitespacesTest) {
     st.nextToken();
     BOOST_CHECK_EQUAL(st.currentToken(), "d");
     st.nextToken();
-    BOOST_CHECK(!st.tokensRemaining());
+    BOOST_CHECK(!st.hasRemainingTokens());
 }
 
 BOOST_AUTO_TEST_CASE(MoveToFirstTest) {
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(MoveToFirstTest) {
     st.nextToken();
     BOOST_CHECK_EQUAL(st.currentToken(), "z");
     st.nextToken();
-    BOOST_CHECK(!st.tokensRemaining());
+    BOOST_CHECK(!st.hasRemainingTokens());
     st.moveToFirstToken();
     BOOST_CHECK_EQUAL(st.currentToken(), "x");
 }
@@ -45,11 +45,11 @@ BOOST_AUTO_TEST_CASE(MoveToFirstTest) {
 BOOST_AUTO_TEST_CASE(ReadingPastEndTest) {
     StringTokenizer st;
     st.parse("token1 token2");
-    BOOST_CHECK(st.tokensRemaining());
+    BOOST_CHECK(st.hasRemainingTokens());
     BOOST_CHECK_EQUAL(st.currentToken(), "token1");
     st.nextToken();
     BOOST_CHECK_EQUAL(st.currentToken(), "token2");
-    BOOST_CHECK(st.tokensRemaining());
+    BOOST_CHECK(st.hasRemainingTokens());
     st.nextToken();
     BOOST_CHECK_EQUAL(st.currentToken(), "");
 }
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(EmptyString) {
     StringTokenizer st;
     st.parse("");
     BOOST_CHECK_EQUAL(st.currentToken(), "");
-    BOOST_CHECK(!st.tokensRemaining());
+    BOOST_CHECK(!st.hasRemainingTokens());
 }
 
 BOOST_AUTO_TEST_SUITE_END();

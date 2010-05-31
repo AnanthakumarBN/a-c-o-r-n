@@ -31,8 +31,8 @@ class StringTokenizer {
 class GeneExpression {
  private:
     vector<string> rpn_expression;
-    const static char* kLeftBracket;
-    const static char* kRightBracket;
+    static const char* kLeftBracket;
+    static const char* kRightBracket;
 
     bool isGeneName(const string& gene);
     bool isOperatorToken(const string& token);
@@ -44,9 +44,9 @@ class GeneExpression {
     bool transformExpressionToRPN(StringTokenizer* tokenizer,
             string expected_operator);
  public:
-    const static char* kAndToken;
-    const static char* kOrToken;
-    const static char* kGeneExpressionPrefix;
+    static const char* kAndToken;
+    static const char* kOrToken;
+    static const char* kGeneExpressionPrefix;
     bool looksLikeGeneExpression(const string& expr);
     bool evaluate(const set<string>& disabled_genes);
     bool loadExpression(const string& expr);

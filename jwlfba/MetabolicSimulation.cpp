@@ -287,12 +287,19 @@ bool MetabolicSimulation::ApplyBounds(const vector<Bound>& bounds) {
     return true;
 }
 
+
+static int hook(void *info, const char *s) {
+    return 1;
+}
+
 bool MetabolicSimulation::LoadModel(const Model* mod,
         const vector<Bound>& bounds) {
     assert(linear_problem_ == NULL);
     assert(model_ == NULL);
 
     linear_problem_ = glp_create_prob();
+    
+    glp_term_hook(hook, NULL);
 
     model_ = mod->clone();
 
@@ -379,11 +386,21 @@ bool MetabolicSimulation::RunSimulation() {
     return true;
 }
 
-double MetabolicSimulation::GetObjectiveFunctionValue() {
+double MetabolicSimulation::GetObjective() const {
     assert(linear_problem_);
     return glp_get_obj_val(linear_problem_);
 }
 
+bool MetabolicSimulation::GetOptimal() const {
+    return glp_get_status(linear_problem_) == GLP_OPT;
+}
+
+void MetabolicSimulation::GetFlux(vector<ReactionFlux>* flux) const {
+    for (unsigned i = 0; i < model_->getNumReactions(); i++) {
+        flux->push_back(ReactionFlux(model_->getReaction(i)->getId(), 
+                    glp_get_col_prim(linear_problem_, i+1)));
+    }
+}
 
 void MetabolicSimulation::DisableReaction(unsigned rnum) {
     assert(rnum < model_->getNumReactions());

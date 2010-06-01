@@ -34,18 +34,18 @@ bool ModelBuilder::GetDouble(StringTokenizer* st, double* val) {
     return true;
 }
 
-bool ModelBuilder::IsValidSBMLDIdChar(char c) const {
+bool ModelBuilder::IsValidSBMLDIdChar(char c) {
     return isalnum(c) || c == '_';
 }
 
-string ModelBuilder::EncodeChar(char c) const {
+string ModelBuilder::EncodeChar(char c) {
     string ret = "_";
     ret += 'a' + c % 16;
     ret += 'a' + c / 16;
     return ret;
 }
 
-string ModelBuilder::CreateValidSBMLId(const string& sid) const {
+string ModelBuilder::CreateValidSBMLId(const string& sid) {
     string ret;
     ret += '_';
     for (unsigned i = 0; i < sid.size(); i++) {
@@ -57,6 +57,13 @@ string ModelBuilder::CreateValidSBMLId(const string& sid) const {
             ret += EncodeChar(sid[i]);
     }
     return ret;
+}
+
+bool ModelBuilder::IsAmkfbaModel(const Model* model) {
+    const XMLNode& notes = *(const_cast<Model*>(model)->getNotes());
+
+    return notes.getNumChildren() > 0 &&
+        notes.getChild(0).getCharacters() == kCreatedFromAmkfbaFile;
 }
 
 string ModelBuilder::DecodeSBMLId(const string& id) {

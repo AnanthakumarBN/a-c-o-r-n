@@ -44,6 +44,7 @@ class InputParameters {
     string amkfba_model_path() const { return amkfba_model_path_; }
     string bounds_file_path() const { return bounds_file_path_; }
     bool interactive_mode() const { return interactive_mode_; }
+    bool print_flux() const { return print_flux_; }
     const OptimisationParameters& optimisation_parameters() const {
         return optimisation_parameters_;
     }

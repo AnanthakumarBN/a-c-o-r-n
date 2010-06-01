@@ -24,7 +24,7 @@ Model* ModelDatabase::GetModel(const string& path) {
 Model* ModelDatabase::GetAmkfbaModel(const string& path) {
     Model* model;
     FileLineReader fr;
-    if (fr.LoadFile(path)) {
+    if (!fr.LoadFile(path)) {
         Error("Error opening '" + path + "'");
         return NULL;
     }

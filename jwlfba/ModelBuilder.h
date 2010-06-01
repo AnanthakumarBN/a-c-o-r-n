@@ -40,13 +40,14 @@ class ModelBuilder {
     bool AddBounds(Reaction* reaction, StringTokenizer* st);
     bool AddReaction(Model* model, StringTokenizer* st);
     bool AddGenes(Reaction* reaction, StringTokenizer* st);
-    bool IsValidSBMLDIdChar(char c) const;
-    string EncodeChar(char c) const;
-    string CreateValidSBMLId(const string& sid) const;
+    static bool IsValidSBMLDIdChar(char c);
+    static string EncodeChar(char c);
     void Error(const string& err);
  public:
+    static string CreateValidSBMLId(const string& sid);
     static string DecodeSBMLId(const string& id);
     static const char* kCreatedFromAmkfbaFile;
+    static bool IsAmkfbaModel(const Model* model);
     string GetError() const;
 
     Model* LoadFromAmkfbaFile(LineReader* reader);

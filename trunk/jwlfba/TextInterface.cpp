@@ -6,6 +6,7 @@
 #include<cstdio>
 #include<string>
 #include"InputParameters.h"
+#include"MetabolicSimulation.h"
 #include"SimulationController.h"
 
 using std::string;
@@ -29,6 +30,24 @@ void TextInterface::Run(const string& command_line) {
         RunBatch(parameters);
 }
 
+void TextInterface::ShowResults(const SimulationController& sc,
+        bool print_flux) const {
+    if (sc.GetOptimal())
+        printf("OPTIMAL\n");
+    else
+        printf("UNDEFINED\n");
+
+    printf("%.8lf\n", sc.GetObjective());
+
+    if (print_flux) {
+        vector<ReactionFlux> rf;
+        sc.GetFlux(&rf);
+        for (unsigned i = 0; i < rf.size(); i++) {
+            printf("%s %.8lf\n", rf[i].reaction.c_str(), rf[i].flux);
+        }
+    }    
+}
+
 void TextInterface::RunBatch(const InputParameters& parameters) {
     SimulationController sc;
     if (!sc.RunSimulation(parameters)) {
@@ -36,7 +55,7 @@ void TextInterface::RunBatch(const InputParameters& parameters) {
         return;
     }
 
-    // wyniki
+    ShowResults(sc, parameters.print_flux());
 }
 
 void TextInterface::RunInteractive() {
@@ -54,6 +73,6 @@ void TextInterface::RunInteractive() {
             continue;
         }
 
-        // wyniki
+        ShowResults(sc, parameters.print_flux());
     }
 }

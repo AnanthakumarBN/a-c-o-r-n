@@ -16,12 +16,14 @@ using std::set;
 using std::string;
 using std::vector;
 class InputParameters;
+class SimulationController;
 
 class TextInterface {
  private:
     void LogError(const string& err);
     void RunBatch(const InputParameters& parameters);
     void RunInteractive();
+    void ShowResults(const SimulationController& sc, bool print_flux) const;
  public:
     void Run(const string& command_line);
 };

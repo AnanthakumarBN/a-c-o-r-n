@@ -8,6 +8,7 @@
 #include<string>
 #include<vector>
 #include"ModelDatabase.h"
+#include"ModelBuilder.h"
 #include"MetabolicSimulation.h"
 #include"InputParameters.h"
 #include"FileLineReader.h"
@@ -17,7 +18,8 @@ using std::set;
 using std::string;
 using std::vector;
 
-SimulationController::SimulationController() : simulation_(NULL) {
+SimulationController::SimulationController() : simulation_(NULL),
+    using_amkfba_model_(false) {
     model_database_ = new ModelDatabase;
 }
 
@@ -64,10 +66,19 @@ bool SimulationController::RunSimulation(const Model* model,
     if (!DisableGenes(optimisation_parameters.disabled_genes))
         return false;
 
-    if (!simulation_->SetObjective(optimisation_parameters.objective)) {
+    string objective = optimisation_parameters.objective;
+
+    if (ModelBuilder::IsAmkfbaModel(model)) {
+        using_amkfba_model_ = true;
+        objective = ModelBuilder::CreateValidSBMLId(objective);
+    }
+
+    if (!simulation_->SetObjective(objective)) {
         Error("Bad objective '" + optimisation_parameters.objective + "'");
         return false;
     }
+
+    simulation_->SetMaximize(!optimisation_parameters.minimize);
 
     if (!simulation_->RunSimulation()) {
         Error("GLPK error while Running simulation");
@@ -98,6 +109,9 @@ bool SimulationController::LoadBound(const string& line, Bound* bound) {
 
 bool SimulationController::LoadBounds(const string& path,
         vector<Bound>* bounds) {
+    if (path == "")
+        return true;
+
     FileLineReader fl;
     if (!fl.LoadFile(path)) {
         Error("Unable to open '" + path  + "'");
@@ -145,6 +159,24 @@ bool SimulationController::RunSimulation(const InputParameters& params) {
         delete model;
 
     return ret;
+}
+
+bool SimulationController::GetOptimal() const {
+    return simulation_->GetOptimal();
+}
+
+double SimulationController::GetObjective() const {
+    return simulation_->GetObjective();
+}
+
+void SimulationController::GetFlux(vector<ReactionFlux>* flux) const {
+    simulation_->GetFlux(flux);
+    if (using_amkfba_model_) {
+        for (unsigned i = 0; i < flux->size(); i++) {
+            (*flux)[i].reaction =
+                ModelBuilder::DecodeSBMLId((*flux)[i].reaction);
+        }
+    }
 }
 
 void SimulationController::Error(const string& err) {

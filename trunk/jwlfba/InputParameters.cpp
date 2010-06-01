@@ -150,6 +150,11 @@ bool InputParameters::ValidateParametersMap(
 
 bool InputParameters::LoadFromString(const string& input_parameters) {
     map<string, string> param_map = GetParametersMap(input_parameters);
+    
+    if (param_map.find("--interactive") != param_map.end()) {
+        interactive_mode_ = true;
+        return true;
+    }
 
     if (!ValidateParametersMap(param_map))
         return false;
@@ -157,11 +162,8 @@ bool InputParameters::LoadFromString(const string& input_parameters) {
     if (param_map.find("--min") != param_map.end())
         optimisation_parameters_.minimize = true;
 
-    if (param_map.find("--print_flux") != param_map.end())
+    if (param_map.find("--print-flux") != param_map.end())
         print_flux_ = true;
-
-    if (param_map.find("--interactive") != param_map.end())
-        interactive_mode_ = true;
 
     optimisation_parameters_.objective = param_map["--objective"];
     model_path_ = param_map["--model"];

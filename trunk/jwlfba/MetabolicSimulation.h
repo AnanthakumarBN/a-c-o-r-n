@@ -31,6 +31,12 @@ struct Bound {
     double lower_bound, upper_bound;
 };
 
+struct ReactionFlux {
+    string reaction;
+    double flux;
+    ReactionFlux(string r, double f) : reaction(r), flux(f) { }
+};
+
 // Given a SBML model and optimisation parameters (e.g. objective funciton),
 // performs the simulation.
 
@@ -167,10 +173,12 @@ class MetabolicSimulation {
     // Executes the optimisation.
     bool RunSimulation();
 
-    string GetStatus();
+    bool GetOptimal() const;
 
     // Get the value of the objective function.
-    double GetObjectiveFunctionValue();
+    double GetObjective() const;
+
+    void GetFlux(vector<ReactionFlux>* flux) const;
 };
 
 #endif  // JWLFBA_METABOLICSIMULATION_H_

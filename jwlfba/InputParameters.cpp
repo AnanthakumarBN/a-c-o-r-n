@@ -19,8 +19,8 @@ using std::vector;
 // The default behavior is to compute maximum flux
 OptimisationParameters::OptimisationParameters() : minimize(false) { }
 
-InputParameters::InputParameters() : interactive_mode(false),
-    print_flux(false) { }
+InputParameters::InputParameters() : interactive_mode_(false),
+    print_flux_(false) { }
 
 const char* kValidParameters[] = {
     "--disable-genes", "--disable-reactions", "--objective", "--model",
@@ -29,18 +29,18 @@ const char* kValidParameters[] = {
 
 const char* kOptionPrefix = "--";
 
-map<string, string> getParameterMap(const string& param) {
+map<string, string> GetParametersMap(const string& param) {
     StringTokenizer st;
     map<string, string> ret;
 
-    st.parse(param);
-    while (st.hasRemainingTokens()) {
-        string key = st.currentToken();
-        st.nextToken();
-        if (st.hasRemainingTokens() && st.currentToken().substr(
+    st.Parse(param);
+    while (st.HasRemainingTokens()) {
+        string key = st.CurrentToken();
+        st.NextToken();
+        if (st.HasRemainingTokens() && st.CurrentToken().substr(
                     0, strlen(kOptionPrefix)) != kOptionPrefix) {
-            ret[key] = st.currentToken();
-            st.nextToken();
+            ret[key] = st.CurrentToken();
+            st.NextToken();
         } else {
             ret[key] = "";
         }
@@ -50,10 +50,10 @@ map<string, string> getParameterMap(const string& param) {
 
 void parseSetValue(const string& csv_set, set<string>* out) {
     StringTokenizer st;
-    st.parse(csv_set, ',');
-    while (st.hasRemainingTokens()) {
-        out->insert(st.currentToken());
-        st.nextToken();
+    st.Parse(csv_set, ',');
+    while (st.HasRemainingTokens()) {
+        out->insert(st.CurrentToken());
+        st.NextToken();
     }
 }
 /*
@@ -76,7 +76,7 @@ void InputParameters::processFlagParameters(const map<string, string>& param_map
         if (it != param_map.end()) {
             *flag_parameters[i].second = true;
             if (it->second != "")
-                addError(it->first + " takes no argument");
+                AddError(it->first + " takes no argument");
         }
     }
 }
@@ -93,36 +93,47 @@ void InputParameters::processStringParameters(
     }
 }
 */
-void InputParameters::addError(const string& error) {
-    errors.push_back(error);
+void InputParameters::AddError(const string& error) {
+    errors_.push_back(error);
 }
 
-const vector<string>& InputParameters::getErrors() const {
-    return errors;
+const vector<string>& InputParameters::GetErrors() const {
+    return errors_;
 }
 
-bool InputParameters::validateParametersMap(map<string, string>* param_map) {
-    errors.clear();
+string Get(const map<string, string>& mp, const string& key) {
+    map<string, string>::const_iterator it = mp.find(key);
+    if (it == mp.end())
+        return "";
+    else
+        return it->second;
+}
 
-    if (!param_map["--min"].empty())
-        addError("--min takes no arguments");
+bool InputParameters::ValidateParametersMap(
+        const map<string, string>& param_map) {
+    errors_.clear();
 
-    if (!param_map["--print-flux"].empty())
-        addError("--print-flux takes no arguments");
+    if (!Get(param_map, "--min").empty())
+        AddError("--min takes no arguments");
 
-    if (!param_map["--interactive"].empty())
-        addError("--interactive takes no arguments");
+    if (!Get(param_map, "--print-flux").empty())
+        AddError("--print-flux takes no arguments");
 
-    if (param_map["--objective"].empty())
-        addError("No objective specified");
+    if (!Get(param_map, "--interactive").empty())
+        AddError("--interactive takes no arguments");
 
-    if (param_map["--amkfba-model"].empty() && param_map["--model"].empty())
-        addError("No model specified");
+    if (Get(param_map, "--objective").empty())
+        AddError("No objective specified");
 
-    if (!param_map["--amkfba-model"].empty() && !param_map["--model"].empty())
-        addError("--akmfba-model and --model can't be set at the same time");
+    if (Get(param_map, "--amkfba-model").empty() &&
+            Get(param_map, "--model").empty())
+        AddError("No model specified");
 
-    for (map<string, string>::iterator it = param_map.begin();
+    if (!Get(param_map, "--amkfba-model").empty() &&
+            !Get(param_map, "--model").empty())
+        AddError("--akmfba-model and --model can't be set at the same time");
+
+    for (map<string, string>::const_iterator it = param_map.begin();
             it != param_map.end(); ++it) {
         int index = -1;
         for (unsigned i = 0; i <
@@ -131,37 +142,31 @@ bool InputParameters::validateParametersMap(map<string, string>* param_map) {
                 index = i;
         }
         if (index == -1) {
-            addError(string("Invalid parameter '") + it->first + "'");
+            AddError(string("Invalid parameter '") + it->first + "'");
         }
     }
-    return getErrors().size() == 0;
+    return GetErrors().size() == 0;
 }
 
-bool InputParameters::loadFromString(const string& input_parameters) {
-    map<string, string> param_map = getParameterMap(input_parameters);
+bool InputParameters::LoadFromString(const string& input_parameters) {
+    map<string, string> param_map = GetParametersMap(input_parameters);
 
-    if (!validateParametersMap(param_map))
+    if (!ValidateParametersMap(param_map))
         return false;
 
     if (param_map.find("--min") != param_map.end())
-        optimisation_parameters.minimize = true;
+        optimisation_parameters_.minimize = true;
 
     if (param_map.find("--print_flux") != param_map.end())
-        print_flux = true;
+        print_flux_ = true;
 
     if (param_map.find("--interactive") != param_map.end())
-        interactive_mode = true;
+        interactive_mode_ = true;
 
-    optimisation_parameters.objective = param_map["--objective"];
-    model_path = param_map["--model"];
-    amkfba_model_path = param_map["--amkfba-model"];
-    bounds_file_path = param_map["--bounds-file"];
-
-    parseSetValue(param_map["--disable-genes"],
-            &optimisation_parameters.disabled_genes);
-
-    parseSetValue(param_map["--disable-reactions"],
-            &optimisation_parameters.disabled_reactions);
+    optimisation_parameters_.objective = param_map["--objective"];
+    model_path_ = param_map["--model"];
+    amkfba_model_path_ = param_map["--amkfba-model"];
+    bounds_file_path_ = param_map["--bounds-file"];
 
     return true;
 }

@@ -24,42 +24,42 @@ const char* ModelBuilder::kAmkfbaOrToken = "OR";
 
 const char* ModelBuilder::kCreatedFromAmkfbaFile = "CREATED_FROM_AMKFBA_FILE";
 
-bool ModelBuilder::getDouble(StringTokenizer* st, double* val) {
-    if (sscanf(st->currentToken().c_str(), "%lf", val) != 1) {
-        error("Expected a floating point number");
+bool ModelBuilder::GetDouble(StringTokenizer* st, double* val) {
+    if (sscanf(st->CurrentToken().c_str(), "%lf", val) != 1) {
+        Error("Expected a floating point number");
         return false;
     }
 
-    st->nextToken();
+    st->NextToken();
     return true;
 }
 
-bool ModelBuilder::isValidSBMLDIdChar(char c) const {
+bool ModelBuilder::IsValidSBMLDIdChar(char c) const {
     return isalnum(c) || c == '_';
 }
 
-string ModelBuilder::encodeChar(char c) const {
+string ModelBuilder::EncodeChar(char c) const {
     string ret = "_";
     ret += 'a' + c % 16;
     ret += 'a' + c / 16;
     return ret;
 }
 
-string ModelBuilder::createValidSBMLId(const string& sid) const {
+string ModelBuilder::CreateValidSBMLId(const string& sid) const {
     string ret;
     ret += '_';
     for (unsigned i = 0; i < sid.size(); i++) {
-        if (isValidSBMLDIdChar(sid[i]) && sid[i] != '_')
+        if (IsValidSBMLDIdChar(sid[i]) && sid[i] != '_')
             ret += sid[i];
         else if (sid[i] == '_')
             ret += "__";
         else
-            ret += encodeChar(sid[i]);
+            ret += EncodeChar(sid[i]);
     }
     return ret;
 }
 
-string ModelBuilder::decodeSBMLId(const string& id) {
+string ModelBuilder::DecodeSBMLId(const string& id) {
     string ret;
     unsigned i = 1;  // remove leading '_'
 
@@ -82,25 +82,25 @@ string ModelBuilder::decodeSBMLId(const string& id) {
     return ret;
 }
 
-bool ModelBuilder::getStoichiometry(StringTokenizer* st, double* coefficient,
-        string* species) {
-    if (!getDouble(st, coefficient)) {
-        error("Bad coefficient");
+bool ModelBuilder::GetStoichiometry(StringTokenizer* st, double* coefficient,
+        string* species_id) {
+    if (!GetDouble(st, coefficient)) {
+        Error("Bad coefficient");
         return false;
     }
 
-    if (!st->hasRemainingTokens())
+    if (!st->HasRemainingTokens())
         return false;
 
-    *species = createValidSBMLId(st->currentToken());
-    st->nextToken();
+    *species_id = CreateValidSBMLId(st->CurrentToken());
+    st->NextToken();
     return true;
 }
 
 // TODO(kuba) - ladniej!
 
-void ModelBuilder::addSpecies(Model* model, const string& species_id) {
-    if (species.find(species_id) != species.end())
+void ModelBuilder::AddSpecies(Model* model, const string& species_id) {
+    if (all_species_.find(species_id) != all_species_.end())
         return;
 
     Species* species = model->createSpecies();
@@ -109,57 +109,58 @@ void ModelBuilder::addSpecies(Model* model, const string& species_id) {
             species_id.substr(species_id.size() - 3) == "_xt") {
         species->setBoundaryCondition(true);
     }
+    all_species_.insert(species_id);
 }
 
 // TODO(kuba): przepisz to ladniej
 
-bool ModelBuilder::addReactants(Model* model, StringTokenizer* st) {
+bool ModelBuilder::AddReactants(Model* model, StringTokenizer* st) {
     do {
         double coefficient;
         string species;
-        if (!getStoichiometry(st, &coefficient, &species)) {
-            error("Reactant expected");
+        if (!GetStoichiometry(st, &coefficient, &species)) {
+            Error("Reactant expected");
             return false;
         }
         SpeciesReference* species_reference = model->createReactant();
         species_reference->setSpecies(species);
         species_reference->setStoichiometry(coefficient);
 
-        addSpecies(model, species);
+        AddSpecies(model, species);
 
-        if (st->currentToken() == kSpeciesSeparator)
-            st->nextToken();
-    } while (st->currentToken() != kReactantsProductsSeparator);
-    st->nextToken();
+        if (st->CurrentToken() == kSpeciesSeparator)
+            st->NextToken();
+    } while (st->CurrentToken() != kReactantsProductsSeparator);
+    st->NextToken();
     return true;
 }
 
-bool ModelBuilder::addProducts(Model* model, StringTokenizer* st) {
+bool ModelBuilder::AddProducts(Model* model, StringTokenizer* st) {
     do {
         double coefficient;
         string species;
-        if (!getStoichiometry(st, &coefficient, &species)) {
-            error("Product expected");
+        if (!GetStoichiometry(st, &coefficient, &species)) {
+            Error("Product expected");
             return false;
         }
         SpeciesReference* species_reference = model->createProduct();
         species_reference->setSpecies(species);
         species_reference->setStoichiometry(coefficient);
 
-        addSpecies(model, species);
+        AddSpecies(model, species);
 
-        if (st->currentToken() == kSpeciesSeparator)
-            st->nextToken();
-    } while (st->currentToken() != kReactionEndToken);
-    st->nextToken();
+        if (st->CurrentToken() == kSpeciesSeparator)
+            st->NextToken();
+    } while (st->CurrentToken() != kReactionEndToken);
+    st->NextToken();
     return true;
 }
 
-bool ModelBuilder::addBounds(Reaction* reaction, StringTokenizer* st) {
+bool ModelBuilder::AddBounds(Reaction* reaction, StringTokenizer* st) {
     double lower_bound, upper_bound;
 
-    if (!getDouble(st, &lower_bound) || !getDouble(st, &upper_bound)) {
-        error("Incorrect bounds");
+    if (!GetDouble(st, &lower_bound) || !GetDouble(st, &upper_bound)) {
+        Error("Incorrect bounds");
         return false;
     }
 
@@ -175,29 +176,29 @@ bool ModelBuilder::addBounds(Reaction* reaction, StringTokenizer* st) {
     return true;
 }
 
-bool ModelBuilder::addGenes(Reaction* reaction, StringTokenizer* st) {
+bool ModelBuilder::AddGenes(Reaction* reaction, StringTokenizer* st) {
     string genes = GeneExpression::kGeneExpressionPrefix;
 
-    if (st->currentToken() != kGenesBeginToken) {
-        error(string("Expected '") + kGenesBeginToken + "'");
+    if (st->CurrentToken() != kGenesBeginToken) {
+        Error(string("Expected '") + kGenesBeginToken + "'");
         return false;
     }
-    st->nextToken();
+    st->NextToken();
 
-    while (st->hasRemainingTokens() && st->currentToken() != kGenesEndToken) {
+    while (st->HasRemainingTokens() && st->CurrentToken() != kGenesEndToken) {
         genes += ' ';
-        if (st->currentToken() == kAmkfbaOrToken)
+        if (st->CurrentToken() == kAmkfbaOrToken)
             genes += GeneExpression::kOrToken;
-        else if (st->currentToken() == kAmkfbaAndToken)
+        else if (st->CurrentToken() == kAmkfbaAndToken)
             genes += GeneExpression::kAndToken;
         else
-            genes += st->currentToken();
-        st->nextToken();
+            genes += st->CurrentToken();
+        st->NextToken();
     }
     genes += ' ';
 
-    if (st->currentToken() != kGenesEndToken) {
-        error(string("Expected '") + kGenesEndToken + "'");
+    if (st->CurrentToken() != kGenesEndToken) {
+        Error(string("Expected '") + kGenesEndToken + "'");
         return false;
     }
 
@@ -208,60 +209,60 @@ bool ModelBuilder::addGenes(Reaction* reaction, StringTokenizer* st) {
     return true;
 }
 
-bool ModelBuilder::addReaction(Model* model, StringTokenizer* st) {
-    if (!st->hasRemainingTokens()) {
-        error("Reaction id expected");
+bool ModelBuilder::AddReaction(Model* model, StringTokenizer* st) {
+    if (!st->HasRemainingTokens()) {
+        Error("Reaction id expected");
         return false;
     }
 
     Reaction* reaction = model->createReaction();
-    reaction->setId(createValidSBMLId(st->currentToken()));
+    reaction->setId(CreateValidSBMLId(st->CurrentToken()));
 
-    st->nextToken();
+    st->NextToken();
 
-    if (!addReactants(model, st))
+    if (!AddReactants(model, st))
         return false;
-    if (!addProducts(model, st))
+    if (!AddProducts(model, st))
         return false;
 
-    if (st->currentToken() != kBoundsStartToken) {
-        error(string("Expected '") + kBoundsStartToken + "'");
+    if (st->CurrentToken() != kBoundsStartToken) {
+        Error(string("Expected '") + kBoundsStartToken + "'");
         return false;
     }
-    st->nextToken();
+    st->NextToken();
 
-    if (!addBounds(reaction, st))
+    if (!AddBounds(reaction, st))
         return false;
 
-    if (!addGenes(reaction, st))
+    if (!AddGenes(reaction, st))
         return false;
 
     return true;
 }
 
-void ModelBuilder::error(const string& err) {
-    error_description = err;
+void ModelBuilder::Error(const string& err) {
+    error_description_ = err;
 }
 
-string ModelBuilder::getError() const {
-    return error_description;
+string ModelBuilder::GetError() const {
+    return error_description_;
 }
 
-Model* ModelBuilder::loadFromAmkfbaFile(LineReader* reader) {
+Model* ModelBuilder::LoadFromAmkfbaFile(LineReader* reader) {
     SBMLDocument* sbmlDoc = new SBMLDocument(2, 1);
     Model* model = sbmlDoc->createModel();
 
     model->setNotes(kCreatedFromAmkfbaFile);
 
-    while (reader->hasRemainingLines()) {
+    while (reader->HasRemainingLines()) {
         StringTokenizer st;
-        string line = reader->readLine();
-        st.parse(line);
+        string line = reader->ReadLine();
+        st.Parse(line);
 
-        if (!addReaction(model, &st))
+        if (!AddReaction(model, &st))
             return NULL;
 
-        reader->nextLine();
+        reader->NextLine();
     }
     return model;
 }

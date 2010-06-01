@@ -19,11 +19,11 @@ class InputParameters;
 
 class TextInterface {
  private:
-    void logError(const string& err);
-    void runBatch();
-    void runInteractive(const InputParameters& parameters);
+    void LogError(const string& err);
+    void RunBatch(const InputParameters& parameters);
+    void RunInteractive();
  public:
-    void run(const string& command_line);
+    void Run(const string& command_line);
 };
 
 #endif  // JWLFBA_TEXTINTERFACE_H_

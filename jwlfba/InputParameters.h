@@ -27,29 +27,28 @@ struct OptimisationParameters {
 
 class InputParameters {
  private:
-    OptimisationParameters optimisation_parameters;
-    string model_path;
-    string amkfba_model_path;
-    string bounds_file_path;
-    bool interactive_mode;
-    bool print_flux;
+    OptimisationParameters optimisation_parameters_;
+    string model_path_;
+    string amkfba_model_path_;
+    string bounds_file_path_;
+    bool interactive_mode_;
+    bool print_flux_;
 
-    vector<string> errors;
-    map<string, string> getParameterMap(const string& param);
-    bool validateParametersMap(const map<string, string>* param_map);
-    void addError(const string& error);
+    vector<string> errors_;
+    map<string, string> GetParameterMap(const string& param);
+    bool ValidateParametersMap(const map<string, string>& param_map);
+    void AddError(const string& error);
  public:
     InputParameters();
-    const vector<string>& getErrors();
-    string getModelPath() const { return model_path; }
-    string getAmkfbaModelPath() const { return amkfba_model_path; }
-    string getBoundsFilePath() const { return bounds_file_path; }
-    bool getInteractiveMode() const { return interactive_mode; }
-    const OptimisationParameters& getOptimisationParameters() const {
-        return optimisation_parameters;
+    string model_path() const { return model_path_; }
+    string amkfba_model_path() const { return amkfba_model_path_; }
+    string bounds_file_path() const { return bounds_file_path_; }
+    bool interactive_mode() const { return interactive_mode_; }
+    const OptimisationParameters& optimisation_parameters() const {
+        return optimisation_parameters_;
     }
-    const vector<string>& getErrors() const;
-    bool loadFromString(const string& input_parameters);
+    const vector<string>& GetErrors() const;
+    bool LoadFromString(const string& input_parameters);
 };
 
 #endif  // JWLFBA_INPUTPARAMETERS_H_

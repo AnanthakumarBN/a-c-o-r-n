@@ -12,51 +12,51 @@ using std::string;
 const int kFileLineReaderBuffer = 1000;
 const char* kStandardInputPath = "-";
 
-FileLineReader::FileLineReader() : file(NULL) { }
+FileLineReader::FileLineReader() : file_(NULL) { }
 
 FileLineReader::~FileLineReader() {
-    if (file)
-        fclose(file);
+    if (file_)
+        fclose(file_);
 }
 
-bool FileLineReader::loadFile(const string& path) {
+bool FileLineReader::LoadFile(const string& path) {
     if (path == kStandardInputPath)
-        file = stdin;
+        file_ = stdin;
     else
-        file = fopen(path.c_str(), "r");
-    return  file != NULL;
+        file_ = fopen(path.c_str(), "r");
+    return  file_ != NULL;
 }
 
 
-void FileLineReader::fetchLine() {
+void FileLineReader::FetchLine() {
     char buf[kFileLineReaderBuffer];
     bool newline_reached = false;
 
-    if (!next_line.empty())
+    if (!next_line_.empty())
         return;
 
-    while (!newline_reached && fgets(buf, kFileLineReaderBuffer, file)) {
+    while (!newline_reached && fgets(buf, kFileLineReaderBuffer, file_)) {
         int len = strlen(buf);
         if (buf[len-1] == '\n') {
             buf[len-1] = '\0';
             newline_reached = true;
         }
-        next_line += buf;
+        next_line_ += buf;
     }
 }
 
-string FileLineReader::readLine() {
-    fetchLine();
-    return next_line;
+string FileLineReader::ReadLine() {
+    FetchLine();
+    return next_line_;
 }
 
-void FileLineReader::nextLine() {
-    next_line = "";
-    fetchLine();
+void FileLineReader::NextLine() {
+    next_line_ = "";
+    FetchLine();
 }
 
-bool FileLineReader::hasRemainingLines() {
-    fetchLine();
-    return next_line != "";
+bool FileLineReader::HasRemainingLines() {
+    FetchLine();
+    return next_line_ != "";
 }
 

@@ -3,6 +3,7 @@
  */
 
 #include"TextInterface.h"
+#include<cstdio>
 #include<string>
 #include"InputParameters.h"
 #include"SimulationController.h"
@@ -11,45 +12,45 @@ using std::string;
 
 const int kMaxCommandLineLength = 50000;
 
-void TextInterface::logError(const string& err) {
+void TextInterface::LogError(const string& err) {
     fprintf(stderr, "%s\n", err.c_str());
 }
 
-void TextInterface::run(const string& command_line) {
+void TextInterface::Run(const string& command_line) {
     InputParameters parameters;
-    if (!parameters.loadFromString(command_line)) {
-        logError(parameters.getErrors()[0]);
+    if (!parameters.LoadFromString(command_line)) {
+        LogError(parameters.GetErrors()[0]);
         return;
     }
 
-    if (parameters.getInteractiveMode())
-        runInteractive(parameters);
+    if (parameters.interactive_mode())
+        RunInteractive();
     else
-        runBatch();
+        RunBatch(parameters);
 }
 
-void TextInterface::runBatch(const InputParameters& parameters) {
+void TextInterface::RunBatch(const InputParameters& parameters) {
     SimulationController sc;
-    if (!sc.runSimulation(parameters)) {
-        logError(sc.getError());
+    if (!sc.RunSimulation(parameters)) {
+        LogError(sc.GetError());
         return;
     }
 
     // wyniki
 }
 
-void TextInterface::runInteractive() {
+void TextInterface::RunInteractive() {
     char command[kMaxCommandLineLength];
     while (fgets(command, kMaxCommandLineLength, stdin)) {
         InputParameters parameters;
         SimulationController sc;
-        if (!parameters.loadFromString(command)) {
-            logError(parameters.getErrors()[0]);
+        if (!parameters.LoadFromString(command)) {
+            LogError(parameters.GetErrors()[0]);
             continue;
         }
 
-        if (!sc.runSimulation(parameters)) {
-            logError(sc.getError());
+        if (!sc.RunSimulation(parameters)) {
+            LogError(sc.GetError());
             continue;
         }
 

@@ -11,9 +11,9 @@ using std::string;
 
 class LineReader {
  public:
-    virtual string readLine() = 0;
-    virtual void nextLine() = 0;
-    virtual bool hasRemainingLines() = 0;
+    virtual string ReadLine() = 0;
+    virtual void NextLine() = 0;
+    virtual bool HasRemainingLines() = 0;
     virtual ~LineReader() { }
 };
 

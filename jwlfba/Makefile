@@ -1,12 +1,12 @@
 CPPFLAGS=-O2
 LIBS=-lsbml -lglpk
 
-sources=MetabolicSimulation.cpp GeneExpression.cpp ModelBuilder.cpp FileLineReader.cpp StringTokenizer.cpp SimulationController.cpp InputParameters.cpp
+sources=MetabolicSimulation.cpp GeneExpression.cpp ModelBuilder.cpp FileLineReader.cpp StringTokenizer.cpp SimulationController.cpp InputParameters.cpp ModelDatabase.cpp TextInterface.cpp
 
 objects=$(sources:.cpp=.o)
 
 %.o: %.cpp %.h
-	g++ -Wall $(CPPFLAGS) -c $< -o $@
+	g++ -Wall -Wshadow $(CPPFLAGS) -c $< -o $@
 
 jwlfba: $(objects) main.cpp
 	g++ $(LIBS) $(CPPFLAGS) $^ -o $@

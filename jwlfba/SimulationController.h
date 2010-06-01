@@ -23,22 +23,22 @@ struct Bound;
 
 class SimulationController {
  private:
-    ModelDatabase* model_database;
-    MetabolicSimulation* simulation;
-    string error_string;
+    ModelDatabase* model_database_;
+    MetabolicSimulation* simulation_;
+    string error_string_;
 
-    bool disableReactions(const set<string> reactions);
-    bool disableGenes(const set<string> genes);
-    bool loadBound(const string& line, Bound* bound);
-    bool loadBounds(const string& path, vector<Bound>* bounds);
-    bool runSimulation(const Model* model, const vector<Bound>& bounds,
+    bool DisableReactions(const set<string> reactions);
+    bool DisableGenes(const set<string> genes);
+    bool LoadBound(const string& line, Bound* bound);
+    bool LoadBounds(const string& path, vector<Bound>* bounds);
+    bool RunSimulation(const Model* model, const vector<Bound>& bounds,
             const OptimisationParameters& params);
-    void error(const string& err);
+    void Error(const string& err);
  public:
-    const string& getError() const;
+    const string& GetError() const;
     SimulationController();
     ~SimulationController();
-    bool runSimulation(const InputParameters& params);
+    bool RunSimulation(const InputParameters& params);
 };
 
 #endif  // JWLFBA_SIMULATIONCONTROLLER_H_

@@ -21,7 +21,7 @@ const char* GeneExpression::kLeftBracket = "(";
 const char* GeneExpression::kRightBracket = ")";
 const char* GeneExpression::kGeneExpressionPrefix = "GENE_ASSOCIATION:";
 
-bool GeneExpression::looksLikeGeneExpression(const string& expr) const {
+bool GeneExpression::LooksLikeGeneExpression(const string& expr) const {
     if (expr.empty())
         return false;
 
@@ -29,81 +29,81 @@ bool GeneExpression::looksLikeGeneExpression(const string& expr) const {
             kGeneExpressionPrefix, sizeof(kGeneExpressionPrefix)) == 0;
 }
 
-bool GeneExpression::loadExpression(const string& expr) {
+bool GeneExpression::LoadExpression(const string& expr) {
     StringTokenizer tokenizer;
-    tokenizer.parse(expr);
+    tokenizer.Parse(expr);
 
-    if (tokenizer.currentToken() != kGeneExpressionPrefix)
+    if (tokenizer.CurrentToken() != kGeneExpressionPrefix)
        return false;
 
-    tokenizer.nextToken();
-    rpn_expression.clear();
-    return transformToRPN(&tokenizer);
+    tokenizer.NextToken();
+    rpn_expression_.clear();
+    return TransformToRPN(&tokenizer);
 }
 
-bool GeneExpression::isGeneName(const string& gene) const {
+bool GeneExpression::IsGeneName(const string& gene) const {
     return !gene.empty() && gene != kAndToken && gene != kOrToken &&
         gene != kLeftBracket && gene != kRightBracket;
 }
 
-bool GeneExpression::isOperatorToken(const string& token) const {
+bool GeneExpression::IsOperatorToken(const string& token) const {
     return token == kAndToken || token == kOrToken;
 }
 
-bool GeneExpression::transformExpressionToRPN(StringTokenizer* tokenizer,
+bool GeneExpression::TransformExpressionToRPN(StringTokenizer* tokenizer,
         string expected_operator) {
-    if (tokenizer->currentToken() == kLeftBracket) {
-        tokenizer->nextToken();
-        if (!transformExpressionToRPN(tokenizer, "")
-                || tokenizer->currentToken() != kRightBracket) {
+    if (tokenizer->CurrentToken() == kLeftBracket) {
+        tokenizer->NextToken();
+        if (!TransformExpressionToRPN(tokenizer, "")
+                || tokenizer->CurrentToken() != kRightBracket) {
             return false;
         }
-        tokenizer->nextToken();
-    } else if (isGeneName(tokenizer->currentToken())) {
-        rpn_expression.push_back(tokenizer->currentToken());
-        tokenizer->nextToken();
+        tokenizer->NextToken();
+    } else if (IsGeneName(tokenizer->CurrentToken())) {
+        rpn_expression_.push_back(tokenizer->CurrentToken());
+        tokenizer->NextToken();
     } else {
         return false;
     }
 
-    if (!tokenizer->hasRemainingTokens() ||
-            tokenizer->currentToken() == kRightBracket)
+    if (!tokenizer->HasRemainingTokens() ||
+            tokenizer->CurrentToken() == kRightBracket)
        return true;
 
-    if (!isOperatorToken(tokenizer->currentToken()))
+    if (!IsOperatorToken(tokenizer->CurrentToken()))
         return false;
 
     if (!expected_operator.empty() &&
-            tokenizer->currentToken() != expected_operator)
+            tokenizer->CurrentToken() != expected_operator)
         return false;
     else
-        expected_operator = tokenizer->currentToken();
+        expected_operator = tokenizer->CurrentToken();
 
-    tokenizer->nextToken();
+    tokenizer->NextToken();
 
-    if (!transformExpressionToRPN(tokenizer, expected_operator))
+    if (!TransformExpressionToRPN(tokenizer, expected_operator))
         return false;
 
-    rpn_expression.push_back(expected_operator);
+    rpn_expression_.push_back(expected_operator);
     return true;
 }
 
-bool GeneExpression::transformToRPN(StringTokenizer* tokenizer) {
-    tokenizer->moveToFirstToken();
+bool GeneExpression::TransformToRPN(StringTokenizer* tokenizer) {
+    tokenizer->MoveToFirstToken();
 
-    if (!tokenizer->hasRemainingTokens())
+    if (!tokenizer->HasRemainingTokens())
         return true;
-    if (!transformExpressionToRPN(tokenizer, ""))
+    if (!TransformExpressionToRPN(tokenizer, ""))
         return false;
-    return !tokenizer->hasRemainingTokens();
+    return !tokenizer->HasRemainingTokens();
 }
 
-bool GeneExpression::geneValue(const string& gene,
+bool GeneExpression::GeneValue(const string& gene,
         const set<string>& disabledGenes) const {
     return disabledGenes.find(gene) == disabledGenes.end();
 }
 
-bool GeneExpression::evaluate(bool val1, const string& oper,
+bool GeneExpression::Evaluate(bool val1, const string& oper,
         bool val2) const {
     if (oper == kAndToken)
         return val1 && val2;
@@ -113,14 +113,14 @@ bool GeneExpression::evaluate(bool val1, const string& oper,
         assert(false);
 }
 
-bool GeneExpression::evaluate(const set<string>& disabledGenes) const {
+bool GeneExpression::Evaluate(const set<string>& disabledGenes) const {
     stack<bool> rpn_stack;
 
-    if (rpn_expression.empty())
+    if (rpn_expression_.empty())
         return true;
 
-    for (unsigned i = 0; i < rpn_expression.size(); i++) {
-        if (isOperatorToken(rpn_expression[i])) {
+    for (unsigned i = 0; i < rpn_expression_.size(); i++) {
+        if (IsOperatorToken(rpn_expression_[i])) {
             assert(rpn_stack.size() >= 2);
 
             bool x, y;
@@ -129,18 +129,18 @@ bool GeneExpression::evaluate(const set<string>& disabledGenes) const {
             y = rpn_stack.top();
             rpn_stack.pop();
 
-            rpn_stack.push(evaluate(x, rpn_expression[i], y));
+            rpn_stack.push(Evaluate(x, rpn_expression_[i], y));
         } else {
-            rpn_stack.push(geneValue(rpn_expression[i], disabledGenes));
+            rpn_stack.push(GeneValue(rpn_expression_[i], disabledGenes));
         }
     }
     assert(rpn_stack.size() == 1);
     return rpn_stack.top();
 }
 
-void GeneExpression::getAllGenes(set<string>* genes) {
-    for (unsigned i = 0; i < rpn_expression.size(); i++) {
-        if (isGeneName(rpn_expression[i]))
-            genes->insert(rpn_expression[i]);
+void GeneExpression::GetAllGenes(set<string>* genes) {
+    for (unsigned i = 0; i < rpn_expression_.size(); i++) {
+        if (IsGeneName(rpn_expression_[i]))
+            genes->insert(rpn_expression_[i]);
     }
 }

@@ -17,19 +17,19 @@ using std::string;
 
 class StringTokenizer {
  private:
-    vector<string> tokens;
-    unsigned current_token_number;
-    char separator;
-    bool isSeparator(char c);
+    vector<string> tokens_;
+    unsigned current_token_number_;
+    char separator_;
+    bool IsSeparator(char c);
  public:
     StringTokenizer();
-    string currentToken();
-    bool currentDoubleToken(double* val);
-    void nextToken();
-    void moveToFirstToken();
-    bool hasRemainingTokens();
-    void parse(const string& str);
-    void parse(const string& str, char separator);
+    string CurrentToken();
+    bool CurrentDoubleToken(double* val);
+    void NextToken();
+    void MoveToFirstToken();
+    bool HasRemainingTokens();
+    void Parse(const string& str);
+    void Parse(const string& str, char separator);
 };
 
 #endif  // JWLFBA_STRINGTOKENIZER_H_

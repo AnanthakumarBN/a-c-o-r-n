@@ -18,8 +18,8 @@ class LineReader;
 
 class ModelBuilder {
  private:
-    string error_description;
-    set<string> species;
+    string error_description_;
+    set<string> all_species_;
 
     static const char* kReactantsProductsSeparator;
     static const char* kReactionEndToken;
@@ -31,25 +31,25 @@ class ModelBuilder {
     static const char* kAmkfbaAndToken;
     static const char* kAmkfbaOrToken;
 
-    void addSpecies(Model* model, const string& species);
-    bool getDouble(StringTokenizer* st, double* val);
-    bool getStoichiometry(StringTokenizer* st, double* coefficient,
+    void AddSpecies(Model* model, const string& species);
+    bool GetDouble(StringTokenizer* st, double* val);
+    bool GetStoichiometry(StringTokenizer* st, double* coefficient,
             string* species);
-    bool addReactants(Model* model, StringTokenizer* st);
-    bool addProducts(Model* model, StringTokenizer* st);
-    bool addBounds(Reaction* reaction, StringTokenizer* st);
-    bool addReaction(Model* model, StringTokenizer* st);
-    bool addGenes(Reaction* reaction, StringTokenizer* st);
-    bool isValidSBMLDIdChar(char c) const;
-    string encodeChar(char c) const;
-    string createValidSBMLId(const string& sid) const;
-    void error(const string& err);
+    bool AddReactants(Model* model, StringTokenizer* st);
+    bool AddProducts(Model* model, StringTokenizer* st);
+    bool AddBounds(Reaction* reaction, StringTokenizer* st);
+    bool AddReaction(Model* model, StringTokenizer* st);
+    bool AddGenes(Reaction* reaction, StringTokenizer* st);
+    bool IsValidSBMLDIdChar(char c) const;
+    string EncodeChar(char c) const;
+    string CreateValidSBMLId(const string& sid) const;
+    void Error(const string& err);
  public:
-    static string decodeSBMLId(const string& id);
+    static string DecodeSBMLId(const string& id);
     static const char* kCreatedFromAmkfbaFile;
-    string getError() const;
+    string GetError() const;
 
-    Model* loadFromAmkfbaFile(LineReader* reader);
+    Model* LoadFromAmkfbaFile(LineReader* reader);
 };
 
 #endif  // JWLFBA_MODELBUILDER_H_

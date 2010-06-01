@@ -7,60 +7,39 @@
 #include<string>
 #include"FileLineReader.h"
 #include"ModelBuilder.h"
+#include"StringTokenizer.h"
 
 using std::string;
 
-Model* ModelDatabase::getModel(const string& path) {
+Model* ModelDatabase::GetModel(const string& path) {
     SBMLDocument* document = readSBML(path.c_str());
     if (document->getNumErrors() > 0) {
-        error(document->getError(0)->getShortMessage());
+        Error(document->getError(0)->getShortMessage());
         return NULL;
     }
 
     return document->getModel();
 }
 
-Model* ModelDatabase::getAmkfbaModel(const string& path) {
+Model* ModelDatabase::GetAmkfbaModel(const string& path) {
     Model* model;
     FileLineReader fr;
-    if (fr.loadFile(path)) {
-        error("Error opening '" + path + "'");
+    if (fr.LoadFile(path)) {
+        Error("Error opening '" + path + "'");
         return NULL;
     }
     ModelBuilder mb;
-    model = mb.loadFromAmkfbaFile(&fr);
+    model = mb.LoadFromAmkfbaFile(&fr);
 
     if (model == NULL)
-        error(mb.getError());
+        Error(mb.GetError());
     return model;
 }
 
-bool ModelDatabase::loadBounds(Model* model, const string& path) {
-    FileLineReader fr;
-    if (fr.loadFile(path)) {
-        error("Error opening '" + path + "'");
-        return false;
-    }
-
-    while (fr.hasRemainingLines()) {
-        StringTokenizer st;
-        st.parse(fr.readLine());
-
-        if (reactions_map.find(st.currentToken()) == reactions_map.end()) {
-            error("Reaction id '" + st.currentToken() + "' not found");
-            return NULL;
-        }
-
-
-
-        fr.nextLine();
-    }
+void ModelDatabase::Error(const string& err) {
+    error_description_ = err;
 }
 
-void ModelDatabase::error(const string& err) {
-    error_description = err;
-}
-
-const string& ModelDatabase::getError() const {
-    return error_description;
+const string& ModelDatabase::GetError() const {
+    return error_description_;
 }

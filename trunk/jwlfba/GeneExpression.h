@@ -18,28 +18,27 @@ class StringTokenizer;
 
 class GeneExpression {
  private:
-    vector<string> rpn_expression;
+    vector<string> rpn_expression_;
     static const char* kLeftBracket;
     static const char* kRightBracket;
 
-    bool isGeneName(const string& gene) const;
-    bool isOperatorToken(const string& token) const;
+    bool IsGeneName(const string& gene) const;
+    bool IsOperatorToken(const string& token) const;
 
-    bool evaluateExpression();
-    bool geneValue(const string& token,
+    bool GeneValue(const string& token,
             const set<string>& disabled_genes) const;
-    bool evaluate(bool val1, const string& oper, bool val2) const;
-    bool transformToRPN(StringTokenizer* tokenizer);
-    bool transformExpressionToRPN(StringTokenizer* tokenizer,
+    bool Evaluate(bool val1, const string& oper, bool val2) const;
+    bool TransformToRPN(StringTokenizer* tokenizer);
+    bool TransformExpressionToRPN(StringTokenizer* tokenizer,
             string expected_operator);
  public:
     static const char* kAndToken;
     static const char* kOrToken;
     static const char* kGeneExpressionPrefix;
-    bool looksLikeGeneExpression(const string& expr) const;
-    bool evaluate(const set<string>& disabled_genes) const;
-    bool loadExpression(const string& expr);
-    void getAllGenes(set<string>* genes);
+    bool LooksLikeGeneExpression(const string& expr) const;
+    bool Evaluate(const set<string>& disabled_genes) const;
+    bool LoadExpression(const string& expr);
+    void GetAllGenes(set<string>* genes);
 };
 
 #endif  // JWLFBA_GENEEXPRESSION_H_

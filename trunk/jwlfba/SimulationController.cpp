@@ -17,118 +17,118 @@ using std::set;
 using std::string;
 using std::vector;
 
-SimulationController::SimulationController() : simulation(NULL) {
-    model_database = new ModelDatabase;
+SimulationController::SimulationController() : simulation_(NULL) {
+    model_database_ = new ModelDatabase;
 }
 
 SimulationController::~SimulationController() {
-    delete model_database;
-    delete simulation;
+    delete model_database_;
+    delete simulation_;
 }
 
-bool SimulationController::disableReactions(const set<string> reactions) {
+bool SimulationController::DisableReactions(const set<string> reactions) {
     for (set<string>::iterator it = reactions.begin();
             it != reactions.end(); ++it) {
-        if (!simulation->disableReaction(*it)) {
-            error("No such reaction '" + *it + "'");
+        if (!simulation_->DisableReaction(*it)) {
+            Error("No such reaction '" + *it + "'");
             return false;
         }
     }
     return true;
 }
 
-bool SimulationController::disableGenes(const set<string> genes) {
+bool SimulationController::DisableGenes(const set<string> genes) {
     for (set<string>::iterator it = genes.begin();
             it != genes.end(); ++it) {
-        if (!simulation->disableGene(*it)) {
-            error("No such gene '" + *it + "'");
+        if (!simulation_->DisableGene(*it)) {
+            Error("No such gene '" + *it + "'");
             return false;
         }
     }
     return true;
 }
 
-bool SimulationController::runSimulation(const Model* model,
+bool SimulationController::RunSimulation(const Model* model,
         const vector<Bound>& bounds,
         const OptimisationParameters& optimisation_parameters) {
-    simulation = new MetabolicSimulation;
+    simulation_ = new MetabolicSimulation;
 
-    if (!simulation->loadModel(model, bounds)) {
-        error("Error loading model: " + simulation->getErrors()[0]);
+    if (!simulation_->LoadModel(model, bounds)) {
+        Error("Error Loading model: " + simulation_->GetErrors()[0]);
         return false;
     }
 
-    if (!disableReactions(optimisation_parameters.disabled_reactions))
+    if (!DisableReactions(optimisation_parameters.disabled_reactions))
         return false;
 
-    if (!disableGenes(optimisation_parameters.disabled_genes))
+    if (!DisableGenes(optimisation_parameters.disabled_genes))
         return false;
 
-    if (!simulation->setObjective(optimisation_parameters.objective)) {
-        error("Bad objective '" + optimisation_parameters.objective + "'");
+    if (!simulation_->SetObjective(optimisation_parameters.objective)) {
+        Error("Bad objective '" + optimisation_parameters.objective + "'");
         return false;
     }
 
-    if (!simulation->runSimulation()) {
-        error("GLPK error while running simulation");
+    if (!simulation_->RunSimulation()) {
+        Error("GLPK error while Running simulation");
         return false;
     }
 
     return true;
 }
 
-bool SimulationController::loadBound(const string& line, Bound* bound) {
+bool SimulationController::LoadBound(const string& line, Bound* bound) {
     StringTokenizer st;
-    st.parse(line);
-    bound->reaction_id = st.currentToken();
-    st.nextToken();
+    st.Parse(line);
+    bound->reaction_id = st.CurrentToken();
+    st.NextToken();
 
-    if (st.currentDoubleToken(&bound->lower_bound)) {
-        error("Invalid lower bound");
+    if (st.CurrentDoubleToken(&bound->lower_bound)) {
+        Error("Invalid lower bound");
         return false;
     }
-    st.nextToken();
+    st.NextToken();
 
-    if (st.currentDoubleToken(&bound->upper_bound)) {
-        error("Invalid upper bound");
+    if (st.CurrentDoubleToken(&bound->upper_bound)) {
+        Error("Invalid upper bound");
         return false;
     }
     return true;
 }
 
-bool SimulationController::loadBounds(const string& path,
+bool SimulationController::LoadBounds(const string& path,
         vector<Bound>* bounds) {
     FileLineReader fl;
-    if (!fl.loadFile(path)) {
-        error("Unable to open '" + path  + "'");
+    if (!fl.LoadFile(path)) {
+        Error("Unable to open '" + path  + "'");
         return false;
     }
 
-    while (fl.hasRemainingLines()) {
+    while (fl.HasRemainingLines()) {
         Bound bd;
-        if (!loadBound(fl.readLine(), &bd))
+        if (!LoadBound(fl.ReadLine(), &bd))
             return false;
 
         bounds->push_back(bd);
 
-        fl.nextLine();
+        fl.NextLine();
     }
     return true;
 }
 
-bool SimulationController::runSimulation(const InputParameters& params) {
+bool SimulationController::RunSimulation(const InputParameters& params) {
     Model* model;
-    assert(params.getModelPath().empty() !=
-            params.getAmkfbaModelPath().empty());
+    assert(params.model_path().empty() !=
+            params.amkfba_model_path().empty());
 
-    if (!params.getModelPath().empty()) {
-        model = model_database->getModel(params.getModelPath());
+    if (!params.model_path().empty()) {
+        model = model_database_->GetModel(params.model_path());
     } else {
-        model = model_database->getAmkfbaModel(params.getAmkfbaModelPath());
+        model = model_database_->GetAmkfbaModel(params.amkfba_model_path());
     }
 
     if (model == NULL) {
-        error("Error reading model: " + model_database->getError());
+        Error("Error reading model: " + model_database_->GetError());
         return false;
     }
 
@@ -136,10 +136,10 @@ bool SimulationController::runSimulation(const InputParameters& params) {
 
     vector<Bound> bounds;
 
-    if (!loadBounds(params.getBoundsFilePath(), &bounds))
+    if (!LoadBounds(params.bounds_file_path(), &bounds))
         return false;
 
-    bool ret = runSimulation(model, bounds, params.getOptimisationParameters());
+    bool ret = RunSimulation(model, bounds, params.optimisation_parameters());
 
     if (copied)
         delete model;
@@ -147,11 +147,11 @@ bool SimulationController::runSimulation(const InputParameters& params) {
     return ret;
 }
 
-void SimulationController::error(const string& err) {
-    error_string = err;
+void SimulationController::Error(const string& err) {
+    error_string_ = err;
 }
 
-const string& SimulationController::getError() const {
-    return error_string;
+const string& SimulationController::GetError() const {
+    return error_string_;
 }
 

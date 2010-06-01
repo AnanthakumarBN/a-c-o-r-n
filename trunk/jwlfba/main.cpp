@@ -7,7 +7,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    SBMLDocument* document = readSBML(argv[1]);
+/*    SBMLDocument* document = readSBML(argv[1]);
     unsigned int errors = document->getNumErrors();
 
     cout << endl;
@@ -16,12 +16,12 @@ int main(int argc, char* argv[])
     cout << endl;
 
     if (errors > 0) document->printErrors(cerr);
-
+*/
 /*    ModelBuilder mb;
     FileLineReader rd;
     rd.loadFile(argv[1]);
     Model* mod = mb.loadFromAmkfbaFile(&rd);*/
-    Model* mod = document->getModel();
+  /*  Model* mod = document->getModel();
 
 //    if (mod == NULL)
  //       printf("%s\n", mb.getError().c_str());
@@ -36,6 +36,6 @@ int main(int argc, char* argv[])
     printf("%d %d\n", (int)r1, (int)r2);
     ms.runSimulation();
 
-    printf("%lf\n", ms.getObjectiveFunctionValue());
+    printf("%lf\n", ms.getObjectiveFunctionValue());*/
 }
 

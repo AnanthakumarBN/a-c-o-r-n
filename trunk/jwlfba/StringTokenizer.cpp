@@ -16,50 +16,50 @@ using std::string;
 using std::stack;
 using std::vector;
 
-bool StringTokenizer::isSeparator(char c) {
-    if (separator == 0)
+bool StringTokenizer::IsSeparator(char c) {
+    if (separator_ == 0)
         return isspace(c);
     else
-        return c == separator;
+        return c == separator_;
 }
 
-void StringTokenizer::parse(const string& str, char sep) {
-    separator = sep;
-    parse(str);
+void StringTokenizer::Parse(const string& str, char sep) {
+    separator_ = sep;
+    Parse(str);
 }
 
-void StringTokenizer::parse(const string& str) {
-    tokens.clear();
+void StringTokenizer::Parse(const string& str) {
+    tokens_.clear();
 
     string current;
     for (unsigned i = 0; i < str.size(); i++) {
-        if (isSeparator(str[i]) && !current.empty()) {
-            tokens.push_back(current);
+        if (IsSeparator(str[i]) && !current.empty()) {
+            tokens_.push_back(current);
             current = "";
-        } else if (!isSeparator(str[i])) {
+        } else if (!IsSeparator(str[i])) {
             current += str[i];
         }
     }
     if (!current.empty())
-        tokens.push_back(current);
+        tokens_.push_back(current);
 }
 
-StringTokenizer::StringTokenizer() : current_token_number(0), separator(0) { }
+StringTokenizer::StringTokenizer() : current_token_number_(0), separator_(0) { }
 
-void StringTokenizer::nextToken() {
-    current_token_number++;
+void StringTokenizer::NextToken() {
+    current_token_number_++;
 }
 
-void StringTokenizer::moveToFirstToken() {
-    current_token_number = 0;
+void StringTokenizer::MoveToFirstToken() {
+    current_token_number_ = 0;
 }
 
-bool StringTokenizer::hasRemainingTokens() {
-    return current_token_number < tokens.size();
+bool StringTokenizer::HasRemainingTokens() {
+    return current_token_number_ < tokens_.size();
 }
 
-bool StringTokenizer::currentDoubleToken(double* val) {
-    const string& token = currentToken();
+bool StringTokenizer::CurrentDoubleToken(double* val) {
+    const string& token = CurrentToken();
     char* endptr;
     *val = strtod(token.c_str(), &endptr);
     if (isnan(*val) || isinf(*val) || endptr != token.c_str() + token.size())
@@ -68,9 +68,9 @@ bool StringTokenizer::currentDoubleToken(double* val) {
     return true;
 }
 
-string StringTokenizer::currentToken() {
-    if (current_token_number < tokens.size())
-        return tokens[current_token_number];
+string StringTokenizer::CurrentToken() {
+    if (current_token_number_ < tokens_.size())
+        return tokens_[current_token_number_];
     else
         return "";
 }

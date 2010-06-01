@@ -8,6 +8,7 @@
 #include<stack>
 #include<string>
 #include<vector>
+#include"StringTokenizer.h"
 
 using std::set;
 using std::string;
@@ -20,44 +21,7 @@ const char* GeneExpression::kLeftBracket = "(";
 const char* GeneExpression::kRightBracket = ")";
 const char* GeneExpression::kGeneExpressionPrefix = "GENE_ASSOCIATION:";
 
-void StringTokenizer::parse(const string& str) {
-    tokens.clear();
-
-    string current;
-    for (unsigned i = 0; i < str.size(); i++) {
-        if (isspace(str[i]) && !current.empty()) {
-            tokens.push_back(current);
-            current = "";
-        } else if (!isspace(str[i])) {
-            current += str[i];
-        }
-    }
-    if (!current.empty())
-        tokens.push_back(current);
-}
-
-StringTokenizer::StringTokenizer() : current_token_number(0) { }
-
-void StringTokenizer::nextToken() {
-    current_token_number++;
-}
-
-void StringTokenizer::moveToFirstToken() {
-    current_token_number = 0;
-}
-
-bool StringTokenizer::hasRemainingTokens() {
-    return current_token_number < tokens.size();
-}
-
-string StringTokenizer::currentToken() {
-    if (current_token_number < tokens.size())
-        return tokens[current_token_number];
-    else
-        return "";
-}
-
-bool GeneExpression::looksLikeGeneExpression(const string& expr) {
+bool GeneExpression::looksLikeGeneExpression(const string& expr) const {
     if (expr.empty())
         return false;
 
@@ -77,12 +41,12 @@ bool GeneExpression::loadExpression(const string& expr) {
     return transformToRPN(&tokenizer);
 }
 
-bool GeneExpression::isGeneName(const string& gene) {
+bool GeneExpression::isGeneName(const string& gene) const {
     return !gene.empty() && gene != kAndToken && gene != kOrToken &&
         gene != kLeftBracket && gene != kRightBracket;
 }
 
-bool GeneExpression::isOperatorToken(const string& token) {
+bool GeneExpression::isOperatorToken(const string& token) const {
     return token == kAndToken || token == kOrToken;
 }
 
@@ -135,11 +99,12 @@ bool GeneExpression::transformToRPN(StringTokenizer* tokenizer) {
 }
 
 bool GeneExpression::geneValue(const string& gene,
-        const set<string>& disabledGenes) {
+        const set<string>& disabledGenes) const {
     return disabledGenes.find(gene) == disabledGenes.end();
 }
 
-bool GeneExpression::evaluate(bool val1, const string& oper, bool val2) {
+bool GeneExpression::evaluate(bool val1, const string& oper,
+        bool val2) const {
     if (oper == kAndToken)
         return val1 && val2;
     else if (oper == kOrToken)
@@ -148,7 +113,7 @@ bool GeneExpression::evaluate(bool val1, const string& oper, bool val2) {
         assert(false);
 }
 
-bool GeneExpression::evaluate(const set<string>& disabledGenes) {
+bool GeneExpression::evaluate(const set<string>& disabledGenes) const {
     stack<bool> rpn_stack;
 
     if (rpn_expression.empty())

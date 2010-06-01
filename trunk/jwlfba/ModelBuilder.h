@@ -14,32 +14,11 @@ using std::set;
 class Model;
 class Reaction;
 class StringTokenizer;
-
-class LineReader {
- public:
-    virtual string readLine() = 0;
-    virtual void nextLine() = 0;
-    virtual bool hasRemainingLines() = 0;
-    virtual ~LineReader();
-};
-
-class FileLineReader : public LineReader {
-    FILE* file;
-    string next_line;
-    void fetchLine();
- public:
-    FileLineReader();
-    virtual ~FileLineReader();
-    bool loadFile(const string& path);
-
-    virtual string readLine();
-    virtual void nextLine();
-    virtual bool hasRemainingLines();
-};
+class LineReader;
 
 class ModelBuilder {
  private:
-    string error;
+    string error_description;
     set<string> species;
 
     static const char* kReactantsProductsSeparator;
@@ -61,16 +40,16 @@ class ModelBuilder {
     bool addBounds(Reaction* reaction, StringTokenizer* st);
     bool addReaction(Model* model, StringTokenizer* st);
     bool addGenes(Reaction* reaction, StringTokenizer* st);
-    bool isValidSBMLDIdChar(char c);
-    string encodeChar(char c);
-    string createValidSBMLId(const string& sid);
+    bool isValidSBMLDIdChar(char c) const;
+    string encodeChar(char c) const;
+    string createValidSBMLId(const string& sid) const;
+    void error(const string& err);
  public:
     static string decodeSBMLId(const string& id);
     static const char* kCreatedFromAmkfbaFile;
-    string getError() { return error; }
+    string getError() const;
 
     Model* loadFromAmkfbaFile(LineReader* reader);
-    string getErrorDescription();
 };
 
 #endif  // JWLFBA_MODELBUILDER_H_

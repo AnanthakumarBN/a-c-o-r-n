@@ -6,58 +6,11 @@
 #include<sbml/SBMLTypes.h>
 #include<string>
 #include"GeneExpression.h"
+#include"StringTokenizer.h"
 #include"MetabolicSimulation.h"
+#include"LineReader.h"
 
 using std::string;
-
-const int kFileLineReaderBuffer = 1000;
-
-LineReader::~LineReader() { }
-
-FileLineReader::FileLineReader() : file(NULL) { }
-
-FileLineReader::~FileLineReader() {
-    if (file)
-        fclose(file);
-}
-
-bool FileLineReader::loadFile(const string& path) {
-    file = fopen(path.c_str(), "r");
-    return  file != NULL;
-}
-
-void FileLineReader::fetchLine() {
-    char buf[kFileLineReaderBuffer];
-    bool newline_reached = false;
-
-    if (!next_line.empty())
-        return;
-
-    while (!newline_reached && fgets(buf, kFileLineReaderBuffer, file)) {
-        int len = strlen(buf);
-        if (buf[len-1] == '\n') {
-            buf[len-1] = '\0';
-            newline_reached = true;
-        }
-        next_line += buf;
-    }
-}
-
-string FileLineReader::readLine() {
-    fetchLine();
-    return next_line;
-}
-
-void FileLineReader::nextLine() {
-    next_line = "";
-    fetchLine();
-}
-
-bool FileLineReader::hasRemainingLines() {
-    fetchLine();
-    return next_line != "";
-}
-
 
 const char* ModelBuilder::kReactantsProductsSeparator = "=";
 const char* ModelBuilder::kReactionEndToken = "|";
@@ -73,7 +26,7 @@ const char* ModelBuilder::kCreatedFromAmkfbaFile = "CREATED_FROM_AMKFBA_FILE";
 
 bool ModelBuilder::getDouble(StringTokenizer* st, double* val) {
     if (sscanf(st->currentToken().c_str(), "%lf", val) != 1) {
-        error = "Expected a floating point number";
+        error("Expected a floating point number");
         return false;
     }
 
@@ -81,18 +34,18 @@ bool ModelBuilder::getDouble(StringTokenizer* st, double* val) {
     return true;
 }
 
-bool ModelBuilder::isValidSBMLDIdChar(char c) {
+bool ModelBuilder::isValidSBMLDIdChar(char c) const {
     return isalnum(c) || c == '_';
 }
 
-string ModelBuilder::encodeChar(char c) {
+string ModelBuilder::encodeChar(char c) const {
     string ret = "_";
     ret += 'a' + c % 16;
     ret += 'a' + c / 16;
     return ret;
 }
 
-string ModelBuilder::createValidSBMLId(const string& sid) {
+string ModelBuilder::createValidSBMLId(const string& sid) const {
     string ret;
     ret += '_';
     for (unsigned i = 0; i < sid.size(); i++) {
@@ -132,7 +85,7 @@ string ModelBuilder::decodeSBMLId(const string& id) {
 bool ModelBuilder::getStoichiometry(StringTokenizer* st, double* coefficient,
         string* species) {
     if (!getDouble(st, coefficient)) {
-        error = "Bad coefficient";
+        error("Bad coefficient");
         return false;
     }
 
@@ -143,6 +96,8 @@ bool ModelBuilder::getStoichiometry(StringTokenizer* st, double* coefficient,
     st->nextToken();
     return true;
 }
+
+// TODO(kuba) - ladniej!
 
 void ModelBuilder::addSpecies(Model* model, const string& species_id) {
     if (species.find(species_id) != species.end())
@@ -163,7 +118,7 @@ bool ModelBuilder::addReactants(Model* model, StringTokenizer* st) {
         double coefficient;
         string species;
         if (!getStoichiometry(st, &coefficient, &species)) {
-            error = "Reactant expected";
+            error("Reactant expected");
             return false;
         }
         SpeciesReference* species_reference = model->createReactant();
@@ -184,7 +139,7 @@ bool ModelBuilder::addProducts(Model* model, StringTokenizer* st) {
         double coefficient;
         string species;
         if (!getStoichiometry(st, &coefficient, &species)) {
-            error = "Product expected";
+            error("Product expected");
             return false;
         }
         SpeciesReference* species_reference = model->createProduct();
@@ -204,17 +159,17 @@ bool ModelBuilder::addBounds(Reaction* reaction, StringTokenizer* st) {
     double lower_bound, upper_bound;
 
     if (!getDouble(st, &lower_bound) || !getDouble(st, &upper_bound)) {
-        error = "Incorrect bounds";
+        error("Incorrect bounds");
         return false;
     }
 
     KineticLaw* kinetic_law = reaction->createKineticLaw();
     Parameter* parameter = kinetic_law->createParameter();
-    parameter->setId(kLowerBoundParameterId);
+    parameter->setId(MetabolicSimulation::kLowerBoundParameterId);
     parameter->setValue(lower_bound);
 
     parameter = kinetic_law->createParameter();
-    parameter->setId(kUpperBoundParameterId);
+    parameter->setId(MetabolicSimulation::kUpperBoundParameterId);
     parameter->setValue(upper_bound);
 
     return true;
@@ -224,7 +179,7 @@ bool ModelBuilder::addGenes(Reaction* reaction, StringTokenizer* st) {
     string genes = GeneExpression::kGeneExpressionPrefix;
 
     if (st->currentToken() != kGenesBeginToken) {
-        error = string("Expected '") + kGenesBeginToken + "'";
+        error(string("Expected '") + kGenesBeginToken + "'");
         return false;
     }
     st->nextToken();
@@ -242,7 +197,7 @@ bool ModelBuilder::addGenes(Reaction* reaction, StringTokenizer* st) {
     genes += ' ';
 
     if (st->currentToken() != kGenesEndToken) {
-        error = string("Expected '") + kGenesEndToken + "'";
+        error(string("Expected '") + kGenesEndToken + "'");
         return false;
     }
 
@@ -255,7 +210,7 @@ bool ModelBuilder::addGenes(Reaction* reaction, StringTokenizer* st) {
 
 bool ModelBuilder::addReaction(Model* model, StringTokenizer* st) {
     if (!st->hasRemainingTokens()) {
-        error = "Reaction id expected";
+        error("Reaction id expected");
         return false;
     }
 
@@ -270,7 +225,7 @@ bool ModelBuilder::addReaction(Model* model, StringTokenizer* st) {
         return false;
 
     if (st->currentToken() != kBoundsStartToken) {
-        error = string("Expected '") + kBoundsStartToken + "'";
+        error(string("Expected '") + kBoundsStartToken + "'");
         return false;
     }
     st->nextToken();
@@ -282,6 +237,14 @@ bool ModelBuilder::addReaction(Model* model, StringTokenizer* st) {
         return false;
 
     return true;
+}
+
+void ModelBuilder::error(const string& err) {
+    error_description = err;
+}
+
+string ModelBuilder::getError() const {
+    return error_description;
 }
 
 Model* ModelBuilder::loadFromAmkfbaFile(LineReader* reader) {

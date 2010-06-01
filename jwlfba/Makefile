@@ -1,7 +1,8 @@
 CPPFLAGS=-O2
 LIBS=-lsbml -lglpk
 
-sources=MetabolicSimulation.cpp GeneExpression.cpp ModelBuilder.cpp
+sources=MetabolicSimulation.cpp GeneExpression.cpp ModelBuilder.cpp FileLineReader.cpp StringTokenizer.cpp SimulationController.cpp InputParameters.cpp
+
 objects=$(sources:.cpp=.o)
 
 %.o: %.cpp %.h

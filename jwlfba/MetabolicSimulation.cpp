@@ -4,7 +4,7 @@
 
 #include"MetabolicSimulation.h"
 #include<glpk/glpk.h>
-#include<sbml/Model.h>
+#include<sbml/SBMLTypes.h>
 #include<sbml/Species.h>
 #include<utility>
 #include<string>
@@ -32,7 +32,7 @@ void MetabolicSimulation::addError(const string& error) {
     model_errors.push_back(error);
 }
 
-const vector<string>& MetabolicSimulation::getErrors() {
+const vector<string>& MetabolicSimulation::getErrors() const {
     return model_errors;
 }
 
@@ -72,7 +72,7 @@ void MetabolicSimulation::setColumnBounds(int column,
     const ListOfParameters& parameters = *reaction.getKineticLaw()->
         getListOfParameters();
 
-    double upper_bound, lower_bound;
+    double upper_bound = 0, lower_bound = 0;
 
     for (unsigned i = 0; i < parameters.size(); i++) {
         if (parameters.get(i)->getId() == kUpperBoundParameterId)
@@ -206,7 +206,7 @@ bool MetabolicSimulation::validateModel() {
 }
 
 GeneExpression MetabolicSimulation::getGeneExpressionFromNotes(
-        const XMLNode& notes) {
+        const XMLNode& notes) const {
     GeneExpression gexp;
     for (unsigned j = 0; j < notes.getNumChildren(); j++) {
         const XMLNode& note = notes.getChild(j);
@@ -234,13 +234,70 @@ void MetabolicSimulation::getGenes() {
     }
 }
 
-bool MetabolicSimulation::loadModel(const Model* mod) {
+void MetabolicSimulation::buildReactionsMap() {
+    for (unsigned i = 0; i < model->getNumReactions(); i++) {
+        reactions_map[model->getReaction(i)->getId()] = i;
+    }
+}
+
+void MetabolicSimulation::applyBounds(const Bound& bound, KineticLaw* kl) {
+    ListOfParameters* parameters = kl->getListOfParameters();
+
+    Parameter *upper_bound_parameter = NULL, *lower_bound_parameter = NULL;
+
+    for (unsigned i = 0; i < parameters->size(); i++) {
+        if (parameters->get(i)->getId() == kUpperBoundParameterId)
+            upper_bound_parameter = parameters->get(i);
+        if (parameters->get(i)->getId() == kLowerBoundParameterId)
+            lower_bound_parameter = parameters->get(i);
+    }
+
+    if (upper_bound_parameter == NULL)
+        upper_bound_parameter = kl->createParameter();
+
+    if (lower_bound_parameter == NULL)
+        lower_bound_parameter = kl->createParameter();
+
+    lower_bound_parameter->setId(kLowerBoundParameterId);
+    lower_bound_parameter->setValue(bound.lower_bound);
+
+    upper_bound_parameter->setId(kUpperBoundParameterId);
+    upper_bound_parameter->setValue(bound.upper_bound);
+}
+
+bool MetabolicSimulation::applyBounds(const vector<Bound>& bounds) {
+    for (unsigned i = 0; i < bounds.size(); i++) {
+        if (reactions_map.find(bounds[i].reaction_id) == reactions_map.end()) {
+            addError("Cannot set bounds for reaction '" +
+                    bounds[i].reaction_id + "'");
+        }
+
+        Reaction* reaction = model->getReaction(
+                reactions_map[bounds[i].reaction_id]);
+
+        KineticLaw* kl;
+        if (reaction->isSetKineticLaw())
+            kl = reaction->getKineticLaw();
+        else
+            kl = reaction->createKineticLaw();
+
+        applyBounds(bounds[i], kl);
+    }
+}
+
+bool MetabolicSimulation::loadModel(const Model* mod,
+        const vector<Bound>& bounds) {
     assert(linear_problem == NULL);
     assert(model == NULL);
 
     linear_problem = glp_create_prob();
 
     model = mod->clone();
+
+    buildReactionsMap();
+
+    if (!applyBounds(bounds))
+        return false;
 
     if (!validateModel())
         return false;
@@ -273,7 +330,7 @@ void MetabolicSimulation::setObjectiveForColumn(const string& sid, int column,
     for (unsigned i = 0; i < species.size(); i++) {
         const SpeciesReference& species_reference =
             *reinterpret_cast<const SpeciesReference*>(species.get(i));
-        
+
         if (species_reference.getSpecies() == sid)
             glp_set_obj_coef(linear_problem, column+1,
                     scale*species_reference.getStoichiometry());
@@ -304,12 +361,20 @@ bool MetabolicSimulation::setObjective(const string& objective) {
     return true;
 }
 
-void MetabolicSimulation::runSimulation() {
+void MetabolicSimulation::setMaximize(bool maximize) {
+    if (maximize)
+        glp_set_obj_dir(linear_problem, GLP_MAX);
+    else
+        glp_set_obj_dir(linear_problem, GLP_MIN);
+}
+
+bool MetabolicSimulation::runSimulation() {
     assert(linear_problem != NULL);
 
-    glp_set_obj_dir(linear_problem, GLP_MAX);
     if (glp_simplex(linear_problem, NULL) != 0)
-        assert(false);  // TODO(me)
+        return false;
+
+    return true;
 }
 
 double MetabolicSimulation::getObjectiveFunctionValue() {

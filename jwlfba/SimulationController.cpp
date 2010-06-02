@@ -33,7 +33,10 @@ SimulationController::~SimulationController() {
 bool SimulationController::DisableReactions(const set<string> reactions) {
     for (set<string>::iterator it = reactions.begin();
             it != reactions.end(); ++it) {
-        if (!simulation_->DisableReaction(*it)) {
+        string reaction_id = *it;
+        if (using_amkfba_model_)
+            reaction_id = ModelBuilder::CreateValidSBMLId(reaction_id);
+        if (!simulation_->DisableReaction(reaction_id)) {
             Error("No such reaction '" + *it + "'");
             return false;
         }
@@ -61,6 +64,8 @@ bool SimulationController::RunSimulation(const Model* model,
         Error("Error Loading model: " + simulation_->GetErrors()[0]);
         return false;
     }
+    if (ModelBuilder::IsAmkfbaModel(model))
+        using_amkfba_model_ = true;
 
     if (!DisableReactions(optimisation_parameters.disabled_reactions))
         return false;
@@ -71,10 +76,8 @@ bool SimulationController::RunSimulation(const Model* model,
     string objective = optimisation_parameters.objective;
 
     // Encode the objective for amkfba models.
-    if (ModelBuilder::IsAmkfbaModel(model)) {
-        using_amkfba_model_ = true;
+    if (using_amkfba_model_)
         objective = ModelBuilder::CreateValidSBMLId(objective);
-    }
 
     if (!simulation_->SetObjective(objective)) {
         Error("Bad objective '" + optimisation_parameters.objective + "'");

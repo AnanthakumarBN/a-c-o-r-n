@@ -52,10 +52,10 @@ string ModelBuilder::CreateValidSBMLId(const string& sid) {
 }
 
 bool ModelBuilder::IsAmkfbaModel(const Model* model) {
-    const XMLNode& notes = *(const_cast<Model*>(model)->getNotes());
+    const XMLNode* notes = const_cast<Model*>(model)->getNotes();
 
-    return notes.getNumChildren() > 0 &&
-        notes.getChild(0).getCharacters() == kCreatedFromAmkfbaFile;
+    return notes != NULL && notes->getNumChildren() > 0 &&
+        notes->getChild(0).getCharacters() == kCreatedFromAmkfbaFile;
 }
 
 string ModelBuilder::DecodeSBMLId(const string& id) {
@@ -91,6 +91,7 @@ bool ModelBuilder::GetStoichiometry(StringTokenizer* st, double* coefficient,
         Error("Bad coefficient");
         return false;
     }
+    st->NextToken();
 
     if (!st->HasRemainingTokens())
         return false;
@@ -162,11 +163,17 @@ bool ModelBuilder::AddProducts(Model* model, StringTokenizer* st) {
 bool ModelBuilder::AddBounds(Reaction* reaction, StringTokenizer* st) {
     double lower_bound, upper_bound;
 
-    if (!st->CurrentDoubleToken(&lower_bound) ||
-            !st->CurrentDoubleToken(&upper_bound)) {
-        Error("Incorrect bounds");
+    if (!st->CurrentDoubleToken(&lower_bound)) {
+        Error("Incorrect lower bound");
         return false;
     }
+    st->NextToken();
+
+    if (!st->CurrentDoubleToken(&upper_bound)) {
+        Error("Incorrect upper bound");
+        return false;
+    }
+    st->NextToken();
 
     KineticLaw* kinetic_law = reaction->createKineticLaw();
     Parameter* parameter = kinetic_law->createParameter();

@@ -167,7 +167,6 @@ class MetabolicSimulation {
     // Returns true iff the parameter is an id of existing species or reaction.
     bool SetObjective(const string& objective);
 
-    // TODO(me)
     void SetMaximize(bool maximize);
 
     // Executes the optimisation.

@@ -42,6 +42,7 @@ bool SimulationController::DisableReactions(const set<string> reactions) {
 bool SimulationController::DisableGenes(const set<string> genes) {
     for (set<string>::iterator it = genes.begin();
             it != genes.end(); ++it) {
+
         if (!simulation_->DisableGene(*it)) {
             Error("No such gene '" + *it + "'");
             return false;
@@ -92,15 +93,16 @@ bool SimulationController::LoadBound(const string& line, Bound* bound) {
     StringTokenizer st;
     st.Parse(line);
     bound->reaction_id = st.CurrentToken();
+
     st.NextToken();
 
-    if (st.CurrentDoubleToken(&bound->lower_bound)) {
+    if (!st.CurrentDoubleToken(&bound->lower_bound)) {
         Error("Invalid lower bound");
         return false;
     }
     st.NextToken();
 
-    if (st.CurrentDoubleToken(&bound->upper_bound)) {
+    if (!st.CurrentDoubleToken(&bound->upper_bound)) {
         Error("Invalid upper bound");
         return false;
     }
@@ -152,6 +154,12 @@ bool SimulationController::RunSimulation(const InputParameters& params) {
 
     if (!LoadBounds(params.bounds_file_path(), &bounds))
         return false;
+
+    if (ModelBuilder::IsAmkfbaModel(model)) {
+        for (unsigned i = 0; i < bounds.size(); i++)
+            bounds[i].reaction_id = ModelBuilder::CreateValidSBMLId(
+                    bounds[i].reaction_id);
+    }
 
     bool ret = RunSimulation(model, bounds, params.optimisation_parameters());
 

@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include"../GeneExpression.h"
+#include"../StringTokenizer.h"
 
 class StringTokenizerTestFixture {
 };
@@ -8,57 +8,57 @@ BOOST_FIXTURE_TEST_SUITE(Test1, StringTokenizerTestFixture);
 
 BOOST_AUTO_TEST_CASE(OneTokenTest) {
     StringTokenizer st;
-    st.parse("abc");
-    BOOST_CHECK_EQUAL(st.currentToken(), "abc");
-    st.nextToken();
-    BOOST_CHECK(!st.hasRemainingTokens());
+    st.Parse("abc");
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "abc");
+    st.NextToken();
+    BOOST_CHECK(!st.HasRemainingTokens());
 }
 
 BOOST_AUTO_TEST_CASE(WhitespacesTest) {
     StringTokenizer st;
-    st.parse("  123\td ");
-    BOOST_CHECK_EQUAL(st.currentToken(), "123");
-    st.nextToken();
-    BOOST_CHECK_EQUAL(st.currentToken(), "d");
-    st.nextToken();
-    BOOST_CHECK(!st.hasRemainingTokens());
+    st.Parse("  123\td ");
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "123");
+    st.NextToken();
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "d");
+    st.NextToken();
+    BOOST_CHECK(!st.HasRemainingTokens());
 }
 
 BOOST_AUTO_TEST_CASE(MoveToFirstTest) {
     StringTokenizer st;
-    st.parse("x y z");
-    BOOST_CHECK_EQUAL(st.currentToken(), "x");
-    st.nextToken();
-    BOOST_CHECK_EQUAL(st.currentToken(), "y");
-    st.moveToFirstToken();
-    BOOST_CHECK_EQUAL(st.currentToken(), "x");
-    st.nextToken();
-    BOOST_CHECK_EQUAL(st.currentToken(), "y");
-    st.nextToken();
-    BOOST_CHECK_EQUAL(st.currentToken(), "z");
-    st.nextToken();
-    BOOST_CHECK(!st.hasRemainingTokens());
-    st.moveToFirstToken();
-    BOOST_CHECK_EQUAL(st.currentToken(), "x");
+    st.Parse("x y z");
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "x");
+    st.NextToken();
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "y");
+    st.MoveToFirstToken();
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "x");
+    st.NextToken();
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "y");
+    st.NextToken();
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "z");
+    st.NextToken();
+    BOOST_CHECK(!st.HasRemainingTokens());
+    st.MoveToFirstToken();
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "x");
 }
 
 BOOST_AUTO_TEST_CASE(ReadingPastEndTest) {
     StringTokenizer st;
-    st.parse("token1 token2");
-    BOOST_CHECK(st.hasRemainingTokens());
-    BOOST_CHECK_EQUAL(st.currentToken(), "token1");
-    st.nextToken();
-    BOOST_CHECK_EQUAL(st.currentToken(), "token2");
-    BOOST_CHECK(st.hasRemainingTokens());
-    st.nextToken();
-    BOOST_CHECK_EQUAL(st.currentToken(), "");
+    st.Parse("token1 token2");
+    BOOST_CHECK(st.HasRemainingTokens());
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "token1");
+    st.NextToken();
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "token2");
+    BOOST_CHECK(st.HasRemainingTokens());
+    st.NextToken();
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "");
 }
 
 BOOST_AUTO_TEST_CASE(EmptyString) {
     StringTokenizer st;
-    st.parse("");
-    BOOST_CHECK_EQUAL(st.currentToken(), "");
-    BOOST_CHECK(!st.hasRemainingTokens());
+    st.Parse("");
+    BOOST_CHECK_EQUAL(st.CurrentToken(), "");
+    BOOST_CHECK(!st.HasRemainingTokens());
 }
 
 BOOST_AUTO_TEST_SUITE_END();

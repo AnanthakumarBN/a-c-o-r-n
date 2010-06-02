@@ -37,13 +37,13 @@ void TextInterface::ShowResults(const SimulationController& sc,
     else
         printf("UNDEFINED\n");
 
-    printf("%.8lf\n", sc.GetObjective());
+    printf("%.6lf\n", sc.GetObjective());
 
     if (print_flux) {
         vector<ReactionFlux> rf;
         sc.GetFlux(&rf);
         for (unsigned i = 0; i < rf.size(); i++) {
-            printf("%s %.8lf\n", rf[i].reaction.c_str(), rf[i].flux);
+            printf("%s %.6lf\n", rf[i].reaction.c_str(), rf[i].flux);
         }
     }    
 }

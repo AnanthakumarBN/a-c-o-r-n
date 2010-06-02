@@ -62,6 +62,7 @@ bool StringTokenizer::CurrentDoubleToken(double* val) {
     const string& token = CurrentToken();
     char* endptr;
     *val = strtod(token.c_str(), &endptr);
+
     if (isnan(*val) || isinf(*val) || endptr != token.c_str() + token.size())
         return false;
 

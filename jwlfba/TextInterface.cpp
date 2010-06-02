@@ -5,12 +5,17 @@
 #include"TextInterface.h"
 #include<cstdio>
 #include<string>
+#include<vector>
 #include"InputParameters.h"
-#include"MetabolicSimulation.h"
+#include"Bound.h"
+#include"ReactionFlux.h"
 #include"SimulationController.h"
 
 using std::string;
+using std::vector;
 
+// Maximum length of a command. Has to be relatively big, since it may
+// hold up to three file paths.
 const int kMaxCommandLineLength = 50000;
 
 void TextInterface::LogError(const string& err) {
@@ -45,7 +50,7 @@ void TextInterface::ShowResults(const SimulationController& sc,
         for (unsigned i = 0; i < rf.size(); i++) {
             printf("%s %.6lf\n", rf[i].reaction.c_str(), rf[i].flux);
         }
-    }    
+    }
 }
 
 void TextInterface::RunBatch(const InputParameters& parameters) {

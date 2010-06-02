@@ -8,8 +8,14 @@ objects=$(sources:.cpp=.o)
 %.o: %.cpp %.h
 	g++ -Wall -Wshadow $(CPPFLAGS) -c $< -o $@
 
+
 jwlfba: $(objects) main.cpp
 	g++ $(LIBS) $(CPPFLAGS) $^ -o $@
+
+clean:
+	rm -f *.o
+	rm -f jwlfba
+	rm -f jwlfba_tests
 
 TEST_LIBS=-lboost_unit_test_framework
 

@@ -16,6 +16,8 @@ using std::set;
 using std::string;
 using std::vector;
 
+// The list of all command line parameters for a simulation
+
 struct OptimisationParameters {
     bool minimize;
     set<string> disabled_genes;
@@ -25,19 +27,51 @@ struct OptimisationParameters {
     OptimisationParameters();
 };
 
+// Responsible for parsing command line and loading all option.
+
 class InputParameters {
  private:
+    // Simulation parameters
     OptimisationParameters optimisation_parameters_;
+
+    // Path to XML model file. '-' denotes stdin
     string model_path_;
+
+    // Path to model file in amkfba format. '-' denotes stdin
     string amkfba_model_path_;
+
+    // Path to file describing bounds.
     string bounds_file_path_;
+
+    // True if we should run in interactive mode, in which comands are read
+    // from standard input in a loop.
     bool interactive_mode_;
+
+    // Determines if the flux through each reaction should be printed after
+    // finding the solution.
     bool print_flux_;
 
+    // Syntax errors in the parameters.
     vector<string> errors_;
-    map<string, string> GetParameterMap(const string& param);
+
+    // Returns a value for a given key in a map or "" if the value
+    // is undefined. It has an advantage over [] operator, since it can
+    // be used with a const map.
+    string GetMapValue(const map<string, string>& mp, const string& key);
+
+    // Parses the command line into a option->value map
+    map<string, string> GetParametersMap(const string& param) const;
+
+    // Returns true iff we recognize all parameters from the param_map
+    bool CheckForUnknownParameters(const map<string, string>& param_map);
+
+    // Returns true iff the set of parameters is correct.
     bool ValidateParametersMap(const map<string, string>& param_map);
+
+    // Parses a comma separated string into set of values.
     void ParseSetValue(const string& csv_values, set<string>* out);
+
+    // Reports a syntax error.
     void AddError(const string& error);
  public:
     InputParameters();
@@ -49,7 +83,12 @@ class InputParameters {
     const OptimisationParameters& optimisation_parameters() const {
         return optimisation_parameters_;
     }
+
+    // Returns the vector of sytnax errors.
     const vector<string>& GetErrors() const;
+
+    // Loads parameters from a string. Returns true iff the parameters
+    // are valid.
     bool LoadFromString(const string& input_parameters);
 };
 

@@ -7,7 +7,9 @@
 #include<set>
 #include<string>
 #include<vector>
+#include"Bound.h"
 #include"ModelDatabase.h"
+#include"ReactionFlux.h"
 #include"ModelBuilder.h"
 #include"MetabolicSimulation.h"
 #include"InputParameters.h"
@@ -42,7 +44,6 @@ bool SimulationController::DisableReactions(const set<string> reactions) {
 bool SimulationController::DisableGenes(const set<string> genes) {
     for (set<string>::iterator it = genes.begin();
             it != genes.end(); ++it) {
-
         if (!simulation_->DisableGene(*it)) {
             Error("No such gene '" + *it + "'");
             return false;
@@ -69,6 +70,7 @@ bool SimulationController::RunSimulation(const Model* model,
 
     string objective = optimisation_parameters.objective;
 
+    // Encode the objective for amkfba models.
     if (ModelBuilder::IsAmkfbaModel(model)) {
         using_amkfba_model_ = true;
         objective = ModelBuilder::CreateValidSBMLId(objective);
@@ -148,25 +150,19 @@ bool SimulationController::RunSimulation(const InputParameters& params) {
         return false;
     }
 
-    bool copied = false;
-
     vector<Bound> bounds;
 
     if (!LoadBounds(params.bounds_file_path(), &bounds))
         return false;
 
+    // Encode the bounds for amkfba models
     if (ModelBuilder::IsAmkfbaModel(model)) {
         for (unsigned i = 0; i < bounds.size(); i++)
             bounds[i].reaction_id = ModelBuilder::CreateValidSBMLId(
                     bounds[i].reaction_id);
     }
 
-    bool ret = RunSimulation(model, bounds, params.optimisation_parameters());
-
-    if (copied)
-        delete model;
-
-    return ret;
+    return RunSimulation(model, bounds, params.optimisation_parameters());
 }
 
 bool SimulationController::GetOptimal() const {

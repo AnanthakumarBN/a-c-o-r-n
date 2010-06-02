@@ -53,8 +53,9 @@ bool GeneExpression::IsOperatorToken(const string& token) const {
 
 bool GeneExpression::TransformExpressionToRPN(StringTokenizer* tokenizer,
         string expected_operator) {
-
+    // First, recognize the type of the expression
     if (tokenizer->CurrentToken() == kLeftBracket) {
+        // Sub-expression
         tokenizer->NextToken();
         if (!TransformExpressionToRPN(tokenizer, "")
                 || tokenizer->CurrentToken() != kRightBracket) {
@@ -62,12 +63,14 @@ bool GeneExpression::TransformExpressionToRPN(StringTokenizer* tokenizer,
         }
         tokenizer->NextToken();
     } else if (IsGeneName(tokenizer->CurrentToken())) {
+        // Get the first gene
         rpn_expression_.push_back(tokenizer->CurrentToken());
         tokenizer->NextToken();
     } else {
         return false;
     }
 
+    // The rest is zero or more and/or gene pairs.
     if (!tokenizer->HasRemainingTokens() ||
             tokenizer->CurrentToken() == kRightBracket)
        return true;
@@ -121,6 +124,7 @@ bool GeneExpression::Evaluate(const set<string>& disabledGenes) const {
 
     for (unsigned i = 0; i < rpn_expression_.size(); i++) {
         if (IsOperatorToken(rpn_expression_[i])) {
+            // Perform operation on top topmost elements.
             assert(rpn_stack.size() >= 2);
 
             bool x, y;
@@ -131,6 +135,7 @@ bool GeneExpression::Evaluate(const set<string>& disabledGenes) const {
 
             rpn_stack.push(Evaluate(x, rpn_expression_[i], y));
         } else {
+            // Push a gene value to the stack.
             rpn_stack.push(GeneValue(rpn_expression_[i], disabledGenes));
         }
     }

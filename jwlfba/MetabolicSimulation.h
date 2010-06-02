@@ -17,25 +17,14 @@ using std::map;
 using std::pair;
 using std::vector;
 
-
+class Bound;
 class Model;
 class Reaction;
+class ReactionFlux;
 class ListOfSpeciesReferences;
 class GeneExpression;
 class KineticLaw;
 class XMLNode;
-
-
-struct Bound {
-    string reaction_id;
-    double lower_bound, upper_bound;
-};
-
-struct ReactionFlux {
-    string reaction;
-    double flux;
-    ReactionFlux(string r, double f) : reaction(r), flux(f) { }
-};
 
 // Given a SBML model and optimisation parameters (e.g. objective funciton),
 // performs the simulation.
@@ -128,8 +117,11 @@ class MetabolicSimulation {
     // Sets the lower and upper bounds for the flux through the reaction to 0
     void DisableReaction(unsigned rnum);
 
+    // Applies a bound to a KineticLaw of a reaction
     void ApplyBound(const Bound& bound, KineticLaw* kl);
 
+    // Applies a list of bounds to reactions. Returns true iff the list
+    // of bounds is correct, i.e. all bounds refer to existing reactions.
     bool ApplyBounds(const vector<Bound>& bounds);
 
     // Records an error in the model.
@@ -167,16 +159,19 @@ class MetabolicSimulation {
     // Returns true iff the parameter is an id of existing species or reaction.
     bool SetObjective(const string& objective);
 
+    // Sets whether to find maximal or minimal flux.
     void SetMaximize(bool maximize);
 
     // Executes the optimisation.
     bool RunSimulation();
 
+    // Returns true if the computed result is an feasible optimal solution.
     bool GetOptimal() const;
 
     // Get the value of the objective function.
     double GetObjective() const;
 
+    // Returns a list of fluxes through all reactions.
     void GetFlux(vector<ReactionFlux>* flux) const;
 };
 

@@ -6,6 +6,7 @@
 #include<glpk/glpk.h>
 #include<sbml/SBMLTypes.h>
 #include<sbml/Species.h>
+#include<cstdio>
 #include<utility>
 #include<string>
 #include<vector>
@@ -212,6 +213,7 @@ GeneExpression MetabolicSimulation::GetGeneExpressionFromNotes(
         const XMLNode& note = notes.getChild(j);
         if (note.getNumChildren() == 1) {
             const string& note_string = note.getChild(0).toXMLString();
+            
             if (gexp.LooksLikeGeneExpression(note_string)) {
                 gexp.LoadExpression(note_string);
                 break;
@@ -426,7 +428,6 @@ bool MetabolicSimulation::DisableGene(const string& gene) {
     for (unsigned i = 0; i < model_->getNumReactions(); i++) {
         if (!genes_[i].Evaluate(disabled_genes_)) {
             DisableReaction(i);
-            return true;
         }
     }
 

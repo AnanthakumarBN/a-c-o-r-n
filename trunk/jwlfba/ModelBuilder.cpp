@@ -76,9 +76,11 @@ string ModelBuilder::DecodeSBMLId(const string& id) {
                 ret += '_';
                 i += 2;
             } else {
-                if (i+2 < id.size()) {  // TODO(me): a jesli nie?
+                if (i+2 < id.size()) {
                     ret += (id[i+1]-'a') + 16*(id[i+2]-'a');
                     i += 3;
+                } else {
+                    assert(false); // incorrect id
                 }
             }
         } else {
@@ -104,22 +106,22 @@ bool ModelBuilder::GetStoichiometry(StringTokenizer* st, double* coefficient,
     return true;
 }
 
-// TODO(kuba) - ladniej!
-
 void ModelBuilder::AddSpecies(Model* model, const string& species_id) {
     if (all_species_.find(species_id) != all_species_.end())
         return;
 
     Species* species = model->createSpecies();
     species->setId(species_id);
-    if (species_id.size() > 3 &&
-            species_id.substr(species_id.size() - 3) == "_xt") {
+    
+    int len = strlen(kExternalMetaboliteSuffix);
+
+    if (species_id.size() > len &&
+            species_id.substr(species_id.size() - len) ==
+            kExternalMetaboliteSuffix) {
         species->setBoundaryCondition(true);
     }
     all_species_.insert(species_id);
 }
-
-// TODO(kuba): przepisz to ladniej
 
 bool ModelBuilder::AddReactants(Model* model, StringTokenizer* st) {
     do {
@@ -271,5 +273,6 @@ Model* ModelBuilder::LoadFromAmkfbaFile(LineReader* reader) {
 
         reader->NextLine();
     }
+
     return model;
 }

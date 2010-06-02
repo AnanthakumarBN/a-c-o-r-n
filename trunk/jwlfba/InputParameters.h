@@ -37,6 +37,7 @@ class InputParameters {
     vector<string> errors_;
     map<string, string> GetParameterMap(const string& param);
     bool ValidateParametersMap(const map<string, string>& param_map);
+    void ParseSetValue(const string& csv_values, set<string>* out);
     void AddError(const string& error);
  public:
     InputParameters();

@@ -4,6 +4,7 @@
 
 #include"InputParameters.h"
 #include<cstring>
+#include<cstdio>
 #include<map>
 #include<string>
 #include<set>
@@ -48,7 +49,7 @@ map<string, string> GetParametersMap(const string& param) {
     return ret;
 }
 
-void parseSetValue(const string& csv_set, set<string>* out) {
+void InputParameters::ParseSetValue(const string& csv_set, set<string>* out) {
     StringTokenizer st;
     st.Parse(csv_set, ',');
     while (st.HasRemainingTokens()) {
@@ -169,6 +170,12 @@ bool InputParameters::LoadFromString(const string& input_parameters) {
     model_path_ = param_map["--model"];
     amkfba_model_path_ = param_map["--amkfba-model"];
     bounds_file_path_ = param_map["--bounds-file"];
+
+    ParseSetValue(param_map["--disable-genes"],
+            &optimisation_parameters_.disabled_genes);
+    
+    ParseSetValue(param_map["--disable-reactions"],
+            &optimisation_parameters_.disabled_reactions);
 
     return true;
 }

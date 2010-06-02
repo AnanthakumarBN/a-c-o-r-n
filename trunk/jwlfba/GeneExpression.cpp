@@ -37,6 +37,7 @@ bool GeneExpression::LoadExpression(const string& expr) {
        return false;
 
     tokenizer.NextToken();
+
     rpn_expression_.clear();
     return TransformToRPN(&tokenizer);
 }
@@ -52,6 +53,7 @@ bool GeneExpression::IsOperatorToken(const string& token) const {
 
 bool GeneExpression::TransformExpressionToRPN(StringTokenizer* tokenizer,
         string expected_operator) {
+
     if (tokenizer->CurrentToken() == kLeftBracket) {
         tokenizer->NextToken();
         if (!TransformExpressionToRPN(tokenizer, "")
@@ -89,8 +91,6 @@ bool GeneExpression::TransformExpressionToRPN(StringTokenizer* tokenizer,
 }
 
 bool GeneExpression::TransformToRPN(StringTokenizer* tokenizer) {
-    tokenizer->MoveToFirstToken();
-
     if (!tokenizer->HasRemainingTokens())
         return true;
     if (!TransformExpressionToRPN(tokenizer, ""))

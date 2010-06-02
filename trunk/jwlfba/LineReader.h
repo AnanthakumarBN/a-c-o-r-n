@@ -9,6 +9,8 @@
 
 using std::string;
 
+// Abstract class for reading text line-by-line
+
 class LineReader {
  public:
     virtual string ReadLine() = 0;

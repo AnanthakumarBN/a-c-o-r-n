@@ -10,7 +10,9 @@
 #include<utility>
 #include<string>
 #include<vector>
+#include"Bound.h"
 #include"GeneExpression.h"
+#include"ReactionFlux.h"
 
 using std::pair;
 using std::vector;
@@ -180,13 +182,14 @@ bool MetabolicSimulation::ValidateSpeciesReferences(
 
 bool MetabolicSimulation::ValidateModel() {
     bool ret = true;
+    // Validate species.
     for (unsigned i = 0; i < model_->getNumSpecies(); i++) {
         if (!model_->getSpecies(i)->isSetId()) {
             AddError("Species has no id");
             ret = false;
         }
     }
-
+    // Validate reactions.
     for (unsigned i = 0; i < model_->getNumReactions(); i++) {
         const Reaction& reaction = *model_->getReaction(i);
 
@@ -213,7 +216,7 @@ GeneExpression MetabolicSimulation::GetGeneExpressionFromNotes(
         const XMLNode& note = notes.getChild(j);
         if (note.getNumChildren() == 1) {
             const string& note_string = note.getChild(0).toXMLString();
-            
+
             if (gexp.LooksLikeGeneExpression(note_string)) {
                 gexp.LoadExpression(note_string);
                 break;
@@ -269,7 +272,8 @@ void MetabolicSimulation::ApplyBound(const Bound& bound, KineticLaw* kl) {
 
 bool MetabolicSimulation::ApplyBounds(const vector<Bound>& bounds) {
     for (unsigned i = 0; i < bounds.size(); i++) {
-        if (reactions_map_.find(bounds[i].reaction_id) == reactions_map_.end()) {
+        if (reactions_map_.find(bounds[i].reaction_id) ==
+                reactions_map_.end()) {
             AddError("Cannot set bounds for reaction '" +
                     bounds[i].reaction_id + "'");
             return false;
@@ -289,6 +293,8 @@ bool MetabolicSimulation::ApplyBounds(const vector<Bound>& bounds) {
     return true;
 }
 
+// Function supplied to GLPK for printing debug information.
+// Used for suppressing any output.
 
 static int hook(void *info, const char *s) {
     return 1;
@@ -300,7 +306,8 @@ bool MetabolicSimulation::LoadModel(const Model* mod,
     assert(model_ == NULL);
 
     linear_problem_ = glp_create_prob();
-    
+
+    // Prevent GLPK from writing anything to terminal.
     glp_term_hook(hook, NULL);
 
     model_ = mod->clone();
@@ -399,7 +406,7 @@ bool MetabolicSimulation::GetOptimal() const {
 
 void MetabolicSimulation::GetFlux(vector<ReactionFlux>* flux) const {
     for (unsigned i = 0; i < model_->getNumReactions(); i++) {
-        flux->push_back(ReactionFlux(model_->getReaction(i)->getId(), 
+        flux->push_back(ReactionFlux(model_->getReaction(i)->getId(),
                     glp_get_col_prim(linear_problem_, i+1)));
     }
 }

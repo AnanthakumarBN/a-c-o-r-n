@@ -7,7 +7,6 @@
 #include<string>
 #include"GeneExpression.h"
 #include"StringTokenizer.h"
-#include"MetabolicSimulation.h"
 #include"LineReader.h"
 
 using std::string;
@@ -22,17 +21,10 @@ const char* ModelBuilder::kGenesEndToken = "</GENES>";
 const char* ModelBuilder::kAmkfbaAndToken = "AND";
 const char* ModelBuilder::kAmkfbaOrToken = "OR";
 
+const char* ModelBuilder::kLowerBoundParameterId = "LOWER_BOUND";
+const char* ModelBuilder::kUpperBoundParameterId = "UPPER_BOUND";
+
 const char* ModelBuilder::kCreatedFromAmkfbaFile = "CREATED_FROM_AMKFBA_FILE";
-
-bool ModelBuilder::GetDouble(StringTokenizer* st, double* val) {
-    if (sscanf(st->CurrentToken().c_str(), "%lf", val) != 1) {
-        Error("Expected a floating point number");
-        return false;
-    }
-
-    st->NextToken();
-    return true;
-}
 
 bool ModelBuilder::IsValidSBMLDIdChar(char c) {
     return isalnum(c) || c == '_';
@@ -72,15 +64,17 @@ string ModelBuilder::DecodeSBMLId(const string& id) {
 
     while (i < id.size()) {
         if (id[i] == '_') {
+            // two _ represent a _
             if (i+1 < id.size() && id[i+1] == '_') {
                 ret += '_';
                 i += 2;
+            // otherwise _xy represents one character
             } else {
                 if (i+2 < id.size()) {
                     ret += (id[i+1]-'a') + 16*(id[i+2]-'a');
                     i += 3;
                 } else {
-                    assert(false); // incorrect id
+                    assert(false);  // incorrect id
                 }
             }
         } else {
@@ -93,7 +87,7 @@ string ModelBuilder::DecodeSBMLId(const string& id) {
 
 bool ModelBuilder::GetStoichiometry(StringTokenizer* st, double* coefficient,
         string* species_id) {
-    if (!GetDouble(st, coefficient)) {
+    if (!st->CurrentDoubleToken(coefficient)) {
         Error("Bad coefficient");
         return false;
     }
@@ -112,8 +106,8 @@ void ModelBuilder::AddSpecies(Model* model, const string& species_id) {
 
     Species* species = model->createSpecies();
     species->setId(species_id);
-    
-    int len = strlen(kExternalMetaboliteSuffix);
+
+    unsigned len = strlen(kExternalMetaboliteSuffix);
 
     if (species_id.size() > len &&
             species_id.substr(species_id.size() - len) ==
@@ -168,18 +162,19 @@ bool ModelBuilder::AddProducts(Model* model, StringTokenizer* st) {
 bool ModelBuilder::AddBounds(Reaction* reaction, StringTokenizer* st) {
     double lower_bound, upper_bound;
 
-    if (!GetDouble(st, &lower_bound) || !GetDouble(st, &upper_bound)) {
+    if (!st->CurrentDoubleToken(&lower_bound) ||
+            !st->CurrentDoubleToken(&upper_bound)) {
         Error("Incorrect bounds");
         return false;
     }
 
     KineticLaw* kinetic_law = reaction->createKineticLaw();
     Parameter* parameter = kinetic_law->createParameter();
-    parameter->setId(MetabolicSimulation::kLowerBoundParameterId);
+    parameter->setId(kLowerBoundParameterId);
     parameter->setValue(lower_bound);
 
     parameter = kinetic_law->createParameter();
-    parameter->setId(MetabolicSimulation::kUpperBoundParameterId);
+    parameter->setId(kUpperBoundParameterId);
     parameter->setValue(upper_bound);
 
     return true;
@@ -196,6 +191,8 @@ bool ModelBuilder::AddGenes(Reaction* reaction, StringTokenizer* st) {
 
     while (st->HasRemainingTokens() && st->CurrentToken() != kGenesEndToken) {
         genes += ' ';
+        // amkfba format has different operators and uses uppercase AND/OR
+        // contrary to lowercase operators in SBML
         if (st->CurrentToken() == kAmkfbaOrToken)
             genes += GeneExpression::kOrToken;
         else if (st->CurrentToken() == kAmkfbaAndToken)

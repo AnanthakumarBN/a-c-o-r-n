@@ -22,12 +22,12 @@ For deploying Acorn follow these steps:
  }}}
  Next rum MySQL client:
  {{{
- $ mysql-u root -p
+ $ mysql -u root -p
  }}}
  Then create user "acorn" with password "acorn" using client session:
  {{{
  $ CREATE USER 'acorn'@'localhost' IDENTIFIED BY 'acorn';
- $ GRANT ALL ON "." TO 'acorn'@'localhost' IDENTIFIED BY 'acorn';
+ $ GRANT ALL ON *.* TO 'acorn'@'localhost' IDENTIFIED BY 'acorn';
  }}}
  Change value of global variables "wait_timeout" and "interactive_timeout" to 691200 sec.:
  {{{

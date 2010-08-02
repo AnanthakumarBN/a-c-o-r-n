@@ -110,11 +110,8 @@ public class AdapterAmkfba {
         if (line == null) {
             throw new AmkfbaException("getFbaOptimizationStatus: unexpected end of output");
         }
-        if (line.length() <= 8 || !line.substring(0, 8).equals("Status:\t")) {
-            throw new AmkfbaException("getFbaOptimizationStatus: 'Status: ' expected");
-        }
         String status;
-        status = getDBStatus(line.substring(8));
+        status = getDBStatus(line);
         if (status == null) {
             throw new AmkfbaException("getFbaOptimizationStatus: got status =" + line.substring(8));
         }
@@ -125,11 +122,8 @@ public class AdapterAmkfba {
         if (line == null) {
             throw new AmkfbaException("getFbaGrowthRate: unexpected end of output");
         }
-        if (line.length() <= 26) {
-            throw new AmkfbaException("getFbaGrowthRate: Cannot read objective function value");
-        }
         try {
-            return Float.valueOf(line.substring(26));
+            return Float.valueOf(line);
         } catch (NumberFormatException e) {
             throw new AmkfbaException("getFbaGrowthRate: NumberFormatException");
         }
@@ -160,20 +154,16 @@ public class AdapterAmkfba {
     }
 
     private String getStatus(String line) throws AmkfbaException {
-        String[] out = line.split("\t");
-        if (out.length < 2) {
-            throw new AmkfbaException("getStatus: out.length < 2, amkfba returned '" + line + "'");
-        }
-        String status = getDBStatus(out[1]);
+        String status = getDBStatus(line);
         if (status == null) {
-            throw new AmkfbaException("getStatus: got status: " + out[1]);
+            throw new AmkfbaException("getStatus: got status: " + line);
         }
         return status;
     }
 
     private Float getGrowthRate(String line) throws AmkfbaException {
         try {
-            return Float.valueOf(line.split("\t")[0]);
+            return Float.valueOf(line);
         } catch (NumberFormatException e) {
             throw new AmkfbaException("getGrowthRate: NumberFormatException");
         }
@@ -183,7 +173,7 @@ public class AdapterAmkfba {
         Process p;
         try {
             System.out.print("Running amkfba... " + arguments + " ");
-            p = Runtime.getRuntime().exec(amkfbaPath + " -i - " + arguments, null);
+            p = Runtime.getRuntime().exec(amkfbaPath + " --amkfba-model - " + arguments, null);
         } catch (IOException e) {
             throw new AmkfbaException("execAmkfba: IOException");
         }
@@ -219,6 +209,10 @@ public class AdapterAmkfba {
                 returnAmkfbaStderr(amkfbaProcess);
             }
             retval.setOptimizationStatus(getStatus(out));
+            out = input.readLine();
+            if (out == null) {
+                returnAmkfbaStderr(amkfbaProcess);
+            }
             retval.setGrowthRate(getGrowthRate(out));
             input.close();
             System.out.println("OK");
@@ -242,9 +236,9 @@ public class AdapterAmkfba {
 
     public AmkfbaOutput runObjstat(EModel model, Collection<EBounds> bounds, String objectiveFunction, Boolean useRmodel, Boolean maximum) throws AmkfbaException {
         Process p;
-        String args = "-p objstat -obj " + objectiveFunction;
+        String args = "--objective " + objectiveFunction;
         if (!maximum) {
-            args += " -min";
+            args += " --min";
         }
         
         dumpModel(model, bounds, useRmodel);
@@ -269,7 +263,7 @@ public class AdapterAmkfba {
 
         dumpModel(model, bounds, false);
 
-        Process p = execAmkfba("-p fba -obj " + objectiveFunction);
+        Process p = execAmkfba("--print-flux --objective " + objectiveFunction);
 
         BufferedWriter output = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
         BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -314,7 +308,7 @@ public class AdapterAmkfba {
 
     public AmkfbaOutput runKgene(EModel model, Collection<EBounds> bounds, String objectiveFunction, String gene, Boolean useRmodel) throws AmkfbaException {
         Process p;
-        String args = "-p kogene -obj " + objectiveFunction + " -ko " + gene;
+        String args = "--objective " + objectiveFunction + " --disable-genes " + gene;
 
         dumpModel(model, bounds, useRmodel);
 

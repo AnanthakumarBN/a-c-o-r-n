@@ -5,7 +5,8 @@ jarfile=$1
 
 # Path to amkfba program
 
-amkfbaPath="../amkfba"
+#amkfbaPath="../amkfba"
+amkfbaPath="../jwlfba/jwlfba"
 
 # All info is printed to stderr by default, you may specify a file in which log will be stored
 # It is generally not a good idea to redirect log information from multiple workers to a single file
@@ -45,4 +46,4 @@ then
 fi
 
 
-java -jar -Dtoplink.jdbc.user=$db_user -Dtoplink.jdbc.password=$db_pass -Dacorn.worker.logfile="$logFile" -Dacorn.worker.amkfbaPath="$amkfbaPath" -Dorg.omg.CORBA.ORBInitialPort=$iiop_port $jarfile 
+java -jar -Dtoplink.jdbc.user=$db_user -Dtoplink.jdbc.password=$db_pass -Dacorn.worker.logfile="$logFile" -Dacorn.worker.amkfbaPath="$amkfbaPath" -Dorg.omg.CORBA.ORBInitialPort=$iiop_port -Dacorn.worker.modelDump="plyyk" $jarfile 

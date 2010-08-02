@@ -389,9 +389,22 @@ void MetabolicSimulation::SetMaximize(bool maximize) {
 bool MetabolicSimulation::RunSimulation() {
     assert(linear_problem_ != NULL);
 
-    if (glp_simplex(linear_problem_, NULL) != 0)
-        return false;
+    int err;
+    glp_smcp parm;
+    glp_init_smcp(&parm);
+    parm.presolve = GLP_ON;
+    is_feasible_ = false;
 
+    if ((err = glp_simplex(linear_problem_, &parm)) != 0)
+    {
+        if(err == GLP_ENOPFS || err == GLP_ENODFS)
+            return true;
+        
+        err = glp_exact(linear_problem_, NULL);
+        return false;
+    }
+    int status = glp_get_status(linear_problem_);
+    is_feasible_ = status == GLP_OPT || status == GLP_FEAS;
     return true;
 }
 
@@ -402,6 +415,10 @@ double MetabolicSimulation::GetObjective() const {
 
 bool MetabolicSimulation::GetOptimal() const {
     return glp_get_status(linear_problem_) == GLP_OPT;
+}
+
+bool MetabolicSimulation::GetFeasible() const {
+    return is_feasible_;
 }
 
 void MetabolicSimulation::GetFlux(vector<ReactionFlux>* flux) const {

@@ -37,6 +37,9 @@ class MetabolicSimulation {
     // GLPK library object for running linear programming
     glp_prob* linear_problem_;
 
+    // Is the solution found feasible?
+    bool is_feasible_;
+
     // libSBML object that stores the model
     Model* model_;
 
@@ -165,8 +168,11 @@ class MetabolicSimulation {
     // Executes the optimisation.
     bool RunSimulation();
 
-    // Returns true if the computed result is an feasible optimal solution.
+    // Returns true if the computed result is an optimal solution.
     bool GetOptimal() const;
+    
+    // Returns true if the computed result is a feasible optimal solution.
+    bool GetFeasible() const;
 
     // Get the value of the objective function.
     double GetObjective() const;

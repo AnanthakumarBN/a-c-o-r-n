@@ -39,8 +39,11 @@ void TextInterface::ShowResults(const SimulationController& sc,
         bool print_flux) const {
     if (sc.GetOptimal())
         printf("OPTIMAL\n");
+    else if(sc.GetFeasible())
+        printf("FEASIBLE\n");
     else
         printf("UNDEFINED\n");
+
 
     printf("%.6lf\n", sc.GetObjective());
 

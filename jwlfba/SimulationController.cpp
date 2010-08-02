@@ -172,6 +172,11 @@ bool SimulationController::GetOptimal() const {
     return simulation_->GetOptimal();
 }
 
+bool SimulationController::GetFeasible() const {
+    return simulation_->GetFeasible();
+}
+
+
 double SimulationController::GetObjective() const {
     return simulation_->GetObjective();
 }

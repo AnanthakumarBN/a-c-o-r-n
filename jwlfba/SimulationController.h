@@ -73,6 +73,7 @@ class SimulationController {
 
     // Return the results of the simulation.
     bool GetOptimal() const;
+    bool GetFeasible() const;
     double GetObjective() const;
     void GetFlux(vector<ReactionFlux>* flux) const;
 };

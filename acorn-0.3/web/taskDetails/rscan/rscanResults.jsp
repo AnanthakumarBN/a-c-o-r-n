@@ -14,23 +14,7 @@
         <h:outputText value="#{RscanResultsBean.init}" />
     </h:form>
     
-    <!-- Common Results -->
-    
-    <div class="commonResults">
-    
-    <h:panelGrid columns="2">
-        Optimisation status:
-        <h:outputText value="#{RscanResultsBean.optStatus}" />
-        
-        Maximal theoretical flux:
-        <h:outputText value="#{RscanResultsBean.growthRate}">
-            <f:convertNumber minFractionDigits="1" maxFractionDigits="8"/>
-        </h:outputText>
-    </h:panelGrid>
-
-    </div>
-    
-    <!-- FBA Results -->
+    <!-- RSCAN Results -->
     
     <div class="filterBox">
     
@@ -139,7 +123,7 @@
         <h:dataTable 
             id="rscanFilteredRowList"
             var="row"
-            value="#{TaskDetailsBean.rscanResults}"
+            value="#{RscanResultsBean.list}"
             width="100%"
             headerClass="tableHeader"
             columnClasses="rscanReactionName, rscanStatus, rscanGrowthRate, rscanFormula"

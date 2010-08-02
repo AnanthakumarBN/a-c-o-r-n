@@ -18,8 +18,8 @@
     <property name="local-web-dir" value="${local-root-dir}/acorn-0.3" />
     <property name="local-WS-dir" value="${local-root-dir}/AcornWS" />
     <property name="local-worker-dir" value="${local-root-dir}/acorn-worker" />
-    <property name="local-amkfba-dir" value="${local-root-dir}/amkfba" />
-    <property name="local-amkfba-run" value="${local-amkfba-dir}/amkfba" />
+    <property name="local-amkfba-dir" value="${local-root-dir}/jwlfba" />
+    <property name="local-amkfba-run" value="${local-amkfba-dir}/jwlfba" />
     <property name="local-web-name" value="acorn-0.3.war" />
     <property name="local-web-file" value="${local-web-dir}/dist/${local-web-name}" />
     <property name="local-worker-name" value="acorn-worker.jar" />
@@ -57,7 +57,7 @@
     <property name="server-amkfba-dir" value="${server-root-dir}/amkfba" />
     <property name="server-amkfba-run" value="${server-amkfba-dir}/amkfba" />
     <property name="server-glassfish-home" value="/usr/local/glassfish" />
-    <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin$" />
+    <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin" />
     <property name="server-domain-name" value="domain1" />
     <property name="server-domain-dir" value="${server-glassfish-home}/domains/${server-domain-name}" />
     <property name="server-worker-log-file" value="${server-root-dir}/worker.log" />
@@ -301,7 +301,7 @@
               jvmargs="-Dtoplink.jdbc.user=${local-db-username} 
                 -Dtoplink.jdbc.password=${local-db-password}
                 -Dacorn.worker.logfile=${local-worker-log-file}
-                -Dacorn.worker.printInput=${local-worker-debug}
+                -Dacorn.worker.dumpFile=${local-worker-debug}
                 -Dacorn.worker.amkfbaPath=${local-amkfba-run}
                 -Dorg.omg.CORBA.ORBInitialPort=${local-iiport}"
         />

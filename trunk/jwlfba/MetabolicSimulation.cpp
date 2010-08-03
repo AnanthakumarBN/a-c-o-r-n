@@ -3,7 +3,7 @@
  */
 
 #include"MetabolicSimulation.h"
-#include<glpk/glpk.h>
+#include<glpk.h>
 #include<sbml/SBMLTypes.h>
 #include<sbml/Species.h>
 #include<cstdio>

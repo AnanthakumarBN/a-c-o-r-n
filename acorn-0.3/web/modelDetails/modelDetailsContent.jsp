@@ -24,7 +24,7 @@
             
             <h:panelGrid id="infopanel" columns="2" border="0" width="40%">
                 Model name:
-                <h:inputText disabled="#{!TaskBean.editable}" id="modelname" 
+                <h:inputText disabled="#{!TaskBean.canEditModels}" id="modelname"
                     value="#{TaskBean.model.name}">
                         <f:validateLength minimum="3" maximum="255"/>
                 </h:inputText>
@@ -44,7 +44,7 @@
                 </h:outputText>
             </h:panelGrid>
             
-            <h:panelGroup rendered="#{TaskBean.editable}">
+            <h:panelGroup rendered="#{TaskBean.canEditModels}">
                 <br/>
                 <h:panelGroup rendered="#{TaskBean.updateAllowed}">
                     <a4j:commandLink

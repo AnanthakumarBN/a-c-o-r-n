@@ -4,12 +4,9 @@ import javax.faces.context.FacesContext;
 import acorn.db.*;
 import acorn.errorHandling.ErrorBean;
 import acorn.userManagement.*;
-import javax.servlet.http.*;
-import java.security.*;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
-import java.lang.System;
 import acorn.db.EModelController;
 
 /**
@@ -58,57 +55,58 @@ public class ModelListBean {
     {
         EModelController emc = new EModelController();
 
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest))
+        if (UserManager.getIsGuestS())
         {
             List<ModelRow> newSharedList = new LinkedList<ModelRow>();
             List<EModel> resShared = emc.getSharedModels();
             for (EModel m : resShared) newSharedList.add(new ModelRow(m, false));
-            privateList = new LinkedList<ModelRow>(); 
+            privateList = new LinkedList<ModelRow>();
             sharedList = newSharedList;
             otherList = new LinkedList<ModelRow>();
             showOtherFilter = false;
             return;
         }
         EUser user = UserManager.getCurrentUser();
-        if (user == null){
-            privateList = new LinkedList<ModelRow>();
-            sharedList = new LinkedList<ModelRow>();
-            otherList = new LinkedList<ModelRow>();
-            return;
-        }
+//not needed since user == null is a guest user
+//        if (user == null){
+//            privateList = new LinkedList<ModelRow>();
+//            sharedList = new LinkedList<ModelRow>();
+//            otherList = new LinkedList<ModelRow>();
+//            return;
+//        }
         start = 0;
         try{
             List<ModelRow> newPrivateList = new LinkedList<ModelRow>();
-            List<ModelRow> newSharedList = new LinkedList<ModelRow>(); 
-            
-            List<EModel> resPrivate = emc.getModels(UserManager.getCurrentUser());
+            List<ModelRow> newSharedList = new LinkedList<ModelRow>();
+
+            List<EModel> resPrivate = emc.getModels(user);
             List<EModel> resShared = emc.getSharedModels();
-            
+
             for (EModel m : resPrivate) newPrivateList.add(
-                    new ModelRow(m, m.getOwner().equals(user) 
-                    || user.getStatus().equals(EUser.statusAdmin)));
+                    new ModelRow(m, m.getOwner().equals(user)
+                    || UserManager.getIsAdminS()));
             for (EModel m : resShared) newSharedList.add(
-                    new ModelRow(m, m.getOwner().equals(user) 
-                    || user.getStatus().equals(EUser.statusAdmin)));
+                    new ModelRow(m, m.getOwner().equals(user)
+                    || UserManager.getIsAdminS()));
             /** if admins wants to view all models */
-            if (user.getStatus().equals(EUser.statusAdmin)) {
+            if (UserManager.getIsAdminS()) {
                 List<ModelRow> newOtherList = new LinkedList<ModelRow>();
                 List<EModel> resOther = emc.getModels();
                 for (EModel m : resOther) newOtherList.add(new ModelRow(m, true));
                 otherList = newOtherList;
             }
-            else 
+            else
             {
                 otherList = new LinkedList<ModelRow>();
                 showOtherFilter = false;
             }
             privateList = newPrivateList;
             sharedList = newSharedList;
-        } catch (Exception e) { 
-            privateList = new LinkedList<ModelRow>(); 
+        } catch (Exception e) {
+            privateList = new LinkedList<ModelRow>();
             sharedList = new LinkedList<ModelRow>();
             otherList = new LinkedList<ModelRow>();
-            return; 
+            return;
         }
         return;
     }

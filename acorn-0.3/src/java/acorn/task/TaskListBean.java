@@ -154,7 +154,7 @@ public class TaskListBean {
      * @return - true or false
      */
     public boolean isDeleteAllowed() {
-        return !isShared() || !UserManager.getUserStatus().equals(UserManager.statusGuest);
+        return !isShared() || !UserManager.getUserStatus().equals(UserManager.GUEST_STATUS);
     }
     
     /**

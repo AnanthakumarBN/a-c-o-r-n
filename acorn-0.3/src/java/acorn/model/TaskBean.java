@@ -370,7 +370,7 @@ public class TaskBean {
                 b.setReaction(c.getReaction());
 
                 model.getEBoundsCollection().add(b);
-                
+
                 // update LastChange date
                 model.setLastChange(new Date());
             }
@@ -463,11 +463,24 @@ public class TaskBean {
     }
 
     public Boolean getEditable() {
+        if (UserManager.getIsGuestS()) {
+            return true;
+        }
         EUser user = UserManager.getCurrentUser();
+        //probably not needed
         if (user == null) {
             return false;
         }
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
+        return true;
+    }
+
+    public Boolean getCanEditModels() {
+        if (UserManager.getIsGuestS()) {
+            return false;
+        }
+        EUser user = UserManager.getCurrentUser();
+        //probably not needed
+        if (user == null) {
             return false;
         }
         return true;
@@ -482,7 +495,7 @@ public class TaskBean {
         if (user == null) {
             return false;
         }
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
+        if (UserManager.getUserStatus().equals(UserManager.GUEST_STATUS)) {
             return false;
         }
         if (user.getStatus().equals(EUser.statusAdmin)) {
@@ -1045,9 +1058,9 @@ public class TaskBean {
     }
 
     public String taskFBA() {
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
-            return "login";
-        }
+//        if (UserManager.getIsGuest()) {
+//            return "login";
+//        }
         Integer id = getModelID();
 
         if (data.get(id).parameters == null) {
@@ -1060,9 +1073,9 @@ public class TaskBean {
     }
 
     public String taskFVA() {
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
-            return "login";
-        }
+//        if (UserManager.getIsGuest()) {
+//            return "login";
+//        }
         Integer id = getModelID();
 
         if (data.get(id).parameters == null) {
@@ -1075,9 +1088,9 @@ public class TaskBean {
     }
 
     public String taskRSCAN() {
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
-            return "login";
-        }
+//        if (UserManager.getIsGuest()) {
+//            return "login";
+//        }
         Integer id = getModelID();
 
         if (data.get(id).parameters == null) {
@@ -1090,9 +1103,9 @@ public class TaskBean {
     }
 
     public String taskKGENE() {
-        if (UserManager.getUserStatus().equals(UserManager.statusGuest)) {
-            return "login";
-        }
+//        if (UserManager.getIsGuest()) {
+//            return "login";
+//        }
         Integer id = getModelID();
 
         if (data.get(id).parameters == null) {
@@ -1351,7 +1364,7 @@ public class TaskBean {
     public boolean isTaskReady() {
         Integer id = getModelID();
 
-        float lower,  upper;
+        float lower, upper;
 
         //funkcja sprawdzajaca czy zadanie jest juz gotowe, tzn czy mozemy je zlecic
         //do wykonania. (nie mozemy jesli nie wszystkie parametry zostaly ustalone poprawnie)
@@ -1382,7 +1395,7 @@ public class TaskBean {
     public boolean isError() {
         Integer id = getModelID();
 
-        if (data.get(id).errorMessage.length()==0) {
+        if (data.get(id).errorMessage.length() == 0) {
             return false;
         } else {
             return true;
@@ -1417,7 +1430,13 @@ public class TaskBean {
                 task.setDate(new Date());
                 task.setLastChange(new Date());
                 task.setStatus(ETask.statusQueued);
-                task.setShared(false);
+                if (UserManager.getIsGuestS()) {
+                    task.setShared(true);
+                    model.setShared(true);
+                } else {
+                    task.setShared(false);
+                    model.setShared(false);
+                }
                 task.setModel(model);
                 model.setTask(task);
 

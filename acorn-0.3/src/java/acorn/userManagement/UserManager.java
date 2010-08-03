@@ -21,7 +21,7 @@ import javax.faces.validator.ValidatorException;
  */
 public class UserManager {
 
-    public static String statusGuest = "guest";
+    public final static String GUEST_STATUS = "guest";
     private String login;
     private String password;
     private String passwordConfirmation;
@@ -270,30 +270,44 @@ public class UserManager {
      * @return status of the user, who is logged in or null
      */
     public static String getUserStatus() {
-        EUser user;
-        FacesContext context = FacesContext.getCurrentInstance();
-        user = (EUser) context.getExternalContext().getSessionMap().get(USER_SESSION_KEY);
+        EUser user = getCurrentUser();
         if (user == null) {
-            return statusGuest;
+            return GUEST_STATUS;
         } else {
             return user.getStatus();
         }
     }
 
-    public boolean getIsAdmin() {
+    public static boolean getIsAdminS() {
         return getUserStatus().equals(EUser.statusAdmin);
     }
 
-    public boolean getIsNormal() {
+    public boolean getIsAdmin() {
+        return getIsAdminS();
+    }
+
+    public static boolean getIsNormalS() {
         return getUserStatus().equals(EUser.statusNormal);
     }
 
+    public boolean getIsNormal() {
+        return getIsNormalS();
+    }
+
+    public static boolean getIsGuestS() {
+        return getUserStatus().equals(GUEST_STATUS);
+    }
+
     public boolean getIsGuest() {
-        return getUserStatus().equals(statusGuest);
+        return getIsGuestS();
+    }
+
+    public static boolean getIsNotGuestS() {
+        return !getUserStatus().equals(GUEST_STATUS);
     }
 
     public boolean getIsNotGuest() {
-        return !getUserStatus().equals(statusGuest);
+        return getIsNotGuestS();
     }
 
     public void validateLogin(FacesContext context,

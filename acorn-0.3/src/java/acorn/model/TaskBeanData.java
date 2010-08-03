@@ -5,8 +5,6 @@
 package acorn.model;
 
 import acorn.db.*;
-import javax.servlet.http.*;
-import java.security.*;
 import java.util.List;
 import java.util.Date;
 import java.util.concurrent.Semaphore;

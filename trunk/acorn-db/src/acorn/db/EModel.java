@@ -74,7 +74,7 @@ public class EModel implements Serializable {
     @ManyToOne
     private EMetabolism metabolism;
     
-    @JoinColumn(name = "OWNER", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "OWNER", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private EUser owner;
     

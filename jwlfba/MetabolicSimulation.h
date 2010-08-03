@@ -5,7 +5,7 @@
 #ifndef JWLFBA_METABOLICSIMULATION_H_
 #define JWLFBA_METABOLICSIMULATION_H_
 
-#include<glpk/glpk.h>
+#include<glpk.h>
 #include<map>
 #include<set>
 #include<string>

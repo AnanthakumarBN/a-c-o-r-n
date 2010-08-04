@@ -2,7 +2,7 @@
 
 extern "C" 
 {
-  #include "glpk/glpk.h"
+  #include "glpk.h"
 }
 
 #define GLPKMAX 1

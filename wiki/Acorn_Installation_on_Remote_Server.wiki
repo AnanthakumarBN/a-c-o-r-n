@@ -64,6 +64,12 @@ For deploying Acorn follow these steps:
  $ make clean
  $ make
  }}}
+ You may need to install GLPK and libSBML libraries, e.g.
+ {{{
+ $ sudo yum install glpk
+ $ sudo yum install libxml2
+ $ sudo yum install libxml2-devel
+ }}}
  * Download sources of GraphViz for Linux from http://www.graphviz.org and install on the remote server. Add path to _bin_ directory of GraphViz to PATH variable.
  * Open "Files" window (*Ctrl+2*) in NetBeans IDE. Open and edit "local-individuals.properties" file. Write proper values for variables:
     *"local-root-name" - name of folder where projects were downloaded

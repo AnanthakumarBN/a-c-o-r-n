@@ -64,7 +64,7 @@ For deploying Acorn follow these steps:
  $ make clean
  $ make
  }}}
- You may need to install GLPK and libSBML libraries, e.g.
+ You may need to install GLPK and libSBML libraries:
  {{{
  $ sudo yum install glpk
  $ sudo yum install libxml2

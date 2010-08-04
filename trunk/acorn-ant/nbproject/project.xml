@@ -12,7 +12,7 @@
                     <target>local-create-resources</target>
                 </action>
                 <action name="run">
-                    <target>local-create-resources</target>
+                    <target>local</target>
                 </action>
             </ide-actions>
             <view>

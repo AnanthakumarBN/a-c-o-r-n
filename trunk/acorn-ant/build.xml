@@ -2,7 +2,9 @@
 <project name="acorn-ant" default="default" basedir=".">
     <description>Ant script</description>
     <property file="local-individual.properties" />
-    <property name="local-root-dir" value="../../${local-root-name}" />
+    <!--<property name="local-root-dir" value="../../${local-root-name}" />-->
+    <!--<property name="local-root-dir" value=".." />-->
+    <property name="local-root-dir" value="${local-root-name}" />
     <property name="local-db-dir" value="${local-root-dir}/acorn-db" />
 
     <property name="vaapp-dir" value="${local-root-dir}/VisualAcornApplication" />
@@ -20,6 +22,8 @@
     <property name="local-worker-dir" value="${local-root-dir}/acorn-worker" />
     <property name="local-amkfba-dir" value="${local-root-dir}/jwlfba" />
     <property name="local-amkfba-run" value="${local-amkfba-dir}/jwlfba" />
+    <property name="local-jwlfba-dir" value="${local-root-dir}/jwlfba" />
+    <property name="local-jwlfba-run" value="${local-jwlfba-dir}/jwlfba" />
     <property name="local-web-name" value="acorn-0.3.war" />
     <property name="local-web-file" value="${local-web-dir}/dist/${local-web-name}" />
     <property name="local-worker-name" value="acorn-worker.jar" />
@@ -56,6 +60,8 @@
     <property name="server-acornConfig" value="server-acornConfig.xml" />
     <property name="server-amkfba-dir" value="${server-root-dir}/amkfba" />
     <property name="server-amkfba-run" value="${server-amkfba-dir}/amkfba" />
+    <property name="server-jwlfba-dir" value="${server-root-dir}/jwlfba" />
+    <property name="server-jwlfba-run" value="${server-jwlfba-dir}/jwlfba" />
     <property name="server-glassfish-home" value="/usr/local/glassfish" />
     <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin" />
     <property name="server-domain-name" value="domain1" />
@@ -302,7 +308,7 @@
                 -Dtoplink.jdbc.password=${local-db-password}
                 -Dacorn.worker.logfile=${local-worker-log-file}
                 -Dacorn.worker.dumpFile=${local-worker-debug}
-                -Dacorn.worker.amkfbaPath=${local-amkfba-run}
+                -Dacorn.worker.amkfbaPath=${local-jwlfba-run}
                 -Dorg.omg.CORBA.ORBInitialPort=${local-iiport}"
         />
     </target>
@@ -450,7 +456,7 @@
                 -Dtoplink.jdbc.url=${server-db-url}
                 -Dtoplink.jdbc.driver=${server-db-driver}
                 -Dacorn.worker.logfile=${server-worker-log-file}
-                -Dacorn.worker.amkfbaPath=${server-amkfba-run}
+                -Dacorn.worker.amkfbaPath=${server-jwlfba-run}
                 -Dorg.omg.CORBA.ORBInitialPort=${server-iiport} ${server-worker-file}"
                 verbose="true">
         </sshexec>
@@ -463,7 +469,7 @@
                 -Dtoplink.jdbc.url=${server-true-db-url}
                 -Dtoplink.jdbc.driver=${server-db-driver}
                 -Dacorn.worker.logfile=${local-worker-log-file}
-                -Dacorn.worker.amkfbaPath=${local-amkfba-run}
+                -Dacorn.worker.amkfbaPath=${local-jwlfba-run}
                 -Dorg.omg.CORBA.ORBInitialPort=${server-iiport}"
         />
     </target>
@@ -480,6 +486,20 @@
             <arg value="clean"/>
         </exec>
     </target>
+
+    <target name="local-jwlfba-compile">
+        <exec dir="${local-jwlfba-dir}" executable="${local-make}">
+            <arg value="Makefile"/>
+            <arg value="all"/>
+        </exec>
+    </target>
+    <target name="local-jwlfba-clean">
+        <exec dir="${local-jwlfba-dir}" executable="${local-make}">
+            <arg value="Makefile"/>
+            <arg value="clean"/>
+        </exec>
+    </target>
+
     <target name="server-kill-all-workers" depends="get-server-auth">
         <sshexec
                 trust="true"

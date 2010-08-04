@@ -96,19 +96,12 @@ public class TaskListBean {
         try {
             ETaskController et = new ETaskController();
             
-            if (mine) {
-                List<ETask> myTasks = et.getTasks(UserManager.getCurrentUser());
-                myTasks.removeAll(taskList); taskList.addAll(myTasks);
-            }
-            
-            if (shared) {
-                List<ETask> sharedTasks = et.getSharedTasks();
-                sharedTasks.removeAll(taskList); taskList.addAll(sharedTasks);
-            }
-            
-            if (others) {
-                List<ETask> allTasks = et.getTasks();
-                allTasks.removeAll(taskList); taskList.addAll(allTasks);
+            if (UserManager.getIsGuestS()) {
+                taskList.addAll(et.getSharedTasks());
+            } else if (UserManager.getIsAdminS()) {
+                taskList.addAll(et.getTasks());
+            } else {//normal user
+                taskList.addAll(et.getTasks(UserManager.getCurrentUser()));
             }
         }
         catch (Exception e) {        

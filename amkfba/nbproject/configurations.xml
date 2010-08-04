@@ -2,70 +2,6 @@
 <configurationDescriptor version="62">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <df name="amkfba" root=".">
-      <df name="glpk">
-        <in>glpavl.c</in>
-        <in>glpavl.h</in>
-        <in>glpdmp.c</in>
-        <in>glpdmp.h</in>
-        <in>glpiet.c</in>
-        <in>glpiet.h</in>
-        <in>glpinv.c</in>
-        <in>glpinv.h</in>
-        <in>glpios.h</in>
-        <in>glpios1.c</in>
-        <in>glpios2.c</in>
-        <in>glpios3.c</in>
-        <in>glpipm.c</in>
-        <in>glpipm.h</in>
-        <in>glpk.h</in>
-        <in>glplib.h</in>
-        <in>glplib1a.c</in>
-        <in>glplib1b.c</in>
-        <in>glplib2.c</in>
-        <in>glplib3.c</in>
-        <in>glplpp.h</in>
-        <in>glplpp1.c</in>
-        <in>glplpp2.c</in>
-        <in>glplpx.h</in>
-        <in>glplpx1.c</in>
-        <in>glplpx2.c</in>
-        <in>glplpx3.c</in>
-        <in>glplpx4.c</in>
-        <in>glplpx5.c</in>
-        <in>glplpx6a.c</in>
-        <in>glplpx6b.c</in>
-        <in>glplpx6c.c</in>
-        <in>glplpx6d.c</in>
-        <in>glplpx7.c</in>
-        <in>glplpx8a.c</in>
-        <in>glplpx8b.c</in>
-        <in>glplpx8c.c</in>
-        <in>glplpx8d.c</in>
-        <in>glplpx8e.c</in>
-        <in>glpluf.c</in>
-        <in>glpluf.h</in>
-        <in>glpmat.c</in>
-        <in>glpmat.h</in>
-        <in>glpmip.h</in>
-        <in>glpmip1.c</in>
-        <in>glpmip2.c</in>
-        <in>glpmpl.h</in>
-        <in>glpmpl1.c</in>
-        <in>glpmpl2.c</in>
-        <in>glpmpl3.c</in>
-        <in>glpmpl4.c</in>
-        <in>glpqmd.c</in>
-        <in>glpqmd.h</in>
-        <in>glprng.c</in>
-        <in>glprng.h</in>
-        <in>glpspx.h</in>
-        <in>glpspx1.c</in>
-        <in>glpspx2.c</in>
-        <in>glpstr.c</in>
-        <in>glpstr.h</in>
-        <in>glptsp.c</in>
-        <in>glptsp.h</in>
-      </df>
       <in>GlpkKernel.cpp</in>
       <in>GlpkKernel.h</in>
       <in>ReactionSTACK.cpp</in>
@@ -119,12 +55,6 @@
       <item path="TokenSTACK.h" ex="true" tool="3">
       </item>
       <item path="amkfba.cpp" ex="true" tool="1">
-      </item>
-      <item path="glpk/glpk.h" ex="true" tool="3">
-      </item>
-      <item path="glpk/glplpx6c.c" ex="true" tool="0">
-      </item>
-      <item path="glpk/glplpx8c.c" ex="true" tool="0">
       </item>
     </conf>
   </confs>

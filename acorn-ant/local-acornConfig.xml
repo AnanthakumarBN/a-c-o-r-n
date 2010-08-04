@@ -80,20 +80,22 @@
             <name>/rscanTarget.jsf</name>
             <securityLevel>guest</securityLevel>
         </page>
-        
-        <!-- Normal Pages -->
+
+        <!-- extra guest privileges-->
         <page>
             <name>/fbaParameters.jsf</name>
-            <securityLevel>normal</securityLevel>
+            <securityLevel>guest</securityLevel>
         </page>
         <page>
             <name>/kgeneParameters.jsf</name>
-            <securityLevel>normal</securityLevel>
+            <securityLevel>guest</securityLevel>
         </page>
         <page>
             <name>/rscanParameters.jsf</name>
-            <securityLevel>normal</securityLevel>
+            <securityLevel>guest</securityLevel>
         </page>
+
+        <!-- Normal Pages -->
         <page>
             <name>/userDetails.jsf</name>
             <securityLevel>normal</securityLevel>

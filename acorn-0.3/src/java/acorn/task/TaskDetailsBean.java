@@ -431,7 +431,12 @@ public class TaskDetailsBean {
      * @return true or false
      */
     public boolean getIsTaskMine() {
-        return UserManager.getCurrentUser() != null && (task.getModel().getOwner().getId().equals(UserManager.getCurrentUser().getId()) || UserManager.getUserStatus().equalsIgnoreCase(EUser.statusAdmin));
+        //return UserManager.getCurrentUser() != null && (task.getModel().getOwner().getId().equals(UserManager.getCurrentUser().getId()) || UserManager.getUserStatus().equalsIgnoreCase(EUser.statusAdmin));
+        return UserManager.getIsAdminS() ||
+               ((UserManager.getCurrentUser() != null) &&
+                (task.getModel().getOwner() != null) &&
+                (task.getModel().getOwner().getId().equals(UserManager.getCurrentUser().getId()))
+               );
     }
 
     /**

@@ -23,6 +23,7 @@ import acorn.db.EVisPlace;
 import acorn.db.EVisTransition;
 import acorn.db.EVisualization;
 import acorn.db.EVisualizationController;
+import acorn.errorHandling.ErrorBean;
 import acorn.exception.RepeatedVisualizationNameException;
 import java.awt.Point;
 import java.beans.XMLDecoder;
@@ -72,7 +73,7 @@ public class AcornWS {
      */
     @WebMethod(operationName = "getModels")
     public String getModels(@WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        System.err.println("getModels("+login+","+pass+")");
+        System.err.println("getModels(" + login + "," + pass + ")");
         List<EModel> lem;
         try {
             if (isGuest(login, pass)) {
@@ -129,7 +130,7 @@ public class AcornWS {
     @WebMethod(operationName = "getAllReactionsByModelId")
     public String getAllReactionsByModelId(@WebParam(name = "modelId") int modelId,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         List<EReaction> reactList = eReactionContr.getByModelId(modelId);
@@ -148,7 +149,7 @@ public class AcornWS {
     @WebMethod(operationName = "getAllSpeciesByModelId")
     public String getAllSpeciesByModelId(@WebParam(name = "modelId") int modelId,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         List<ESpecies> specList = eSpeciesContr.getSpecies(modelId);
@@ -169,7 +170,7 @@ public class AcornWS {
     public String getReactionsForSpecies(@WebParam(name = "modelId") int modelId,
             @WebParam(name = "speciesSid") String speciesSid, @WebParam(name = "isSource") boolean isSource,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         ESpecies species = eSpeciesContr.getByModelIdAndSidName(modelId, speciesSid);
@@ -195,7 +196,7 @@ public class AcornWS {
     public String getSpeciesForReaction(@WebParam(name = "modelId") int modelId,
             @WebParam(name = "reactionSid") String reactionSid, @WebParam(name = "isSource") boolean isSource,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         EReaction reaction = eReactionContr.getByModelIdAndReactionSid(modelId, reactionSid);
@@ -263,7 +264,7 @@ public class AcornWS {
             @WebParam(name = "clientEncoding") String clientEncoding,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass)
             throws RepeatedVisualizationNameException, VisValidationException, AuthenticationException {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             throw new AuthenticationException("You are not authenticated.");
         }
         List<VisTransition> visTransitions = null;
@@ -435,7 +436,7 @@ public class AcornWS {
     @WebMethod(operationName = "getAllVisualizationNames")
     public List<String> getAllVisualizationNames(@WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
         List<EVisualization> visualizations = eVisualizationController.getAllVisualizations();
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         List<String> visualizationNames = new ArrayList<String>(0);
@@ -451,7 +452,7 @@ public class AcornWS {
     @WebMethod(operationName = "removeVisualization")
     public boolean removeVisualization(@WebParam(name = "visualizationName") String visualizationName,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) throws AuthenticationException {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             throw new AuthenticationException("You are not authenticated.");
         }
         eVisualizationController.removeVisualization(visualizationName);
@@ -466,7 +467,7 @@ public class AcornWS {
     @WebMethod(operationName = "getDescendantVisualizationNames")
     public List<String> getDescendantVisualizationNames(@WebParam(name = "modelId") int modelId,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         List<EVisualization> visuals = eVisualizationController.getDescVisualizations(modelId);
@@ -483,7 +484,7 @@ public class AcornWS {
     @WebMethod(operationName = "getMethodType")
     public String getMethodType(@WebParam(name = "modelId") int modelId,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         ByteArrayOutputStream fos = new ByteArrayOutputStream();
@@ -500,7 +501,7 @@ public class AcornWS {
     @WebMethod(operationName = "isFba")
     public boolean isFba(@WebParam(name = "modelId") int modelId,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) throws javax.naming.AuthenticationException {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             throw new javax.naming.AuthenticationException("You are not authenticated.");
         }
         return eModelController.isFbaTask(modelId);
@@ -512,7 +513,7 @@ public class AcornWS {
     @WebMethod(operationName = "getVisualization")
     public String getVisualization(@WebParam(name = "visName") String visName,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         EVisualization vis = null;
@@ -543,7 +544,7 @@ public class AcornWS {
      */
     @WebMethod(operationName = "isTaskDone")
     public boolean isTaskDone(@WebParam(name = "modelId") int modelId, @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) throws AuthenticationException {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             throw new AuthenticationException("You are not authenticated.");
         }
         return eModelController.isDoneTask(modelId);
@@ -555,7 +556,7 @@ public class AcornWS {
     @WebMethod(operationName = "getFlux")
     public Float getFlux(@WebParam(name = "modelId") int modelId, @WebParam(name = "reactionSid") String reactionSid,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         float flux = 0;
@@ -573,12 +574,17 @@ public class AcornWS {
      */
     @WebMethod(operationName = "authenticate")
     public void authenticate(@WebParam(name = "login") String login, @WebParam(name = "pass") String pass) throws AuthenticationException {
-        try {
-            if (isGuest(login, pass))//guest user
-            {
-                return;
-            }
+        if (isGuest(login, pass) || isUser(login, pass)) {
+            return;
+        } else {
+            throw new AuthenticationException("Incorrect login.");
+        }
+    }
 
+    private boolean isUser(String login, String pass) {
+        if ((login == null) || (pass == null))
+            return false;
+        try {
             char[] passwordFromDB = null;
             char[] passwordFromWS = pass.toCharArray();
 
@@ -586,7 +592,8 @@ public class AcornWS {
             try {
                 user = eUserController.findUserByLogin(login);
             } catch (NoResultException ex) {
-                throw new AuthenticationException("Incorrect login.");
+                return false;
+                //throw new AuthenticationException("Incorrect login.");
             }
 
             String noMD5PasswordDB = new String(user.getPasswd());
@@ -601,7 +608,8 @@ public class AcornWS {
             passwordFromDB = byteArrToString(md5.digest()).toCharArray();
             int correctCount = 0;
             if (passwordFromDB.length != passwordFromWS.length) {
-                throw new AuthenticationException("Incorrect password.\n");
+                return false;
+                //throw new AuthenticationException("Incorrect password.");
             }
             for (int i = 0; i < passwordFromWS.length; i++) {
                 if (passwordFromWS[i] == passwordFromDB[i]) {
@@ -610,26 +618,23 @@ public class AcornWS {
             }
             if (passwordFromWS.length == correctCount) {
                 //do nothing here
-                } else {
-                throw new AuthenticationException("Incorrect password.\n");
+            } else {
+                return false;
+                //throw new AuthenticationException("Incorrect password.");
             }
         } catch (NoSuchAlgorithmException ex) {
-            throw new AuthenticationException("No such algoritm exception.");
-        }
-
-    }
-
-    private boolean isUser(String login, String pass) {
-        try {
-            authenticate(login, pass);
-        } catch (AuthenticationException ex) {
             return false;
+            //throw new AuthenticationException("No such algorithm exception.");
         }
         return true;
     }
 
     private boolean isGuest(String login, String pass) {
-        return (login.equals(""));
+        if (login == null) {
+            return false;
+        } else {
+            return (login.equals(""));
+        }
     }
 
     private static String byteArrToString(byte[] b) {
@@ -652,7 +657,7 @@ public class AcornWS {
     @WebMethod(operationName = "getModelModificationDate")
     public String getModelModificationDate(@WebParam(name = "modelId") int modelId,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         EModel model = eModelController.getModel(modelId);
@@ -674,7 +679,7 @@ public class AcornWS {
     public String getDetachedReactions(
             @WebParam(name = "modelId") int modelId,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        if (!isUser(login, pass)) {
+        if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
         Collection<EReaction> reactions = eModelController.getDetachedReactions(modelId);

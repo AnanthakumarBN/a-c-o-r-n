@@ -1,5 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this template, choose Tool | Templates
  * and open the template in the editor.
  */
 package org.login;
@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Locale;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -16,7 +17,6 @@ import org.jdesktop.swingx.JXLoginPane;
 import org.jdesktop.swingx.auth.LoginService;
 import org.jdesktop.swingx.auth.UserNameStore;
 import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
 import org.openide.LifecycleManager;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
@@ -26,24 +26,35 @@ import org.openide.util.NbBundle;
  * @author markos
  */
 public class LoginPanel extends JXLoginPane {
-
     private JButton okButton;
     private JButton cancelButton;
+    private JButton guestButton;
 
     public LoginPanel(LoginService loginService) {
         super(loginService);
-
+//no idea why this (and override of getLocalet()) does not work
+//hack that works is to delete org\jdesktop\swingx\plaf\basic\resources\LoginPane_xx.properties
+//in VisualAcornApplication/swing-worker-x/release/modules/ext/swingx.jar
+//        setLocale(Locale.US);
         init();
     }
 
     public LoginPanel(LoginService loginService, UserNameStore userNameStore) {
         super(loginService, null, userNameStore);
+//        setLocale(Locale.US);
         init();
     }
+
+//    @Override
+//    public Locale getLocale() {
+//        System.err.println("getLocale()="+super.getLocale());
+//        return Locale.US;
+//    }
 
     protected void init() {
         this.okButton = createOkButton();
         this.cancelButton = createCancelButton();
+        this.guestButton = createGuestButton();
 
 //        setLocale(Locale.UK);
         addPropertyChangeListener("status", new PropertyChangeListener() {
@@ -75,29 +86,29 @@ public class LoginPanel extends JXLoginPane {
                                 frame.dispose();
                             }
                         });
-//                        JPanel panel = new JPanel();
-//                        panel.setLayout(new GridLayout(2, 2));
-//                        JLabel label = new JLabel("Model name:");
-//                        JComboBox modelBox = new JComboBox(new Object[]{"odin", "dwa", "tri"});
-//                        panel.add(label);
-//                        panel.add(modelBox);
-//                        panel.add(button);
-//                        frame.add(panel, BorderLayout.NORTH);
-//                        frame.setSize(380, 380);
-//                        frame.setVisible(true);
-//                        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-//                        String msg = "I'm plugged in!";
-//                        NotifyDescriptor d = new NotifyDescriptor.Message(msg,
-//                                NotifyDescriptor.INFORMATION_MESSAGE);
-//                        DialogDisplayer.getDefault().notify(d);
                 }
             }
         });
     }
 
     protected JButton createOkButton() {
+        //getActionMap().get(LOGIN_ACTION_COMMAND).putValue(Action.NAME, NbBundle.getMessage(LoginPanel.class, "BTN_OK"));
         return new JButton(getActionMap().get(LOGIN_ACTION_COMMAND));
+    }
+
+    protected JButton createGuestButton() {
+        //return new JButton(getActionMap().get(LOGIN_ACTION_COMMAND));
+        JButton button =  new JButton(NbBundle.getMessage(LoginPanel.class, "BTN_Guest"));
+        button.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                setPassword("".toCharArray());
+                setUserName("");
+                getActionMap().get(LOGIN_ACTION_COMMAND).actionPerformed(e);
+            }
+        });
+
+        return button;
     }
 
     protected JButton createCancelButton() {
@@ -117,7 +128,7 @@ public class LoginPanel extends JXLoginPane {
         DialogDescriptor dd = new DialogDescriptor(this,
                 NbBundle.getMessage(LoginPanel.class, "TITLE_Login"),
                 true,
-                new Object[]{okButton, cancelButton},
+                new Object[]{guestButton, okButton, cancelButton},
                 okButton,
                 DialogDescriptor.DEFAULT_ALIGN,
                 null,

@@ -59,16 +59,15 @@ public class DBDataDownloader {
     }
 
     public List<ModelStruct> getModels() {
-        String serializedModelStructs = port.getModelsForUser(this.user, this.MD5pass);
-        List<ModelStruct> modelStructs = getDeserializedModelStruct(serializedModelStructs);
-        return modelStructs;
+        String serializedModelStructs = port.getModels(this.user, this.MD5pass);
+        return getDeserializedModelStruct(serializedModelStructs);
     }
 
-    public List<ModelStruct> getAllModels() {
-        String serializedModelStructs = port.getModels(this.user, this.MD5pass);
-        List<ModelStruct> modelStructs = getDeserializedModelStruct(serializedModelStructs);
-        return modelStructs;
-    }
+//    public List<ModelStruct> getAllModels() {
+//        String serializedModelStructs = port.getModels(this.user, this.MD5pass);
+//        List<ModelStruct> modelStructs = getDeserializedModelStruct(serializedModelStructs);
+//        return modelStructs;
+//    }
 
     public List<NameStruct> getAllSpeciesByModelId(int modelId) {
         String inputString = port.getAllSpeciesByModelId(modelId, this.user, this.MD5pass);

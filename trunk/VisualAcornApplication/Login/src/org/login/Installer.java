@@ -53,7 +53,7 @@ public class Installer extends ModuleInstall {
     private static class MyLoginService extends LoginService {
 
         public boolean authenticate(String name, char[] password, String server) throws Exception {
-            if (name == null || name.trim().length() == 0) {
+            if ((name == null) || (password == null)) {
                 return false;
             }
 

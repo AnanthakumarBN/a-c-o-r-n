@@ -170,6 +170,8 @@ public class EModelController extends EntityController {
             em.getTransaction().begin();
             EModel modelx = em.find(EModel.class, model.getId());
             removeModel(em, modelx);
+            //!!1tu jest błąd
+            //Internal Exception: java.sql.SQLIntegrityConstraintViolationException: Obiekt DELETE w tabeli 'ETASK' spowodował naruszenie reguły ograniczającej klucz obcy 'ECOMMONRESULTSTASK' dla klucza (1). Instrukcja została wycofana.
             em.getTransaction().commit();
         } finally {
             em.close();

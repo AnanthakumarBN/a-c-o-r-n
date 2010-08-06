@@ -91,7 +91,11 @@ public class DBDataDownloader {
         return port.getDescendantVisualizationNames(modelId, this.user, this.MD5pass);
     }
 
-//    private List<String> getDeserializedString(String inputString) {
+    public List<String> getAncestorVisualizationNames(int modelId) {
+        return port.getAncestorVisualizationNames(modelId, this.user, this.MD5pass);
+    }
+
+    //    private List<String> getDeserializedString(String inputString) {
 //        byte[] byteArray = null;
 //        try {
 //            byteArray = inputString.getBytes(webServiceEncoding);

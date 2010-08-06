@@ -56,7 +56,7 @@ public class ModelListBean {
         try {
             if (UserManager.getIsGuestS()) {
                 List<ModelRow> newSharedList = new LinkedList<ModelRow>();
-                List<EModel> resShared = emc.getSharedModels();
+                List<EModel> resShared = emc.getModelsShared();
 
                 for (EModel m : resShared) {
                     newSharedList.add(new ModelRow(m, false));
@@ -100,7 +100,7 @@ public class ModelListBean {
                 List<ModelRow> newSharedList = new LinkedList<ModelRow>();
 
                 //List<EModel> resPrivate = emc.getModels(user);
-                List<EModel> resShared = emc.getSharedModels();
+                List<EModel> resShared = emc.getModelsShared();
 
                 for (EModel m : resShared) {
                     if (m.getOwner().equals(null)) {//to avoid NullPointerException later

@@ -135,13 +135,20 @@ public class TaskDetailsBean {
 
 
     /** 
-     * Fetches ESpecies from database
+     * Fetches visualizations from database
      * @return
      */
     private List<Visualization> justFetchVisualizations(EModel m) {
         try {
             EVisualizationController vc = new EVisualizationController();
-            List<EVisualization> res = vc.getVisualization(m);
+            List<EVisualization> res;
+            if (UserManager.getIsGuestS()) {
+                res=vc.getAncestorVisualizationsShared(m.getId());
+            } else if (UserManager.getIsAdminS()) {
+                res=vc.getAncestorVisualizationsAll(m.getId());
+            } else {//normal user
+                res=vc.getAncestorVisualizationsForUser(m.getId(), UserManager.getCurrentUser().getLogin());
+            }
 
             List<Visualization> list = new LinkedList<Visualization>();
             int ii = 0;
@@ -266,6 +273,7 @@ public class TaskDetailsBean {
     public String generateDrawing() throws DotFileException, InterruptedException {
 //        int modelId = getModelID();
         String visname = getSelectedVisualizations();
+        System.err.println("visname="+visname);
         FacesContext context = FacesContext.getCurrentInstance();
         if (visname == null) {
             FacesMessage message = new FacesMessage(

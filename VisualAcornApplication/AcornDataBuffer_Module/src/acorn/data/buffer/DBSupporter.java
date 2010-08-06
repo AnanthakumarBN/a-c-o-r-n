@@ -299,7 +299,7 @@ public class DBSupporter {
 
     public void updateVisualizationNames() {
         if (this.modelList.contains(this.selectedModel)) {
-            this.visualizationNames = dataProvider.getDescendantVisualizationNames(selectedModel.getId());
+            this.visualizationNames = dataProvider.getAncestorVisualizationNames(selectedModel.getId());
         }
     }
 

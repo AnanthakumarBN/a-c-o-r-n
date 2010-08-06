@@ -6,6 +6,7 @@
 package acorn.model;
 
 import acorn.db.EVisualization;
+import acorn.db.EVisualizationController;
 
 /**
  *
@@ -58,4 +59,8 @@ public class Visualization {
         this.sid = sid;
     }
 
+    //!!!temporary solution
+    public String getStripedName() {
+        return EVisualizationController.stripVisNameFromUser(getName());
+    }
 }

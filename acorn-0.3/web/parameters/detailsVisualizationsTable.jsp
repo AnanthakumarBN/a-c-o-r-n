@@ -96,7 +96,7 @@
             <f:facet name="header">
                 <h:outputText value="Name of visualization" />
             </f:facet>
-            <h:outputText escape="false" value="#{visualizations.name}"/>
+            <h:outputText escape="false" value="#{visualizations.stripedName}"/>
         </h:column>
         </h:dataTable>
     </h:form>

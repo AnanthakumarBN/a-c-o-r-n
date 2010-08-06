@@ -2,6 +2,7 @@ package acorn.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -27,8 +28,64 @@ public class EModelController extends EntityController {
     }
 
     /**
+     * Returns list of all models from database that are descendants of a given root (transitive closure version).
+     * @return - list of all descendants of the root model (including the root).
+     */
+    public List<EModel> getDescModels(EModel root) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            //List<EModel> allModels = (List<EModel>) em.createQuery("select m from EModel as m").getResultList();
+            LinkedList<EModel> toGo = new LinkedList<EModel>();
+            List<EModel> result = new LinkedList<EModel>();
+
+            //assume that the root model is really a model from the database
+            toGo.add(root);
+
+            //transitive closure
+            while (toGo.size() > 0) {
+                result.addAll(toGo);
+                result = getChildrenByModelList(toGo);
+            }
+
+            em.getTransaction().commit();
+            return result;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Returns list of all models from database that are ancestors of a given model (transitive closure version).
+     * @return - list of all ancestors of a given model (including that model).
+     */
+    public List<EModel> getAncestorsModels(EModel start) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            //List<EModel> allModels = (List<EModel>) em.createQuery("select m from EModel as m").getResultList();
+            EModel model = start;
+            List<EModel> result = new LinkedList<EModel>();
+
+            //assume that the start model is really a model from the database
+            result.add(model);
+
+            //transitive closure
+            while (model.getParent() != null) {
+                result.add(model.getParent());
+                model=model.getParent();
+            }
+
+            em.getTransaction().commit();
+            return result;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
      * Returns list of all models owned by @user.
-     * @return - list of all models owned by @user
+     * @return - list of all models owned by @user.
      */
     public List<EModel> getModels(EUser user) {
         EntityManager em = getEntityManager();
@@ -43,16 +100,94 @@ public class EModelController extends EntityController {
     }
 
     /**
+     * Returns list of all models owned by @user that are descendants of a given root (transitive closure version).
+     * @return - list of all owned by @user descendants of the root model (including the root).
+     */
+    public List<EModel> getDescModels(EModel root, EUser user) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            List<EModel> userModels = (List<EModel>) em.createNamedQuery("EModel.findByOwner").
+                    setParameter("owner", user).
+                    setHint("toplink.refresh", true).
+                    getResultList();
+            LinkedList<EModel> toGo = new LinkedList<EModel>();
+            List<EModel> result = new LinkedList<EModel>();
+
+            if (userModels.contains(root)) {
+                toGo.add(root);
+            }
+
+            //transitive closure
+            while (toGo.size() > 0) {
+                result.addAll(toGo);
+                LinkedList<EModel> children = getChildrenByModelList(toGo);
+                toGo = new LinkedList<EModel>();
+                for (EModel m : children) {
+                    //don't use m.owner to not to cause any more queries
+                    if (userModels.indexOf(m) != -1) {
+                        toGo.add(m);
+                    }
+                }
+            }
+
+            em.getTransaction().commit();
+            return result;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
      * Returns list of all shared models.
      * @return - list of all shared models
      */
-    public List<EModel> getSharedModels() {
+    public List<EModel> getModelsShared() {
         EntityManager em = getEntityManager();
         try {
             return (List<EModel>) em.createQuery("SELECT e FROM EModel e WHERE e.shared = :shared").
                     setParameter("shared", true).
                     setHint("toplink.refresh", true).
                     getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Returns list of all models shared models that are descendants of a given root (transitive closure version).
+     * @return - list of all shared descendants of the root model (including the root).
+     */
+    public List<EModel> getDescModelsShared(EModel root) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            List<EModel> sharedModels = (List<EModel>) em.createQuery("SELECT e FROM EModel e WHERE e.shared = :shared").
+                    setParameter("shared", true).
+                    setHint("toplink.refresh", true).
+                    getResultList();
+            LinkedList<EModel> toGo = new LinkedList<EModel>();
+            List<EModel> result = new LinkedList<EModel>();
+
+            if (sharedModels.contains(root)) {
+                toGo.add(root);
+            }
+
+            //transitive closure
+            while (toGo.size() > 0) {
+                result.addAll(toGo);
+                LinkedList<EModel> children = getChildrenByModelList(toGo);
+                toGo = new LinkedList<EModel>();
+                for (EModel m : children) {
+                    //don't use m.owner to not to cause any more queries
+                    if (sharedModels.indexOf(m) != -1) {
+                        toGo.add(m);
+                    }
+                }
+            }
+
+            em.getTransaction().commit();
+            return result;
         } finally {
             em.close();
         }
@@ -229,19 +364,19 @@ public class EModelController extends EntityController {
             for (EReactant r : reactant_list) {
                 em.persist(r);
                 r.getSpecies().getEReactantCollection().add(r);
-            /* r.getReaction().getEReactantCollection().add(r); */
+                /* r.getReaction().getEReactantCollection().add(r); */
             }
 
             for (EProduct p : product_list) {
                 em.persist(p);
                 p.getSpecies().getEProductCollection().add(p);
-            /* p.getReaction().getEProductCollection().add(p); */
+                /* p.getReaction().getEProductCollection().add(p); */
             }
 
             for (EBounds b : bounds_list) {
                 em.persist(b);
                 b.getModel().getEBoundsCollection().add(b);
-            /* b.getReaction().getEBoundsCollection().add(b); */
+                /* b.getReaction().getEBoundsCollection().add(b); */
             }
 
             em.merge(metabolism);
@@ -298,8 +433,8 @@ public class EModelController extends EntityController {
      * @param parentList list of parent models
      * @return list of children models
      */
-    public List<EModel> getChildrenByModelList(List<EModel> parentList) {
-        List<EModel> children = new ArrayList<EModel>(0);
+    public LinkedList<EModel> getChildrenByModelList(List<EModel> parentList) {
+        LinkedList<EModel> children = new LinkedList<EModel>();
         for (EModel model : parentList) {
 //            children.addAll(getChildrenByModel(model));
             children.addAll(model.getEModelCollection());
@@ -371,16 +506,16 @@ public class EModelController extends EntityController {
             em.getTransaction().begin();
             EModel model = getModel(modelId);
 
-    
-                Collection<EBounds> eboundColl = model.getEBoundsCollection();
-                for (EBounds bounds : eboundColl) {
-                    if (bounds.getLowerBound() == 0 && bounds.getUpperBound() == 0) {
-                        detachedReactions.add(bounds.getReaction());
-    
+
+            Collection<EBounds> eboundColl = model.getEBoundsCollection();
+            for (EBounds bounds : eboundColl) {
+                if (bounds.getLowerBound() == 0 && bounds.getUpperBound() == 0) {
+                    detachedReactions.add(bounds.getReaction());
+
                 }
             }
             em.getTransaction().commit();
-        }catch(NoResultException ex){
+        } catch (NoResultException ex) {
             em.getTransaction().rollback();
         } finally {
             em.close();

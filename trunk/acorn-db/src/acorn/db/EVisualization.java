@@ -31,7 +31,7 @@ import javax.persistence.Table;
     @NamedQuery(name= "EVisualization.getArcResources", query="select v.arcResource from EVisualization v where v.id=:id"),
     @NamedQuery(name= "EVisualization.getArcProducts", query="select v.arcProduct from EVisualization v where v.id=:id"),
     @NamedQuery(name = "EVisualization.getAllVisualizations", query = "select v from EVisualization v"),
-    @NamedQuery(name = "EVisualization.getVisualizationsByModel", query = "select v from EVisualization v where v.model=:model")
+    @NamedQuery(name = "EVisualization.getUserVisualizationsByModel", query = "select v from EVisualization v where v.model=:model and v.name like :name")
 })
 public class EVisualization implements Serializable {
 

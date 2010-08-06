@@ -114,12 +114,14 @@ public class EVisualizationController extends EntityController {
             EVisualization v = (EVisualization) em.createNamedQuery("EVisualization.getByName").setParameter("name", name).getSingleResult();
             em.getTransaction().commit();
             return v;
+        } catch (NoResultException ex) {
+            return null;
         } finally {
             em.close();
         }
     }
 
-    public List<EVisualization> getVisualization(EModel model) {
+    public List<EVisualization> getAllModelVisualizations(EModel model) {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
@@ -201,56 +203,214 @@ public class EVisualizationController extends EntityController {
         }
     }
 
-    public boolean isVisualizationNameUsed(String visName) {
-        List<EVisualization> visualizations = getAllVisualizations();
+    public static final char VIS_NAME_SEPARATOR = '.';
 
-        for (EVisualization vis : visualizations) {
-            if (vis.getName().equals(visName)) {
-                return true;
-            }
-        }
-        return false;
+    public static String visNameForUser(String visName, String login) {
+        return visName + VIS_NAME_SEPARATOR + login;
     }
 
-    public List<EVisualization> getModelVisualizations(EModel model) {
+    public static String stripVisNameFromUser(String visName) {
+        int ind = visName.indexOf(VIS_NAME_SEPARATOR);
+        if (ind == -1)
+            return visName;
+        else
+            //assumes that "_" cannot be used in user name
+            return visName.substring(ind+1);
+    }
+
+    public boolean isVisualizationNameUsed(String visName, String login) {
+        EVisualization vis = getVisualizationByName(visNameForUser(visName, login));
+        if (vis == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+//    public List<EVisualization> getModelVisualizationsForUser(EModel model, String login) {
+//        //temporary solution (to not to change the db schema)
+//        //better add user field to visualisation
+//        EntityManager em = getEntityManager();
+//        try {
+//            em.getTransaction().begin();
+//            List<EVisualization> visualizations = em.createNamedQuery("EVisualization.getVisualizationsByModel").setParameter("model", model).setParameter("name", login + "_%").getResultList();
+//            em.getTransaction().commit();
+//            return visualizations;
+//        } finally {
+//            em.close();
+//        }
+//    }
+
+     /**
+     *
+     * @param modelName
+     * @return all visualizations connected to modelId model or its descendants
+     */
+    public List<EVisualization> getDescVisualizationsAll(int modelId) {
+        EModelController mc = new EModelController();
+        EModel rootModel = null;
+        List<EVisualization> visualizations = new ArrayList<EVisualization>();
+
         EntityManager em = getEntityManager();
         try {
+            rootModel = mc.getModel(modelId);
+            List<EModel> models = mc.getDescModels(rootModel);
+
             em.getTransaction().begin();
-            List<EVisualization> visualizations = em.createNamedQuery("EVisualization.getVisualizationsByModel").setParameter("model", model).getResultList();
+            for (EModel mod : models) {
+                visualizations.addAll(em.createNamedQuery("EVisualization.getByModel").setParameter("model", mod).getResultList());
+            }
             em.getTransaction().commit();
             return visualizations;
         } finally {
-            em.close();
+            //em.close();
         }
     }
 
     /**
      *
      * @param modelName
-     * @return visualizations connected to modelName model or its descendants
+     * @return visualizations connected to modelId model or its descendants that are owned by a given user
      */
-    public List<EVisualization> getDescVisualizations(int modelId) {
-//        EntityManager em = getEntityManager();
+    public List<EVisualization> getDescVisualizationsForUser(int modelId, String login) {
         EModelController mc = new EModelController();
+        EUserController uc = new EUserController();
+        EModel rootModel = null;
+        EUser user = null;
+        List<EVisualization> visualizations = new ArrayList<EVisualization>();
 
-        List<EVisualization> visualizations = new ArrayList<EVisualization>(0);
-        EModel model = null;
-
+        EntityManager em = getEntityManager();
         try {
-            model = mc.getModel(modelId);
-            List<EModel> models = new ArrayList<EModel>(1);
-            models.add(model);
-            while (!models.isEmpty()) {
-                for (EModel mod : models) {
-                    visualizations.addAll(getModelVisualizations(mod));
-                }
-                models = mc.getChildrenByModelList(models);
+            user = uc.findUserByLogin(login);
+            rootModel = mc.getModel(modelId);
+            List<EModel> models = mc.getDescModels(rootModel, user);
+
+            em.getTransaction().begin();
+            for (EModel mod : models) {
+                //temporary solution (to not to change the db schema)
+                //better add user field to visualisation
+                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name", login + "_%").getResultList());
             }
-            return visualizations;
-        } catch (NoResultException ex) {
+            em.getTransaction().commit();
             return visualizations;
         } finally {
-//            em.close();
+            //em.close();
+        }
+    }
+
+    /**
+     *
+     * @param modelName
+     * @return shared (created by guest) visualizations connected to modelId model or its descendants
+     */
+    public List<EVisualization> getDescVisualizationsShared(int modelId) {
+        EModelController mc = new EModelController();
+        EUserController uc = new EUserController();
+        EModel rootModel = null;
+        List<EVisualization> visualizations = new ArrayList<EVisualization>();
+
+        EntityManager em = getEntityManager();
+        try {
+            rootModel = mc.getModel(modelId);
+            List<EModel> models = mc.getDescModelsShared(rootModel);
+
+            em.getTransaction().begin();
+            for (EModel mod : models) {
+                //temporary solution (to not to change the db scherootModelma)
+                //better add user field to visualisation
+                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name", "_%").getResultList());
+            }
+            em.getTransaction().commit();
+            return visualizations;
+        } finally {
+            //em.close();
+        }
+    }
+
+
+         /**
+     *
+     * @param modelName
+     * @return all visualizations connected to modelId model or its ancestors
+     */
+    public List<EVisualization> getAncestorVisualizationsAll(int modelId) {
+        EModelController mc = new EModelController();
+        EModel startModel = null;
+        List<EVisualization> visualizations = new ArrayList<EVisualization>();
+
+        EntityManager em = getEntityManager();
+        try {
+            startModel = mc.getModel(modelId);
+            List<EModel> models = mc.getAncestorsModels(startModel);
+
+            em.getTransaction().begin();
+            for (EModel mod : models) {
+                visualizations.addAll(em.createNamedQuery("EVisualization.getByModel").setParameter("model", mod).getResultList());
+            }
+            em.getTransaction().commit();
+            return visualizations;
+        } finally {
+            //em.close();
+        }
+    }
+
+    /**
+     *
+     * @param modelName
+     * @return visualizations connected to modelId model or its ancestors that are owned by a given user
+     */
+    public List<EVisualization> getAncestorVisualizationsForUser(int modelId, String login) {
+        EModelController mc = new EModelController();
+        EUserController uc = new EUserController();
+        EModel startModel = null;
+        EUser user = null;
+        List<EVisualization> visualizations = new ArrayList<EVisualization>();
+
+        EntityManager em = getEntityManager();
+        try {
+            user = uc.findUserByLogin(login);
+            startModel = mc.getModel(modelId);
+            List<EModel> models = mc.getAncestorsModels(startModel);
+
+            em.getTransaction().begin();
+            for (EModel mod : models) {
+                //temporary solution (to not to change the db schema)
+                //better add user field to visualisation
+                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name", login + EVisualizationController.VIS_NAME_SEPARATOR + "%").getResultList());
+            }
+            em.getTransaction().commit();
+            return visualizations;
+        } finally {
+            //em.close();
+        }
+    }
+
+    /**
+     *
+     * @param modelName
+     * @return shared (created by guest) visualizations connected to modelId model or its descendants
+     */
+    public List<EVisualization> getAncestorVisualizationsShared(int modelId) {
+        EModelController mc = new EModelController();
+        EUserController uc = new EUserController();
+        EModel startModel = null;
+        List<EVisualization> visualizations = new ArrayList<EVisualization>();
+
+        EntityManager em = getEntityManager();
+        try {
+            startModel = mc.getModel(modelId);
+            List<EModel> models = mc.getAncestorsModels(startModel);
+
+            em.getTransaction().begin();
+            for (EModel mod : models) {
+                //temporary solution (to not to change the db schema)
+                //better add user field to visualisation
+                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name", EVisualizationController.VIS_NAME_SEPARATOR+"%").getResultList());
+            }
+            em.getTransaction().commit();
+            return visualizations;
+        } finally {
+            //em.close();
         }
     }
 

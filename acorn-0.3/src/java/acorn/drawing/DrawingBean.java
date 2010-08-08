@@ -64,20 +64,19 @@ public class DrawingBean {
     }
 
     public String draw() throws DotFileException {
-
         String pathFile = createEmptyFile();
-        writeDotFile(pathFile);
+        writeTotFile(pathFile);
         String pathGraphFile = runNeato(pathFile);
 
         return pathGraphFile;
     }
 
     public String createEmptyFile() throws DotFileException {
-        String curDir = System.getProperty("user.dir");
+        //String curDir = System.getProperty("user.dir");
         String userHome = System.getProperty("user.home");
-        String dir = userHome + "/" + this.dir;
-        String filePath = dir + "/" + vis.getName() + ".dot";
-        if (!new File(dir).exists() && !(new File(dir)).mkdir()) {
+        String dirr = userHome + "/" + this.dir;
+        String filePath = dirr + "/" + EVisualizationController.stripVisNameFromUser(vis.getName()) + ".dot";
+        if (!new File(dirr).exists() && !(new File(dirr)).mkdir()) {
             throw new DotFileException("can't create path for dot file");
         }
         if ((new File(filePath)).exists() && !(new File(filePath)).delete()) {
@@ -93,7 +92,7 @@ public class DrawingBean {
         return filePath;
     }
 
-    public void writeDotFile(String filePath) {
+    public void writeTotFile(String filePath) {
         int corner_num = 0;
 
         EVisualizationController vc = new EVisualizationController();

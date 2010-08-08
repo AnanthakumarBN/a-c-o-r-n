@@ -73,14 +73,17 @@ public class AcornWS {
      */
     @WebMethod(operationName = "getModels")
     public String getModels(@WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        System.err.println("getModels(" + login + "," + pass + ")");
         List<EModel> lem;
         try {
             if (isGuest(login, pass)) {
-                System.err.println("isGuest!!!");
                 lem = eModelController.getModelsShared();
             } else if (isUser(login, pass)) {
-                lem = eModelController.getModels(eUserController.findUserByLogin(login));
+                if (isUserAnAdmin(login)) {
+                    lem = eModelController.getModels();
+                } else {
+                    lem = eModelController.getModels(eUserController.findUserByLogin(login));
+                }
+
             } else {
                 return null;
             }
@@ -281,7 +284,7 @@ public class AcornWS {
         } catch (UnsupportedEncodingException ex) {
             return false;
         }
-        EVisualization vis = new EVisualization(login+EVisualizationController.VIS_NAME_SEPARATOR+visualizationName);
+        EVisualization vis = new EVisualization(EVisualizationController.visNameForUser(visualizationName, login));
 
         //maps will be used for finding connection/creating EVisArcReactant and EVisArcProduct
         HashMap<String, EVisTransition> transitionMap = new HashMap<String, EVisTransition>(0);
@@ -512,6 +515,9 @@ public class AcornWS {
             if (isUserAnAdmin(login)) {
                 visuals = eVisualizationController.getAncestorVisualizationsAll(modelId);
                 //don't streep names for admin
+                for (EVisualization vis : visuals) {
+                    names.add(vis.getName());
+                }
             } else {
                 visuals = eVisualizationController.getAncestorVisualizationsForUser(modelId, login);
                 for (EVisualization vis : visuals) {
@@ -563,10 +569,14 @@ public class AcornWS {
         if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
         }
-        EVisualization vis = null;
         EVisualizationController visController = new EVisualizationController();
 
-        List<VisEdge> edges = visController.getEdgesOfVisualization(EVisualizationController.visNameForUser(visName, login));
+        List<VisEdge> edges;
+        if (isUserAnAdmin(login)) {
+            edges = visController.getEdgesOfVisualization(visName);
+        } else {
+            edges = visController.getEdgesOfVisualization(EVisualizationController.visNameForUser(visName, login));
+        }
 
 
         return getXmlSerialization(edges);

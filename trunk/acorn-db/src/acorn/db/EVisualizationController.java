@@ -206,7 +206,7 @@ public class EVisualizationController extends EntityController {
     public static final char VIS_NAME_SEPARATOR = '.';
 
     public static String visNameForUser(String visName, String login) {
-        return visName + VIS_NAME_SEPARATOR + login;
+        return login + VIS_NAME_SEPARATOR + visName;
     }
 
     public static String stripVisNameFromUser(String visName) {
@@ -376,7 +376,7 @@ public class EVisualizationController extends EntityController {
             for (EModel mod : models) {
                 //temporary solution (to not to change the db schema)
                 //better add user field to visualisation
-                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name", login + EVisualizationController.VIS_NAME_SEPARATOR + "%").getResultList());
+                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name",  EVisualizationController.visNameForUser(login, "%")).getResultList());
             }
             em.getTransaction().commit();
             return visualizations;
@@ -405,7 +405,7 @@ public class EVisualizationController extends EntityController {
             for (EModel mod : models) {
                 //temporary solution (to not to change the db schema)
                 //better add user field to visualisation
-                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name", EVisualizationController.VIS_NAME_SEPARATOR+"%").getResultList());
+                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name", EVisualizationController.visNameForUser("%", "")).getResultList());
             }
             em.getTransaction().commit();
             return visualizations;

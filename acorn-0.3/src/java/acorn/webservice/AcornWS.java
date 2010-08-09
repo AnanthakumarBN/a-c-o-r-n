@@ -465,39 +465,6 @@ public class AcornWS {
     /**
      *
      * @param modelId
-     * @return visualization names - model name and descendant models
-     */
-    @WebMethod(operationName = "getDescendantVisualizationNames")
-    public List<String> getDescendantVisualizationNames(@WebParam(name = "modelId") int modelId,
-            @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
-        List<EVisualization> visuals;
-        List<String> names = new LinkedList<String>();
-        if (isGuest(login, pass)) {
-            visuals = eVisualizationController.getDescVisualizationsShared(modelId);
-            for (EVisualization vis : visuals) {
-                names.add(EVisualizationController.stripVisNameFromUser(vis.getName()));
-                //!!!when user field is added to vis then don't streep names of vis created by non guests
-            }
-        } else if (isUser(login, pass)) {
-            if (isUserAnAdmin(login)) {
-                visuals = eVisualizationController.getDescVisualizationsAll(modelId);
-                //don't streep names for admin
-            } else {
-                visuals = eVisualizationController.getDescVisualizationsForUser(modelId, login);
-                for (EVisualization vis : visuals) {
-                    names.add(EVisualizationController.stripVisNameFromUser(vis.getName()));
-                }
-            }
-        } else {
-            return null;
-        }
-
-        return names;
-    }
-
-    /**
-     *
-     * @param modelId
      * @return visualization names - model name and ancestor models
      */
     @WebMethod(operationName = "getAncestorVisualizationNames")

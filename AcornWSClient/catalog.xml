@@ -8,5 +8,9 @@
     <system systemId="http://localhost:8080/AcornWSService?xsd=1" uri="xml-resources/web-service-references/AcornWSService/wsdl/localhost_8080/AcornWSService.xsd_1.xsd"/>
     <system systemId="http://localhost:8080/acorn/AcornWSService?WSDL" uri="xml-resources/web-service-references/AcornWSService/wsdl/localhost_8080/acorn/AcornWSService.wsdl"/>
     <system systemId="http://localhost:8080/acorn/AcornWSService?xsd=1" uri="xml-resources/web-service-references/AcornWSService/wsdl/localhost_8080/acorn/AcornWSService.xsd_1.xsd"/>
+    <system systemId="http://sysbio3.fhms.surrey.ac.uk:8080/acorn/AcornWSService?wsdl" uri="xml-resources/web-service-references/AcornWSService/wsdl/sysbio3.fhms.surrey.ac.uk_8080/acorn/AcornWSService.wsdl"/>
+    <system systemId="http://sysbio3.fhms.surrey.ac.uk:8080/acorn/AcornWSService?xsd=1" uri="xml-resources/web-service-references/AcornWSService/wsdl/sysbio3.fhms.surrey.ac.uk_8080/acorn/AcornWSService.xsd_1.xsd"/>
 </catalog>
+
+
 

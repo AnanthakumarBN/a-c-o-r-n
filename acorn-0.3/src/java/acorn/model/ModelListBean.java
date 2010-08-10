@@ -103,7 +103,7 @@ public class ModelListBean {
                 List<EModel> resShared = emc.getModelsShared();
 
                 for (EModel m : resShared) {
-                    if (m.getOwner().equals(null)) {//to avoid NullPointerException later
+                    if (m.getOwner() == null) {//to avoid NullPointerException later
                         newSharedList.add(new ModelRow(m, true));
                     } else if (m.getOwner().equals(user)) {
                         newPrivateList.add(new ModelRow(m, true));

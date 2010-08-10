@@ -4,7 +4,6 @@
  */
 package acorn.drawing;
 
-import acorn.db.EReaction;
 import acorn.db.ETask;
 import acorn.db.ETaskController;
 import acorn.db.EVisArcProduct;
@@ -13,7 +12,6 @@ import acorn.db.EVisPlace;
 import acorn.db.EVisTransition;
 import acorn.db.EVisualization;
 import acorn.db.EVisualizationController;
-import acorn.db.EfbaResultElement;
 import acorn.exception.DotFileException;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -75,6 +73,7 @@ public class DrawingBean {
         //String curDir = System.getProperty("user.dir");
         String userHome = System.getProperty("user.home");
         String dirr = userHome + "/" + this.dir;
+        //!!!we need to qualify the vis name with the user name but not use "." rather "_"
         String filePath = dirr + "/" + EVisualizationController.stripVisNameFromUser(vis.getName()) + ".dot";
         if (!new File(dirr).exists() && !(new File(dirr)).mkdir()) {
             throw new DotFileException("can't create path for dot file");
@@ -106,7 +105,7 @@ public class DrawingBean {
         String transitionBack = "\", shape=box, style=bold, pin=true, width=\"" + transitionWidth + "\", height=\"" + transitionHeight + "\"];\n";
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
-            out.write("Digraph " + vis.getName() + " {\n");
+            out.write("Digraph " + EVisualizationController.stripVisNameFromUser(vis.getName()) + " {\n");
             for (EVisPlace place : lp) {
                 String firstName = place.getSpeciesSid();
                 //String firstName = place.getName();
@@ -184,6 +183,7 @@ public class DrawingBean {
 
             Process p2 = rt.exec(secondRun);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new DotFileException("Can't create graphic file.");
         }
         return filePath + ".dot." + format;

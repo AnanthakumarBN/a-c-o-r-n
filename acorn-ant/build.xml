@@ -29,7 +29,7 @@
     <property name="local-worker-name" value="acorn-worker.jar" />
     <property name="local-WS-name" value="AcornWSApplication.jar" />
     <property name="local-worker-file" value="${local-worker-dir}/dist/${local-worker-name}" />
-    <property name="local-worker-ext-libs" value="${local-worker-dir}/external-libs/complib/JMS-1.1/classpath/" />
+    <property name="local-worker-ext-libs" value="${local-worker-dir}/external-libs/" />
     <property name="local-WS-file" value="${local-WS-dir}/dist/${local-WS-name}" />
     <property name="local-db-name" value="acorn-db.jar" />
     <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />
@@ -37,9 +37,11 @@
     <property name="local-db-persistence" value="local-db-persistence.xml" />
     <property name="local-worker-persistence" value="local-worker-persistence.xml" />
     <property name="local-worker-properties" value="local-worker-project.properties" />
+    <property name="local-worker-jars-dir" value="localWorkerJars" />
     <property name="local-acornConfig" value="local-acornConfig.xml" />
     <property name="server-db-persistence" value="server-db-persistence.xml" />
     <property name="server-worker-persistence" value="server-worker-persistence.xml" />
+    <property name="server-worker-jars-dir" value="serverWorkerJars" />
     <!--property name="server-name" value="sysbio1.sbs.surrey.ac.uk" /-->
     <!--<propetry name="server-adminpassfile" value=".adminpassfile" /> -->
     <property name="server-root-name" value="acorn" />
@@ -47,6 +49,7 @@
     <property name="server-web-dir" value="${server-root-dir}/acorn-0.3" />
     <property name="server-WS-dir" value="${server-root-dir}/acorn-webservice" />
     <property name="server-web-name" value="acorn-0.3.war" />
+    <property name="server-jnlpclient-name" value="visualacornapplication.war" />
     <property name="server-WS-name" value="AcornWSApplication.jar" />
     <property name="server-web-undeploy-name" value="acorn-0.3" />
     <property name="server-WS-undeploy-name" value="AcornWSApplication" />
@@ -54,6 +57,8 @@
     <property name="server-web-file" value="${server-web-dir}/${server-web-name}" />
     <property name="server-WS-file" value="${server-WS-dir}/${server-WS-name}" />
     <property name="server-worker-dir" value="${server-root-dir}/acorn-worker" />
+    <property name="server-jnlpclient-dir" value="${server-root-dir}/jnlpclient" />
+    <property name="server-jnlp-file" value="${server-jnlpclient-dir}/visualacornapplication.war" />
     <property name="server-worker-name" value="acorn-worker.jar" />
     <property name="server-worker-file" value="${server-worker-dir}/${server-worker-name}" />
     <property name="server-worker-properties" value="server-worker-project.properties" />
@@ -234,6 +239,10 @@
     </target>
     <target name="server-web-deploy-all" depends="get-server-auth, server-web-compile, server-web-undeploy, server-stop-domain, server-start-domain, copy-web-to-server" description="Do all to deploy acorn on server">
         <antcall target="server-web-deploy" />
+        <antcall target="vaapp-prepapare-and-install-server-distro" />
+    </target>
+    <target name="server-web-deploy-all-withoutVAAP" depends="get-server-auth, server-web-compile, server-web-undeploy, server-stop-domain, server-start-domain, copy-web-to-server" description="Do all to deploy acorn on server">
+        <antcall target="server-web-deploy" />
     </target>
     <target name="server-web-undeploy" depends="get-server-auth">
         <sshexec
@@ -348,6 +357,11 @@
     <target name="swap-to-local-worker">
         <copy overwrite="true" file="${local-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
         <copy overwrite="true" file="${local-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
+        <copy overwrite="true" todir="${local-worker-dir}/external-libs">
+            <fileset dir="${local-worker-jars-dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
     </target>
     <target name="swap-to-server-db">
         <copy overwrite="true" file="${server-db-persistence}" tofile="${local-db-dir}/src/META-INF/persistence.xml"/>
@@ -355,6 +369,11 @@
     <target name="swap-to-server-worker">
         <copy overwrite="true" file="${server-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
         <copy overwrite="true" file="${server-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
+        <copy overwrite="true" todir="${local-worker-dir}/external-libs">
+            <fileset dir="${server-worker-jars-dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
     </target>
     <target name="server-worker-compile" depends="local-worker-clean">
         <antcall target="swap-to-server-worker" />
@@ -416,8 +435,8 @@
             verbose="true"
             todir="${server-username}:${server-password}@${server-name}:${server-worker-dir}/lib/"
           >
-              <fileset dir="${local-worker-ext-libs}" includes="*.jar"/>
-          </scp>
+            <fileset dir="${local-worker-ext-libs}" includes="*.jar"/>
+        </scp>
     </target>
     <target name="copy-WS-to-server" depends="get-server-auth">
         <scp
@@ -547,5 +566,48 @@
     </target>
     <target name="vaapp-run">
         <ant antfile="${vaapp-dir}/build.xml" target="run" inheritall="false"/>
+    </target>
+    <target name="vaapp-prepapare-and-install-server-distro" depends="get-server-auth">
+        <ant antfile="${vaapp-dir}/build.xml" target="clean" inheritall="false"/>
+        <ant antfile="${vaapp-dir}/build.xml" target="build" inheritall="false"/>
+        <ant antfile="${vaapp-dir}/build.xml" target="build-jnlp" inheritall="false"/>
+        <ant antfile="${vaapp-dir}/build.xml" target="build-zip" inheritall="false"/>
+        <ant antfile="${vaapp-dir}/build.xml" target="build-mac" inheritall="false"/>
+        <zip destfile="${vaapp-dir}/dist/visualacornapplication.app.zip" basedir="${vaapp-dir}/dist/visualacornapplication.app" />
+        <scp
+            trust="true"
+            host="${server-name}"
+            username="${server-username}"
+            password="${server-password}"
+            verbose="true"
+            file="${vaapp-dir}/dist/visualacornapplication.war"
+            todir="${server-username}:${server-password}@${server-name}:${server-jnlpclient-dir}"
+          />
+        <sshexec
+            trust="true"
+            password="${server-password}"
+            username="${server-username}"
+            host="${server-name}"
+            command="${server-glassfish-asadmin} deploy --user admin --passwordfile ${file-to-asadmin-pass} ${server-jnlp-file}"
+            failonerror=""
+          />
+        <scp
+            trust="true"
+            host="${server-name}"
+            username="${server-username}"
+            password="${server-password}"
+            verbose="true"
+            file="${vaapp-dir}/dist/visualacornapplication.zip"
+            todir="${server-username}:${server-password}@${server-name}:${server-domain-dir}/applications/j2ee-modules/visualacornapplication"
+          />
+        <scp
+            trust="true"
+            host="${server-name}"
+            username="${server-username}"
+            password="${server-password}"
+            verbose="true"
+            file="${vaapp-dir}/dist/visualacornapplication.app.zip"
+            todir="${server-username}:${server-password}@${server-name}:${server-domain-dir}/applications/j2ee-modules/visualacornapplication"
+          />
     </target>
 </project>

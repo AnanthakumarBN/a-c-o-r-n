@@ -87,10 +87,6 @@ public class DBDataDownloader {
         return port.removeVisualization(name, this.user, this.MD5pass);
     }
 
-    public List<String> getDescendantVisualizationNames(int modelId) {
-        return port.getDescendantVisualizationNames(modelId, this.user, this.MD5pass);
-    }
-
     public List<String> getAncestorVisualizationNames(int modelId) {
         return port.getAncestorVisualizationNames(modelId, this.user, this.MD5pass);
     }

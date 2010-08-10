@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.1.3.1-hudson-749-SNAPSHOT. --><xs:schema xmlns:tns="http://webservice.acorn/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://webservice.acorn/">
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.1.3.3-hudson-757-SNAPSHOT. --><xs:schema xmlns:tns="http://webservice.acorn/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://webservice.acorn/">
 
 <xs:element name="AuthenticationException" type="tns:AuthenticationException"></xs:element>
 
@@ -21,6 +21,10 @@
 <xs:element name="getAllVisualizationNames" type="tns:getAllVisualizationNames"></xs:element>
 
 <xs:element name="getAllVisualizationNamesResponse" type="tns:getAllVisualizationNamesResponse"></xs:element>
+
+<xs:element name="getAncestorVisualizationNames" type="tns:getAncestorVisualizationNames"></xs:element>
+
+<xs:element name="getAncestorVisualizationNamesResponse" type="tns:getAncestorVisualizationNamesResponse"></xs:element>
 
 <xs:element name="getDescendantVisualizationNames" type="tns:getDescendantVisualizationNames"></xs:element>
 
@@ -47,10 +51,6 @@
 <xs:element name="getModelModificationDateResponse" type="tns:getModelModificationDateResponse"></xs:element>
 
 <xs:element name="getModels" type="tns:getModels"></xs:element>
-
-<xs:element name="getModelsForUser" type="tns:getModelsForUser"></xs:element>
-
-<xs:element name="getModelsForUserResponse" type="tns:getModelsForUserResponse"></xs:element>
 
 <xs:element name="getModelsResponse" type="tns:getModelsResponse"></xs:element>
 
@@ -272,19 +272,6 @@
 </xs:sequence>
 </xs:complexType>
 
-<xs:complexType name="getModelsForUser">
-<xs:sequence>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getModelsForUserResponse">
-<xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
 <xs:complexType name="getAllReactionsByModelId">
 <xs:sequence>
 <xs:element name="modelId" type="xs:int"></xs:element>
@@ -338,6 +325,20 @@
 <xs:complexType name="getDetachedReactionsResponse">
 <xs:sequence>
 <xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getAncestorVisualizationNames">
+<xs:sequence>
+<xs:element name="modelId" type="xs:int"></xs:element>
+<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getAncestorVisualizationNamesResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"></xs:element>
 </xs:sequence>
 </xs:complexType>
 

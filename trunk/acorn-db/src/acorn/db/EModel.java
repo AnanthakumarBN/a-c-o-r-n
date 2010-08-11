@@ -31,7 +31,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Table(name = "EMODEL")
 @NamedQueries({@NamedQuery(name = "EModel.findById", query = "SELECT e FROM EModel e WHERE e.id = :id"), 
-@NamedQuery(name = "EModel.findByName", query = "SELECT e FROM EModel e WHERE e.name = :name"), 
+@NamedQuery(name = "EModel.findByName", query = "SELECT e FROM EModel e WHERE e.name = :name"),
+@NamedQuery(name = "EModel.findByNameForLogin", query = "SELECT e FROM EModel e WHERE e.name = :name AND e.owner.login = :login"),
 @NamedQuery(name = "EModel.findByOwner", query = "SELECT e FROM EModel e WHERE e.owner = :owner"), 
 @NamedQuery(name = "EModel.findByDate", query = "SELECT e FROM EModel e WHERE e.date = :date"), 
 @NamedQuery(name = "EModel.findByLastChange", query = "SELECT e FROM EModel e WHERE e.lastChange = :lastChange"), 
@@ -248,5 +249,29 @@ public class EModel implements Serializable {
         this.eVisualizations = eVisualizations;
     }
     
-    
+    public static final char MODEL_NAME_SEPARATOR = '.';
+
+    public String getQualifiedName() {
+        if (getOwner() == null) {
+            return MODEL_NAME_SEPARATOR + getName();
+        } else {
+            return getOwner().getLogin() + MODEL_NAME_SEPARATOR + getName();
+        }
+    }
+
+    public String getQualifiedName(EUser forWho) {
+        if (forWho == null) { //gest
+            if (getOwner() == null) {
+                return getName();
+            } else {
+                return getQualifiedName();
+            }
+        } else if (forWho.equals(getOwner())) {//the same user
+            //we know that this is not quest
+            return getName();
+        } else {//different user
+            //we know that this is not quest
+            return getQualifiedName();
+        }
+    }
 }

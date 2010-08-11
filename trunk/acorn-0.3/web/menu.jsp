@@ -112,12 +112,12 @@
                 <span></span>
                 </h:outputLink>
             </li>
-            <li><h:outputLink value="addVisualization.jsf">
+            <!--<li><h:outputLink value="addVisualization.jsf">
                 <b class="p1"></b><b class="p2"></b><b class="p3"></b><b class="p4"></b><b class="p5"></b>
                 <em>Add pathway map</em>
                 <span></span>
                 </h:outputLink>
-            </li>
+            </li>-->
             <li><h:outputLink value="userList.jsf">
                 <b class="p1"></b><b class="p2"></b><b class="p3"></b><b class="p4"></b><b class="p5"></b>
                 <em>User List</em>

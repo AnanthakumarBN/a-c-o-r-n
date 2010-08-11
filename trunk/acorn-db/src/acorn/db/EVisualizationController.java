@@ -24,6 +24,7 @@ public class EVisualizationController extends EntityController {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
+
             em.persist(vis);
             em.getTransaction().commit();
         } finally {
@@ -31,15 +32,16 @@ public class EVisualizationController extends EntityController {
         }
     }
 
-    public List<VisEdge> getEdgesOfVisualization(String visName) {
+    public List<VisEdge> getEdgesOfVisualization(String visName, String ownerLogin) {
         EVisualization vis = null;
         ETaskController eTaskController = new ETaskController();
         EModelController eModelController = new EModelController();
 
         EntityManager em = getEntityManager();
         try {
-            vis = getVisualizationByName(visName);
+            vis = getVisualizationByName(visName, ownerLogin);
         } catch (NoResultException ex) {
+            ex.printStackTrace();
             return null;
         }
 
@@ -94,11 +96,16 @@ public class EVisualizationController extends EntityController {
         return edges;
     }
 
-    public void removeVisualization(String visName) {
+    public void removeVisualization(String visName, String login) {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-            EVisualization visualization = (EVisualization) em.createNamedQuery("EVisualization.getByName").setParameter("name", visName).getSingleResult();
+            EVisualization visualization;
+            if (login.equals("")) { //guest
+                visualization = (EVisualization) em.createNamedQuery("EVisualization.getByNameForGuest").setParameter("name", visName).getSingleResult();
+            } else {
+                visualization = (EVisualization) em.createNamedQuery("EVisualization.getByNameForLogin").setParameter("name", visName).setParameter("login", login).getSingleResult();
+            }
             em.remove(visualization);
             em.getTransaction().commit();
         } catch (NoResultException ex) {
@@ -107,11 +114,30 @@ public class EVisualizationController extends EntityController {
         }
     }
 
-    public EVisualization getVisualizationByName(String name) {
+    public EVisualization getVisualizationByName(String visName, String login) {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-            EVisualization v = (EVisualization) em.createNamedQuery("EVisualization.getByName").setParameter("name", name).getSingleResult();
+            EVisualization v;
+            if (login.equals("")) { //guest
+                v = (EVisualization) em.createNamedQuery("EVisualization.getByNameForGuest").setParameter("name", visName).getSingleResult();
+            } else {
+                v = (EVisualization) em.createNamedQuery("EVisualization.getByNameForLogin").setParameter("name", visName).setParameter("login", login).getSingleResult();
+            }
+            em.getTransaction().commit();
+            return v;
+        } catch (NoResultException ex) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    public EVisualization getVisualizationById(Long id) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            EVisualization v = em.find(EVisualization.class, id);
             em.getTransaction().commit();
             return v;
         } catch (NoResultException ex) {
@@ -203,23 +229,8 @@ public class EVisualizationController extends EntityController {
         }
     }
 
-    public static final char VIS_NAME_SEPARATOR = '.';
-
-    public static String visNameForUser(String visName, String login) {
-        return login + VIS_NAME_SEPARATOR + visName;
-    }
-
-    public static String stripVisNameFromUser(String visName) {
-        int ind = visName.indexOf(VIS_NAME_SEPARATOR);
-        if (ind == -1)
-            return visName;
-        else
-            //assumes that "_" cannot be used in user name
-            return visName.substring(ind+1);
-    }
-
     public boolean isVisualizationNameUsed(String visName, String login) {
-        EVisualization vis = getVisualizationByName(visNameForUser(visName, login));
+        EVisualization vis = getVisualizationByName(visName, login);
         if (vis == null) {
             return false;
         } else {
@@ -227,7 +238,7 @@ public class EVisualizationController extends EntityController {
         }
     }
 
-     /**
+    /**
      *
      * @param modelName
      * @return all visualizations connected to modelId model or its ancestors
@@ -275,7 +286,13 @@ public class EVisualizationController extends EntityController {
             for (EModel mod : models) {
                 //temporary solution (to not to change the db schema)
                 //better add user field to visualisation
-                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name",  EVisualizationController.visNameForUser("%", login)).getResultList());
+                //visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name",  EVisualizationController.visNameForUser("%", login)).getResultList());
+                if (login.equals("")) { //guest
+                    visualizations.addAll(em.createNamedQuery("EVisualization.getByModelForGuest").setParameter("model", mod).getResultList());
+                } else {
+                    visualizations.addAll(em.createNamedQuery("EVisualization.getByModelForLogin").setParameter("model", mod).setParameter("login", login).getResultList());
+                }
+
             }
             em.getTransaction().commit();
             return visualizations;
@@ -287,7 +304,7 @@ public class EVisualizationController extends EntityController {
     /**
      *
      * @param modelName
-     * @return shared (created by guest) visualizations connected to modelId model or its descendants
+     * @return shared visualizations connected to modelId model or its descendants
      */
     public List<EVisualization> getAncestorVisualizationsShared(int modelId) {
         EModelController mc = new EModelController();
@@ -304,7 +321,7 @@ public class EVisualizationController extends EntityController {
             for (EModel mod : models) {
                 //temporary solution (to not to change the db schema)
                 //better add user field to visualisation
-                visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name", EVisualizationController.visNameForUser("%", "")).getResultList());
+                visualizations.addAll(em.createNamedQuery("EVisualization.getByModelShared").setParameter("model", mod).getResultList());
             }
             em.getTransaction().commit();
             return visualizations;

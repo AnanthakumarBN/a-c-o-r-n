@@ -13,6 +13,6 @@ import java.util.Comparator;
  */
     public class VisualizationComparator implements Comparator<Visualization> {
     public int compare(Visualization s1, Visualization s2) { 
-        return s1.getName().compareTo(s2.getName());
+        return s1.getQualifiedName().compareTo(s2.getQualifiedName());
     }
 }

@@ -9,21 +9,24 @@
 
 <div id="content" class="content">
     <h1>Login</h1>
-    
+
     <h:outputText style="color: green" value="#{UserManager.registerOutcome}"/>
-    
+
     <h:messages style="color: red"
                 showDetail="true"/>
     <h:form id="login">
         <h:panelGrid columns="2" border="0">
             Username: <h:inputText id="login" 
-                                   value="#{UserManager.login}"/>        
+                         value="#{UserManager.login}"/>
             Password: <h:inputSecret id="password"
-                                     value="#{UserManager.password}"/>
+                           value="#{UserManager.password}"/>
         </h:panelGrid>
         <h:commandButton id="submit" 
                          type="submit"
                          value="Login"
                          action="#{UserManager.loginUser}"/>
     </h:form>
+    <p>
+        You can use the system as a guest without loging in, but registering and loging in gives access to additional features.
+    </p>
 </div>

@@ -100,45 +100,6 @@ public class EModelController extends EntityController {
     }
 
     /**
-     * Returns list of all models owned by @user that are descendants of a given root (transitive closure version).
-     * @return - list of all owned by @user descendants of the root model (including the root).
-     */
-    public List<EModel> getDescModels(EModel root, EUser user) {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            List<EModel> userModels = (List<EModel>) em.createNamedQuery("EModel.findByOwner").
-                    setParameter("owner", user).
-                    setHint("toplink.refresh", true).
-                    getResultList();
-            LinkedList<EModel> toGo = new LinkedList<EModel>();
-            List<EModel> result = new LinkedList<EModel>();
-
-            if (userModels.contains(root)) {
-                toGo.add(root);
-            }
-
-            //transitive closure
-            while (toGo.size() > 0) {
-                result.addAll(toGo);
-                LinkedList<EModel> children = getChildrenByModelList(toGo);
-                toGo = new LinkedList<EModel>();
-                for (EModel m : children) {
-                    //don't use m.owner to not to cause any more queries
-                    if (userModels.indexOf(m) != -1) {
-                        toGo.add(m);
-                    }
-                }
-            }
-
-            em.getTransaction().commit();
-            return result;
-        } finally {
-            em.close();
-        }
-    }
-
-    /**
      * Returns list of all shared models.
      * @return - list of all shared models
      */

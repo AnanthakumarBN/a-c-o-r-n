@@ -2,13 +2,14 @@ package acorn.db;
 
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  * EUserController
  * @author lukasz
  */
 public class EUserController extends EntityController {
-    
+
     /**
      * Returns list of all users from database.
      * @return - list of all users from database
@@ -21,7 +22,7 @@ public class EUserController extends EntityController {
             em.close();
         }
     }
-    
+
     /**
      * Finds and returns @user.
      * @return - @user
@@ -35,9 +36,9 @@ public class EUserController extends EntityController {
             return userx;
         } finally {
             em.close();
-        }  
+        }
     }
-    
+
     /**
      * Finds and returns @user.
      * @return - @user
@@ -51,9 +52,31 @@ public class EUserController extends EntityController {
             return userx;
         } finally {
             em.close();
-        }  
+        }
     }
-    
+
+    /**
+     * Finds and returns @user.
+     * @return - @user
+     */
+    public EUser getUser(String login) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query q = em.createNamedQuery("EUser.findByLogin").setParameter("login", login);
+            EUser userx;
+            if (q.getResultList().size() == 0) {
+                userx = null;
+            } else {
+                userx = (EUser) q.getSingleResult();
+            }
+            em.getTransaction().commit();
+            return userx;
+        } finally {
+            em.close();
+        }
+    }
+
     /**
      * Adds @user.
      */
@@ -65,7 +88,7 @@ public class EUserController extends EntityController {
             em.getTransaction().commit();
         } finally {
             em.close();
-        }  
+        }
     }
 
     /**
@@ -79,9 +102,9 @@ public class EUserController extends EntityController {
             em.getTransaction().commit();
         } finally {
             em.close();
-        }  
+        }
     }
-    
+
     /**
      * Removes @user from database.
      */
@@ -96,7 +119,7 @@ public class EUserController extends EntityController {
             em.close();
         }
     }
-    
+
     /**
      * Removes @userId from database.
      */
@@ -111,7 +134,7 @@ public class EUserController extends EntityController {
             em.close();
         }
     }
-    
+
     /**
      * Finds and returns user whose login is @login.
      * @return - user whose login is @login
@@ -121,12 +144,12 @@ public class EUserController extends EntityController {
         try {
             em.getTransaction().begin();
             EUser userx = (EUser) em.createNamedQuery("EUser.findByLogin").
-                            setParameter("login", login).
-                            getSingleResult();
+                    setParameter("login", login).
+                    getSingleResult();
             em.getTransaction().commit();
             return userx;
         } finally {
             em.close();
-        }  
-    } 
+        }
+    }
 }

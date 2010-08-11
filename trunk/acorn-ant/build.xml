@@ -355,25 +355,25 @@
         <copy overwrite="true" file="${local-db-persistence}" tofile="${local-db-dir}/src/META-INF/persistence.xml"/>
     </target>
     <target name="swap-to-local-worker">
-        <copy overwrite="true" file="${local-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
-        <copy overwrite="true" file="${local-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
         <copy overwrite="true" todir="${local-worker-dir}/external-libs">
             <fileset dir="${local-worker-jars-dir}">
                 <include name="*.jar"/>
             </fileset>
         </copy>
+        <copy overwrite="true" file="${local-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
+        <copy overwrite="true" file="${local-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
     </target>
     <target name="swap-to-server-db">
         <copy overwrite="true" file="${server-db-persistence}" tofile="${local-db-dir}/src/META-INF/persistence.xml"/>
     </target>
     <target name="swap-to-server-worker">
-        <copy overwrite="true" file="${server-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
-        <copy overwrite="true" file="${server-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
         <copy overwrite="true" todir="${local-worker-dir}/external-libs">
             <fileset dir="${server-worker-jars-dir}">
                 <include name="*.jar"/>
             </fileset>
         </copy>
+        <copy overwrite="true" file="${server-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
+        <copy overwrite="true" file="${server-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
     </target>
     <target name="server-worker-compile" depends="local-worker-clean">
         <antcall target="swap-to-server-worker" />

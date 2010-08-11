@@ -90,13 +90,17 @@
             <f:facet name="header">
                 <h:outputText value="Select visualization" />
             </f:facet>
-            <customTags:radioButton id="reactionVisualizationsRadio" name="reactionVisualizationsRadio" overrideName="true" value="#{TaskDetailsBean.selectedVisualizations}" itemValue="#{visualizations.sid}" />
+            <customTags:radioButton id="reactionVisualizationsRadio"
+                                    name="reactionVisualizationsRadio"
+                                    overrideName="true"
+                                    value="#{TaskDetailsBean.selectedVisualizations}"
+                                    itemValue="#{visualizations.sid}" />
         </h:column>
         <h:column>
             <f:facet name="header">
                 <h:outputText value="Name of visualization" />
             </f:facet>
-            <h:outputText escape="false" value="#{visualizations.stripedName}"/>
+            <h:outputText escape="false" value="#{visualizations.qualifiedName}"/>
         </h:column>
         </h:dataTable>
     </h:form>

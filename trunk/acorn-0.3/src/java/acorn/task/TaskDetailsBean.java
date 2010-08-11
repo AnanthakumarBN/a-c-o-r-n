@@ -192,7 +192,7 @@ public class TaskDetailsBean {
         data.get(id).filteredVisualizations = new LinkedList();
         for (Visualization row : data.get(id).visualizations) {
             if (data.get(id).visualizationsNameFilter == null ||
-                    row.getName().toLowerCase().contains(data.get(id).visualizationsNameFilter.toLowerCase())) {
+                    row.getQualifiedName().toLowerCase().contains(data.get(id).visualizationsNameFilter.toLowerCase())) {
                 data.get(id).filteredVisualizations.add(row);
             }
         }
@@ -272,9 +272,9 @@ public class TaskDetailsBean {
 
     public String generateDrawing() throws DotFileException, InterruptedException {
 //        int modelId = getModelID();
-        String visname = getSelectedVisualizations();
+        Long visId = getSelectedVisualizations();
         FacesContext context = FacesContext.getCurrentInstance();
-        if (visname == null) {
+        if (visId == null) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_FATAL,
                     "Choose visualization.", null);
@@ -282,7 +282,7 @@ public class TaskDetailsBean {
             return null;
         }
         EVisualizationController vc = new EVisualizationController();
-        EVisualization v = vc.getVisualizationByName(visname);
+        EVisualization v = vc.getVisualizationById(visId);
         fetchTask();
 
         if (!ETask.statusDone.equals(task.getStatus())) {
@@ -349,13 +349,13 @@ public class TaskDetailsBean {
         data.get(id).visualizationsNameFilter = in;
     }
 
-    public String getSelectedVisualizations() {
+    public Long getSelectedVisualizations() {
         Integer id = getModelID();
 
         return data.get(id).getSelectedVisualization();
     }
 
-    public void setSelectedVisualizations(String in) {
+    public void setSelectedVisualizations(Long in) {
         Integer id = getModelID();
 
         try {

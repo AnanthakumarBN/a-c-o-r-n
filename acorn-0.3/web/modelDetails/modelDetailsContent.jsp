@@ -89,17 +89,25 @@
         <div class="createTask">   
             <h2>Start new simulation for this model</h2>
             
-            Edit reaction bounds in the table below to account for nutrients available
-            in the medium. If the nutrient is not available lower and upper
-            bounds should equal 0. If the nutrient is available the upper bound
-            should be larger than 0. If nutrient is secreted the lower bound should
-            be lower than 0. The table below can be used to exclude any reaction from
-            the model or set its maximal or minimal capacity. Reaction list can be
-            serahced by reaction name using the filter below.
-            
-            <p>Once media conditions are defined, set the name of your simulation and choose
-            one of the simulation methods. The name will let you identify your simulation
-            on task lists.
+            <p>Before running the simulation you can use the table below to modify
+            reaction bounds. The bounds of transport reactions can be used to
+            account for nutrients available in the medium. Set upper and lower
+            bound to 0 if the nutrient is not available. Set the upper bound to
+            positive value for transport reactions of nutrients available in the
+            medium. If the substance is secreted set the lower bound to negative
+            value. You can also use the reaction bounds to set the flux on any
+            reaction to experimentally measured value (upper and lower bound
+            equal to the value) or to exclude reactions from the model (upper
+            and lower bounds set to 0). The set of reaction names can be searched
+            to quickly identify reactions of interest
+            </p>
+
+            <p>
+            Once reaction bounds are defined, set the name of your simulation
+            and choose one of the simulation methods. The name will let you
+            identify your simulation on task lists.
+            </p>
+
             
             <h:panelGrid columns="2">
                 New Task name:
@@ -117,10 +125,12 @@
             <h:commandLink action="#{TaskBean.taskFVA}"
                 value="Flux Variability Analysis" >
                 <f:param name="modelID" value="#{param['modelID']}" />
-            </h:commandLink><br>Use this method to investigate flux distribution. The program
-            will constraint the growth rate to its maximal value under given conditions. Subsequently, the maximal
-            and minimal flux will be calculated for every reaction by running two FBA simulations with
-            this reaction being set as an objective.<br/><br/>
+            </h:commandLink><br>Use this method to investigate intracellular
+            flux distribution. The program will constraint the objective
+            function to its maximal value under given conditions. Subsequently,
+            the maximal and minimal flux will be calculated for every reaction
+            by running two FBA simulations with the reaction being set as an
+            objective.<br/><br/>
 
             <h:commandLink action="#{TaskBean.taskRSCAN}"
                 value="Reaction Essentiality Scan" >
@@ -132,8 +142,9 @@
             <h:commandLink action="#{TaskBean.taskKGENE}" 
                 value="Single Gene Knockout" >
                 <f:param name="modelID" value="#{param['modelID']}" />
-            </h:commandLink><br>Set objective function and a gene to be inactivated. All reactions
-            that require this gene will be constrined to 0 and single FBA simulation will be run.<br/><br/>
+            </h:commandLink><br>Set objective function and a gene to be inactivated.
+            The flux through each of the reactions requiring this gene will be
+            constrined to 0 and single FBA simulation will be run.<br/><br/>
                     
             <!-- IF YOU WANT TO ADD NEW METHOD -> put here commandLink similar to the above ones -->                    
         </div>

@@ -22,7 +22,7 @@ public class TaskDetailsBeanData {
     public int visualizationsStart;
     public List<Visualization> visualizations;
     public List<Visualization> filteredVisualizations;
-    private String selectedVisualization;
+    private Long selectedVisualizationId;
     public String taskName;
     public String method;
     public Date lastUse;
@@ -63,12 +63,12 @@ public class TaskDetailsBeanData {
         return model;
     }
 
-    public String getSelectedVisualization() {
-        return selectedVisualization;
+    public Long getSelectedVisualization() {
+        return selectedVisualizationId;
     }
 
-    public void setSelectedVisualization(String selectedVisualization) {
-        this.selectedVisualization = selectedVisualization;
+    public void setSelectedVisualization(Long selectedVisualizationId) {
+        this.selectedVisualizationId = selectedVisualizationId;
     }
 
     

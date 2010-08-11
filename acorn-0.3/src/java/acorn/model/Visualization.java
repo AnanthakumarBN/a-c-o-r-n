@@ -6,7 +6,7 @@
 package acorn.model;
 
 import acorn.db.EVisualization;
-import acorn.db.EVisualizationController;
+import acorn.userManagement.UserManager;
 
 /**
  *
@@ -16,14 +16,13 @@ public class Visualization {
     
     private String index;
     private String sid;
-    private String name;
+    private String qualifiedName;
     private EVisualization visualization;
     
    public Visualization(EVisualization vis, int ind){
         this.index = Integer.toString(ind);
-        //index < 0 - makes the difference between species and reactions in radio button on parameters jsp page
-        this.sid = vis.getName();
-        this.name = vis.getName();
+        this.sid = vis.getId().toString();
+        this.qualifiedName = vis.getQualifiedName(UserManager.getCurrentUser());
         this.visualization = vis;
     }
 
@@ -35,12 +34,12 @@ public class Visualization {
         this.index = index;
     }
 
-    public String getName() {
-        return name;
+    public String getQualifiedName() {
+        return qualifiedName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setQualifiedName(String name) {
+        this.qualifiedName = name;
     }
 
     public EVisualization getVisualization() {
@@ -53,14 +52,5 @@ public class Visualization {
 
     public String getSid() {
         return sid;
-    }
-
-    public void setSid(String sid) {
-        this.sid = sid;
-    }
-
-    //!!!temporary solution
-    public String getStripedName() {
-        return EVisualizationController.stripVisNameFromUser(getName());
     }
 }

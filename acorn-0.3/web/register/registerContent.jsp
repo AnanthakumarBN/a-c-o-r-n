@@ -14,83 +14,86 @@
         <%--validator="#{UserManager.validateName}" --%>
         <h:panelGrid columns="3" border="0">
             First Name: <h:inputText id="name"       
-                                     requiredMessage="*"
-                                     value="#{UserManager.name}"
-                                     required="true">
+                         requiredMessage="*"
+                         value="#{UserManager.name}"
+                         required="true">
                 <f:validateLength minimum="3" maximum="255"/>
             </h:inputText>                
             <h:message for="create:name" style="color: red"/>
-            
+
             Last Name: <h:inputText id="surname"  
-                                    requiredMessage="*"
-                                    value="#{UserManager.surname}"
-                                    required="true">
+                         requiredMessage="*"
+                         value="#{UserManager.surname}"
+                         required="true">
                 <f:validateLength minimum="3" maximum="255"/>
             </h:inputText>                
             <h:message for="create:institution" style="color: red"/>
-            
+
             Institution: <h:inputText id="institution"  
-                                      requiredMessage="*"
-                                      value="#{UserManager.institution}"
-                                      required="false">
+                         requiredMessage="*"
+                         value="#{UserManager.institution}"
+                         required="false">
                 <f:validateLength minimum="0" maximum="255"/>
             </h:inputText>               
             <h:message for="create:institution" style="color: red"/>
-            
+
             Login: <h:inputText id="login" 
-                                requiredMessage="*"
-                                value="#{UserManager.login}"
-                                validator="#{UserManager.validateLogin}"
-                                required="true">
+                         requiredMessage="*"
+                         value="#{UserManager.login}"
+                         validator="#{UserManager.validateLogin}"
+                         required="true">
                 <f:validateLength minimum="3" maximum="255"/>
             </h:inputText>
             <h:message for="create:login" style="color: red"/>
-            
+
             E-mail: <h:inputText id="email" 
-                                 requiredMessage="*"
-                                 value="#{UserManager.email}"
-                                 validator="#{UserManager.validateEmail}"
-                                 required="true">
-                 <f:validateLength minimum="3" maximum="255"/>
+                         requiredMessage="*"
+                         value="#{UserManager.email}"
+                         validator="#{UserManager.validateEmail}"
+                         required="true">
+                <f:validateLength minimum="3" maximum="255"/>
             </h:inputText>
             <h:message for="create:email" style="color: red"/>
-            
+
             Password: <h:inputSecret id="password"    
-                                     requiredMessage="*"
-                                     value="#{UserManager.password}"
-                                     required="true">
+                           requiredMessage="*"
+                           value="#{UserManager.password}"
+                           required="true">
                 <f:validateLength minimum="3" maximum="255"/>                
             </h:inputSecret>
-            
+
             <h:message for="create:password" style="color: red"/>
             Password (verify): <h:inputSecret id="passwordConfirmation"   
-                                              requiredMessage="*"
-                                              value="#{UserManager.passwordConfirmation}"
-                                              required="true"
-                                              validator="#{UserManager.passwordConfirmationValidator}">
+                           requiredMessage="*"
+                           value="#{UserManager.passwordConfirmation}"
+                           required="true"
+                           validator="#{UserManager.passwordConfirmationValidator}">
                 <f:attribute name="passwordId" value="content:create:password"/>
                 <%--f:validateLength minimum="3" maximum="255"/--%>
             </h:inputSecret>
             <h:message for="create:passwordConfirmation" style="color: red"/>
         </h:panelGrid>
-        
-<%--        <h:graphicImage url="/jcaptcha" />
-        
-        <h:panelGrid columns="3" border="0">
-         
-            Verification string: <h:inputText id="captchaText" 
-                                              requiredMessage="*" 
-                                              validator="#{UserManager.validateCaptchaText}"
-                                              required="true"
-                                              value="#{UserManager.captchaText}">
-                <f:validateLength minimum="2" maximum="20"/>
-            </h:inputText>
-            <h:message for="create:captchaText" style="color: red"/>
-        </h:panelGrid>
---%>
+
+        <%--        <h:graphicImage url="/jcaptcha" />
+
+                <h:panelGrid columns="3" border="0">
+
+                    Verification string: <h:inputText id="captchaText"
+                                                      requiredMessage="*"
+                                                      validator="#{UserManager.validateCaptchaText}"
+                                                      required="true"
+                                                      value="#{UserManager.captchaText}">
+                        <f:validateLength minimum="2" maximum="20"/>
+                    </h:inputText>
+                    <h:message for="create:captchaText" style="color: red"/>
+                </h:panelGrid>
+        --%>
         <h:commandButton id="submit" 
                          value="Create"
                          action="#{UserManager.createUser}"/>
         <h:messages style="color: red" globalOnly="true"/>
     </h:form>
+    <p>
+        You can use the system as a guest without login in, but registering and loging in gives access to additional features.
+    </p>
 </div>

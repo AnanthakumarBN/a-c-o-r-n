@@ -74,7 +74,7 @@ public class DrawingBean {
         String userHome = System.getProperty("user.home");
         String dirr = userHome + "/" + this.dir;
         //!!!we need to qualify the vis name with the user name but not use "." rather "_"
-        String filePath = dirr + "/" + EVisualizationController.stripVisNameFromUser(vis.getName()) + ".dot";
+        String filePath = dirr + "/" + vis.getQualifiedNameForDot() + ".dot";
         if (!new File(dirr).exists() && !(new File(dirr)).mkdir()) {
             throw new DotFileException("can't create path for dot file");
         }
@@ -105,7 +105,7 @@ public class DrawingBean {
         String transitionBack = "\", shape=box, style=bold, pin=true, width=\"" + transitionWidth + "\", height=\"" + transitionHeight + "\"];\n";
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(filePath));
-            out.write("Digraph " + EVisualizationController.stripVisNameFromUser(vis.getName()) + " {\n");
+            out.write("Digraph " + vis.getName() + " {\n");
             for (EVisPlace place : lp) {
                 String firstName = place.getSpeciesSid();
                 //String firstName = place.getName();

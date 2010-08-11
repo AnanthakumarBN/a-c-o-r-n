@@ -38,8 +38,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -81,9 +82,11 @@ public class AcornWS {
                 if (isUserAnAdmin(login)) {
                     lem = eModelController.getModels();
                 } else {
-                    lem = eModelController.getModels(eUserController.findUserByLogin(login));
+                    HashSet<EModel> set = new HashSet<EModel>();
+                    set.addAll(eModelController.getModels(eUserController.findUserByLogin(login)));
+                    set.addAll(eModelController.getModelsShared());
+                    lem = new ArrayList<EModel>(set);
                 }
-
             } else {
                 return null;
             }
@@ -92,8 +95,9 @@ public class AcornWS {
         }
         ModelStruct[] modelElements = new ModelStruct[lem.size()];
         int i = 0;
+        EUser user = eUserController.getUser(login);
         for (EModel em : lem) {
-            modelElements[i++] = new ModelStruct(em.getId(), em.getName());
+            modelElements[i++] = new ModelStruct(em.getId(), em.getQualifiedName(user));
         }
         Arrays.sort(modelElements);
         return getModelStructXmlSerialization(modelElements);
@@ -284,7 +288,13 @@ public class AcornWS {
         } catch (UnsupportedEncodingException ex) {
             return false;
         }
-        EVisualization vis = new EVisualization(EVisualizationController.visNameForUser(visualizationName, login));
+
+        EUser owner = null;
+        if (!isGuest(login, pass)) {
+            owner = eUserController.getUser(login);
+        }
+
+        EVisualization vis = new EVisualization(visualizationName, owner);
 
         //maps will be used for finding connection/creating EVisArcReactant and EVisArcProduct
         HashMap<String, EVisTransition> transitionMap = new HashMap<String, EVisTransition>(0);
@@ -443,8 +453,9 @@ public class AcornWS {
             return null;
         }
         List<String> visualizationNames = new ArrayList<String>(0);
+        EUser owner = eUserController.getUser(login);
         for (EVisualization vis : visualizations) {
-            visualizationNames.add(vis.getName());
+            visualizationNames.add(vis.getQualifiedName(owner));
         }
         return visualizationNames;
     }
@@ -458,7 +469,7 @@ public class AcornWS {
         if (!isUser(login, pass) && !isGuest(login, pass)) {
             throw new AuthenticationException("You are not authenticated.");
         }
-        eVisualizationController.removeVisualization(visualizationName);
+        eVisualizationController.removeVisualization(visualizationName, login);
         return true;
     }
 
@@ -471,31 +482,30 @@ public class AcornWS {
     public List<String> getAncestorVisualizationNames(@WebParam(name = "modelId") int modelId,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
         List<EVisualization> visuals;
-        List<String> names = new LinkedList<String>();
+        Set<String> names = new HashSet<String>();
         if (isGuest(login, pass)) {
             visuals = eVisualizationController.getAncestorVisualizationsShared(modelId);
             for (EVisualization vis : visuals) {
-                names.add(EVisualizationController.stripVisNameFromUser(vis.getName()));
-                //!!!when user field is added to vis then don't streep names of vis created by non guests
+                names.add(vis.getQualifiedName(eUserController.findUserByLogin(login)));
             }
         } else if (isUser(login, pass)) {
             if (isUserAnAdmin(login)) {
                 visuals = eVisualizationController.getAncestorVisualizationsAll(modelId);
                 //don't streep names for admin
                 for (EVisualization vis : visuals) {
-                    names.add(vis.getName());
+                    names.add(vis.getQualifiedName(eUserController.findUserByLogin(login)));
                 }
             } else {
                 visuals = eVisualizationController.getAncestorVisualizationsForUser(modelId, login);
                 for (EVisualization vis : visuals) {
-                    names.add(EVisualizationController.stripVisNameFromUser(vis.getName()));
+                    names.add(vis.getQualifiedName(eUserController.findUserByLogin(login)));
                 }
             }
         } else {
             return null;
         }
 
-        return names;
+        return new ArrayList<String>(names);
     }
 
     /**
@@ -531,7 +541,7 @@ public class AcornWS {
      * Web service operation
      */
     @WebMethod(operationName = "getVisualization")
-    public String getVisualization(@WebParam(name = "visName") String visName,
+    public String getVisualization(@WebParam(name = "visName") String visName, @WebParam(name = "ownerId") String ownerLogin,
             @WebParam(name = "login") String login, @WebParam(name = "pass") String pass) {
         if (!isUser(login, pass) && !isGuest(login, pass)) {
             return null;
@@ -540,9 +550,9 @@ public class AcornWS {
 
         List<VisEdge> edges;
         if (isUserAnAdmin(login)) {
-            edges = visController.getEdgesOfVisualization(visName);
+            edges = visController.getEdgesOfVisualization(visName, ownerLogin);
         } else {
-            edges = visController.getEdgesOfVisualization(EVisualizationController.visNameForUser(visName, login));
+            edges = visController.getEdgesOfVisualization(visName, ownerLogin);
         }
 
 

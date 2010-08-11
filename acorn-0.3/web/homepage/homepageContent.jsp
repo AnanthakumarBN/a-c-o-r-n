@@ -9,15 +9,24 @@
 
 <div id="content" class="content">
     <h1>Welcome to Acorn</h1>
-    <p>Click Models tab to see the list of genome scale metabolic reaction networks
-    available in the system. There may be many models for the same organism, each of them
-    representing metabolism under different set of envornmental conditions. To start
-    simulation choose one of the models and follow instructions.</p>
-    <p>To run the visualization editor you need to have Java SE 6.0 installed (Mac users see <a href="http://gephi.org/users/install-java-6-mac-os-x-leopard/">this</a>). You can either:
+    <p>Go to the Models tab to see the list of the genome scale metabolic
+       reaction networks available. Different versions of the same model
+       represent metabolism under different nutritional conditions. To run
+       simulations choose one of the models and follow instructions.
+    </p>
+    <p>
+        For a quick tutorial containing Flash presentations of software usage click here.
+    </p>
+    <p>
+        You can create pathway maps and visualize numerical results of the
+        simulations using our editor. To run the editor you need to have
+        Java SE 6.0 installed (Mac users see <a href="http://gephi.org/users/install-java-6-mac-os-x-leopard/">this</a>).
+        You can either install editor on your computer or run it without
+        installation via Java WebStart:
     </p>
     <ul>
-        <li>Use the Java Web Start version by clicking <a href="http://sysbio3.fhms.surrey.ac.uk:8080/visualacornapplication/master.jnlp">this link</a>.</li>
+        <li>Start Java Web Start version <a href="http://sysbio3.fhms.surrey.ac.uk:8080/visualacornapplication/master.jnlp">here</a>.</li>
         <li>Download a Windows/Linux distribution from <a href="http://sysbio3.fhms.surrey.ac.uk:8080/visualacornapplication/visualacornapplication.zip">here</a>. You will need to unzip it and execute the runnable in <code>bin</code> directory.</li>
-        <li>Download a Mac distribution from <a href="http://sysbio3.fhms.surrey.ac.uk:8080/visualacornapplication/visualacornapplication.app.zip">here</a>.</li>
+        <li>Download a Mac distribution from here <a href="http://sysbio3.fhms.surrey.ac.uk:8080/visualacornapplication/visualacornapplication.app.zip">here</a>.</li>
     </ul>
 </div>

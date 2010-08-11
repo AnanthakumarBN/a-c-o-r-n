@@ -9,7 +9,7 @@
             <folders/>
             <ide-actions>
                 <action name="build">
-                    <target>local-create-resources</target>
+                    <target>vaapp-run-all-on-local-server</target>
                 </action>
                 <action name="run">
                     <target>local</target>

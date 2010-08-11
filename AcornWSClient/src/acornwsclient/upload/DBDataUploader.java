@@ -47,7 +47,7 @@ public class DBDataUploader {
         String placesString = getXmlPlacesSerialization(places);
         String edgesString = getXmlEdgesSerialization(edges);
 //        try {
-        return port.saveVisualization(modelId, visualizationName, transitionsString, 
+        return port.saveVisualization(modelId, visualizationName, transitionsString,
                 placesString, edgesString, clientEncoding, this.user, this.MD5pass);
 //        } catch (RepeatedVisualizationNameException_Exception ex) {
 //            throw new RepeatedVisualizationNameException(ex.getMessage());

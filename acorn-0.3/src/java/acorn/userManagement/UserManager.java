@@ -7,7 +7,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.component.UIInput;
 import javax.faces.component.UIComponent;
 import javax.servlet.http.*;
-import java.security.*;
 import com.octo.captcha.service.CaptchaServiceException;
 import java.util.Random;
 import javax.persistence.NoResultException;

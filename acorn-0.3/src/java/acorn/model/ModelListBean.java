@@ -59,7 +59,7 @@ public class ModelListBean {
                 List<EModel> resShared = emc.getModelsShared();
 
                 for (EModel m : resShared) {
-                    newSharedList.add(new ModelRow(m, false));
+                    newSharedList.add(new ModelRow(m, m.getOwner() == null));
                 }
                 privateList = new LinkedList<ModelRow>();
                 sharedList = newSharedList;
@@ -68,8 +68,7 @@ public class ModelListBean {
                 showPrivateFilter = false;
                 showSharedFilter = true;
                 return;
-            }
-            else if (UserManager.getIsAdminS()) {
+            } else if (UserManager.getIsAdminS()) {
                 EUser user = UserManager.getCurrentUser();
                 List<ModelRow> newPrivateList = new LinkedList<ModelRow>();
                 List<ModelRow> newSharedList = new LinkedList<ModelRow>();
@@ -99,16 +98,20 @@ public class ModelListBean {
                 List<ModelRow> newPrivateList = new LinkedList<ModelRow>();
                 List<ModelRow> newSharedList = new LinkedList<ModelRow>();
 
-                //List<EModel> resPrivate = emc.getModels(user);
+                List<EModel> resPrivate = emc.getModels(user);
+                for (EModel m : resPrivate) {
+                    newPrivateList.add(new ModelRow(m, true));
+                }
+
                 List<EModel> resShared = emc.getModelsShared();
 
                 for (EModel m : resShared) {
                     if (m.getOwner() == null) {//to avoid NullPointerException later
-                        newSharedList.add(new ModelRow(m, true));
+                        newSharedList.add(new ModelRow(m, false));
                     } else if (m.getOwner().equals(user)) {
                         newPrivateList.add(new ModelRow(m, true));
                     } else { //if (m.isShared()) {//shared but not owned by the user (we want to avoid having models in two lists)
-                        newSharedList.add(new ModelRow(m, true));
+                        newSharedList.add(new ModelRow(m, false));
                     }
                 }
                 privateList = newPrivateList;

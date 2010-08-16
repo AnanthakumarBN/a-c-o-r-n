@@ -21,6 +21,8 @@ public class TaskListBean {
     private static int byDate = 2;
     private static int byStatus = 3;
     private static int byMethod = 4;
+    private static int byShared = 5;
+    private static int byDelete = 6;
     
     /* Fields */
     private boolean mine;
@@ -267,6 +269,20 @@ public class TaskListBean {
                 if (!asc) Collections.reverse(taskList);
             }
         }
+        else if (sort == byShared) {
+            setSort(sort); setSortDir(asc);
+            if (getTaskList() != null) {
+                Collections.sort(taskList, new TaskSharedComparator());
+                if (!asc) Collections.reverse(taskList);
+            }
+        }
+        else if (sort == byDelete) {
+            setSort(sort); setSortDir(asc);
+            if (getTaskList() != null) {
+                Collections.sort(taskList, new TaskDeleteComparator(this));
+                if (!asc) Collections.reverse(taskList);
+            }
+        }
         
         filterList();
     }
@@ -377,5 +393,18 @@ public class TaskListBean {
     
     private void setSortDirDefault() {
         setSortDir(true);
-    }    
+    }
+
+    //hacks for user-aware deleting of tasks on the web
+    public Integer getCurrentUserId() {
+        if (UserManager.getIsGuestS()) {
+            return null;
+        } else {
+            return UserManager.getCurrentUser().getId();
+        }
+    }
+
+    public boolean isDeleteAllUser() {
+        return UserManager.getIsAdminS();
+    }
 }

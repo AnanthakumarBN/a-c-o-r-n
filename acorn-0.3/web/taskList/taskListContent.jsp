@@ -269,18 +269,50 @@
             
             <h:column>
                 <f:facet name="header">
-                    <h:outputText value="Shared" />
-                </f:facet>                     
+                    <h:panelGroup>
+                        Shared
+                        <a4j:commandLink
+                            styleClass="ordArrow"
+                            reRender="filteredTaskList"
+                            action="#{TaskListBean.sortAsc}">
+                            <h:graphicImage value="/chrome/nav_ordasc.gif" />
+                            <a4j:actionparam name="sort" value="5" />
+                        </a4j:commandLink>
+                        <a4j:commandLink
+                            styleClass="ordArrow"
+                            reRender="filteredTaskList"
+                            action="#{TaskListBean.sortDesc}">
+                            <h:graphicImage value="/chrome/nav_orddesc.gif" />
+                            <a4j:actionparam name="sort" value="5" />
+                        </a4j:commandLink>
+                    </h:panelGroup>
+                </f:facet>
                 
                 <h:outputText value="#{task.shared}" />    
             </h:column>
             
             <h:column rendered="#{TaskListBean.deleteAllowed}">
                 <f:facet name="header">
-                    <h:outputText value="" />
+                    <h:panelGroup>
+                        Delete
+                        <a4j:commandLink
+                            styleClass="ordArrow"
+                            reRender="filteredTaskList"
+                            action="#{TaskListBean.sortAsc}">
+                            <h:graphicImage value="/chrome/nav_ordasc.gif" />
+                            <a4j:actionparam name="sort" value="6" />
+                        </a4j:commandLink>
+                        <a4j:commandLink
+                            styleClass="ordArrow"
+                            reRender="filteredTaskList"
+                            action="#{TaskListBean.sortDesc}">
+                            <h:graphicImage value="/chrome/nav_orddesc.gif" />
+                            <a4j:actionparam name="sort" value="6" />
+                        </a4j:commandLink>
+                    </h:panelGroup>
                 </f:facet>
             
-                <a4j:commandLink id="delete" action="#{TaskListBean.deleteTask}" reRender="tableForm"  value="delete">
+                <a4j:commandLink rendered="#{(task.ownerId == TaskListBean.currentUserId) || TaskListBean.deleteAllUser}" id="delete" action="#{TaskListBean.deleteTask}" reRender="tableForm"  value="delete">
                     <a4j:actionparam name="taskID" value="#{task.id}" />
                 </a4j:commandLink>
             </h:column>

@@ -75,11 +75,11 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library>
-                    <file>${reference.org_visualapi.module}</file>
+                    <file>${reference.acorn-db.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library>
-                    <file>${reference.acorn-db.jar}</file>
+                    <file>${reference.org_visualapi.module}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library>

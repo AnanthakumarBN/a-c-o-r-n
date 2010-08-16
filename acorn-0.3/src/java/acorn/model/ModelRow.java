@@ -77,7 +77,7 @@ public class ModelRow {
                         return d1.compareTo(d2);
                     } catch (Exception e) {ErrorBean.printStackTrace(e); return 0; }
                 }};
-            else return new Comparator<ModelRow>() {           
+            else return new Comparator<ModelRow>() {   
                 public int compare(ModelRow t1, ModelRow t2) {
                     try {
                         Comparable d1 = (Comparable) m.invoke(t1, new Object[] {});

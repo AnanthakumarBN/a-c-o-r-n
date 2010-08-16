@@ -19,12 +19,12 @@ import java.util.HashMap;
 import java.util.List;
 import org.dbStructs.ModelStruct;
 import org.dbStructs.NameStruct;
+import org.dbStructs.VisStruct;
 import org.exceptions.VisValidationException;
 import org.openide.util.Exceptions;
 import org.visualapi.VisPlace;
 import org.visualapi.VisTransition;
 import org.visualapi.VisEdge;
-
 
 /**
  *
@@ -42,10 +42,10 @@ public class DBSupporter {
     private List<NameStruct> allSpeciesList;
     private NameStruct[] template = new NameStruct[0];
     private List<String> visualizationNames;
-    private String savedVisualizationName;
     private boolean fbaTask;
     private boolean doneTask;
     private HashMap<String, Float> fluxMap;
+    private VisStruct vis;
 
     public DBSupporter(String user, String MD5pass) {
         dataProvider = new DBDataDownloader(user, MD5pass);
@@ -56,7 +56,6 @@ public class DBSupporter {
         srBuffer = new SpeciesReactionBuffer();
         selectedModel = null;
         updateVisualizationNames();
-        savedVisualizationName = null;
         fbaTask = false;
         doneTask = false;
 
@@ -72,14 +71,14 @@ public class DBSupporter {
         /**
          * TODO update srbuffer -> reactions in duplicateNewList
          */
-        for(NameStruct updateReaction: duplicateNewList){
+        for (NameStruct updateReaction : duplicateNewList) {
             List<NameStruct> sourceSpec = getSpeciesForReaction(updateReaction, true);
             List<NameStruct> targetSpec = getSpeciesForReaction(updateReaction, false);
 
             srBuffer.addReactionAndUpdateSpecies(updateReaction, sourceSpec, targetSpec);
         }
 
-        for(NameStruct detReact : detachedReactions){
+        for (NameStruct detReact : detachedReactions) {
             this.srBuffer.removeReaction(detReact);
         }
     }
@@ -92,12 +91,13 @@ public class DBSupporter {
         return doneTask;
     }
 
-    public int getSelectedModelId(){
-        if(selectedModel == null){
+    public int getSelectedModelId() {
+        if (selectedModel == null) {
             return -1;
         }
         return selectedModel.getId();
     }
+
     public boolean isFbaTask() {
         return fbaTask;
     }
@@ -235,25 +235,23 @@ public class DBSupporter {
         this.selectedModel = selectedModel;
     }
 
-
-
     public void setModel(ModelStruct model) {
-            this.selectedModel = model;
-            this.modelModificationDate = dataProvider.getModelModificationDate(model.getId());
-            allReactionList = dataProvider.getAllReactionsByModelId(selectedModel.getId());
-            allSpeciesList = dataProvider.getAllSpeciesByModelId(selectedModel.getId());
-            this.updateVisualizationNames();
+        this.selectedModel = model;
+        this.modelModificationDate = dataProvider.getModelModificationDate(model.getId());
+        allReactionList = dataProvider.getAllReactionsByModelId(selectedModel.getId());
+        allSpeciesList = dataProvider.getAllSpeciesByModelId(selectedModel.getId());
+        this.updateVisualizationNames();
         try {
             this.fbaTask = dataProvider.isFbaTask(selectedModel.getId());
             this.doneTask = dataProvider.isTaskDone(selectedModel.getId());
         } catch (AuthenticationException_Exception ex) {
             Exceptions.printStackTrace(ex);
         }
-            
 
-            //deletes all data buffered earlier
-            fluxMap.clear();
-            this.srBuffer.clear();
+
+        //deletes all data buffered earlier
+        fluxMap.clear();
+        this.srBuffer.clear();
     }
 
     public Date getModelModificationDate() {
@@ -264,8 +262,6 @@ public class DBSupporter {
         this.modelModificationDate = modelModificationDate;
     }
 
-
-
     public ModelStruct[] getModelsArray() {
         ModelStruct[] array = modelList.toArray(new ModelStruct[0]);
         Arrays.sort(array);
@@ -275,7 +271,6 @@ public class DBSupporter {
     public List<ModelStruct> getModelList() {
         return modelList;
     }
-
 
     public NameStruct[] getAllReactionList() {
         return getSortedArray(allReactionList);
@@ -319,7 +314,7 @@ public class DBSupporter {
      * @throws acorndatabuffer.structures.VisValidationException if transitions aren't valid
      */
     public void validateVisualization(List<VisTransition> transitionList) throws BadKeyInBufferStruct, VisValidationException {
-        
+
         List<NameStruct> sourceStructs = null;
         List<NameStruct> targetStructs = null;
         List<NameStruct> notValidStructs = null;
@@ -355,35 +350,50 @@ public class DBSupporter {
         }
     }
 
-    public void saveNewVisualization(String visualizationName, List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges)
+    public void saveNewVisualization(String visualizationName, List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges, boolean shared)
             throws RepeatedVisualizationNameException_Exception, BadKeyInBufferStruct, VisValidationException, VisValidationException_Exception {
 
         if (visualizationNames.contains(visualizationName)) {
             new VisValidationException("Visualization: " + visualizationName + "is in database.\n Write another one.");
         }
-        saveVisualization(visualizationName, transitions, places, edges);
+        saveVisualization(visualizationName, transitions, places, edges, shared);
     }
 
-    public void eraseOldSaveNewVisualization(String visualizationName, List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges)
+    public void eraseOldSaveNewVisualization(String visualizationName, List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges, boolean shared)
             throws BadKeyInBufferStruct, VisValidationException, RepeatedVisualizationNameException_Exception, VisValidationException_Exception {
 
         this.removeVisualization(visualizationName);
-        saveVisualization(visualizationName, transitions, places, edges);
+        saveVisualization(visualizationName, transitions, places, edges, shared);
     }
 
-    private void saveVisualization(String visualizationName, List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges) throws RepeatedVisualizationNameException_Exception, VisValidationException_Exception, VisValidationException_Exception{
+    private void saveVisualization(String visualizationName, List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges, boolean shared)
+            throws RepeatedVisualizationNameException_Exception, VisValidationException_Exception, VisValidationException_Exception {
         try {
-            dataUploader.saveVisualization(selectedModel.getId(), visualizationName, transitions, places, edges);
+            dataUploader.saveVisualization(selectedModel.getId(), visualizationName, transitions, places, edges, shared);
         } catch (AuthenticationException_Exception ex) {
             Exceptions.printStackTrace(ex);
         }
         visualizationNames.add(visualizationName);
-        savedVisualizationName = visualizationName;
         this.updateVisualizationNames();
     }
 
-    public List<VisEdge> getVisualization(String visualizationName) {
-        List<VisEdge> edges = dataProvider.getVisualization(visualizationName);
+    //temporary solution until this VAAP is revritten
+    public static String getOwnerLogin(String visName) {
+        int l = visName.indexOf('.');
+        return visName.substring(0, l);
+    }
+
+    //temporary solution until this VAAP is revritten
+    public static String getShortName(String visName) {
+        int l = visName.indexOf('.');
+        return visName.substring(l + 1);
+    }
+
+    public List<VisEdge> getVisualization(String vN) {
+        String ownerLogin = getOwnerLogin(vN);
+        String visualizationName = getShortName(vN);
+        List<VisEdge> edges = dataProvider.getVisualization(visualizationName, ownerLogin);
+        this.vis = dataProvider.getVisualizationObject(visualizationName, ownerLogin);
         List<NameStruct> sourceTransitions = new ArrayList<NameStruct>(0);
         List<NameStruct> targetTransitions = new ArrayList<NameStruct>(0);
 
@@ -413,17 +423,21 @@ public class DBSupporter {
             List<NameStruct> sourceSpecies = dataProvider.getSpeciesForReaction(selectedModel.getId(), trans.getSid(), true);
             srBuffer.addNameStructList(trans, sourceSpecies, true, true);
         }
-        this.savedVisualizationName = visualizationName;
         return edges;
     }
-
-    
-
 
     public float getFlux(String sid) {
         if (!fluxMap.containsKey(sid)) {
             fluxMap.put(sid, dataProvider.getFlux(selectedModel.getId(), sid));
         }
         return fluxMap.get(sid);
+    }
+
+    public boolean getIsCurrentVisShared() {
+        return vis.isShared();
+    }
+
+    public boolean getCanCurrentVisBeModified() {
+        return vis.isCanModify();
     }
 }

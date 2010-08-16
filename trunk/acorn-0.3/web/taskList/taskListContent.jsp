@@ -291,7 +291,7 @@
                 <h:outputText value="#{task.shared}" />    
             </h:column>
             
-            <h:column rendered="#{TaskListBean.deleteAllowed}">
+            <h:column>
                 <f:facet name="header">
                     <h:panelGroup>
                         Delete

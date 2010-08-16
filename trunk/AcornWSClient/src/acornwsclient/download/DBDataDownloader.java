@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.dbStructs.ModelStruct;
 import org.dbStructs.NameStruct;
+import org.dbStructs.VisStruct;
 import org.visualapi.VisEdge;
 
 /**
@@ -68,7 +69,6 @@ public class DBDataDownloader {
 //        List<ModelStruct> modelStructs = getDeserializedModelStruct(serializedModelStructs);
 //        return modelStructs;
 //    }
-
     public List<NameStruct> getAllSpeciesByModelId(int modelId) {
         String inputString = port.getAllSpeciesByModelId(modelId, this.user, this.MD5pass);
         return getDeserializedNameStruct(inputString);
@@ -79,10 +79,6 @@ public class DBDataDownloader {
         return getDeserializedNameStruct(inputString);
     }
 
-    public List<String> getAllVisualizationNames() {
-        return port.getAllVisualizationNames(this.user, this.MD5pass);
-    }
-
     public boolean removeVisualization(String name) throws AuthenticationException_Exception {
         return port.removeVisualization(name, this.user, this.MD5pass);
     }
@@ -91,40 +87,24 @@ public class DBDataDownloader {
         return port.getAncestorVisualizationNames(modelId, this.user, this.MD5pass);
     }
 
-    //    private List<String> getDeserializedString(String inputString) {
-//        byte[] byteArray = null;
-//        try {
-//            byteArray = inputString.getBytes(webServiceEncoding);
-//        } catch (UnsupportedEncodingException ex) {
-//            Logger.getLogger(DBDataDownloader.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        ByteArrayInputStream stream = new ByteArrayInputStream(byteArray);
-//
-//
-//        XMLDecoder d = new XMLDecoder(new BufferedInputStream(stream));
-//
-//        List<String> strings = new ArrayList<String>(0);
-//        try {
-//            while (true) {
-//                strings.add((String) d.readObject());
-//            }
-//        } catch (ArrayIndexOutOfBoundsException ex) {
-//            return strings;
-//        }
-//    }
     /**
      *
      * @param visualizationName visualization name which is downloaded from DataBase
      * @return visualization as list of edges containing visPlace and VisTransition as source/target of edge
      */
-    public List<VisEdge> getVisualization(String visualizationName) {
-        String serializedString = port.getVisualization(visualizationName, this.user, this.MD5pass);
+    public List<VisEdge> getVisualization(String visualizationName, String ownerLogin) {
+        String serializedString = port.getVisualization(visualizationName, ownerLogin, this.user, this.MD5pass);
         List<VisEdge> edges = getDeserializedVisEdge(serializedString);
         for (VisEdge edge : edges) {
             edge.getSource().removeNullsFromSets();
             edge.getTarget().removeNullsFromSets();
         }
         return edges;
+    }
+
+    public VisStruct getVisualizationObject(String visualizationName, String ownerLogin) {
+        String serializedString = port.getVisualizationObject(visualizationName, ownerLogin, this.user, this.MD5pass);
+        return getDeserializedVisStruct(serializedString);
     }
 
     public boolean isFbaTask(int modelId) throws AuthenticationException_Exception {
@@ -176,6 +156,20 @@ public class DBDataDownloader {
         } catch (ArrayIndexOutOfBoundsException ex) {
             return edges;
         }
+    }
+
+    private VisStruct getDeserializedVisStruct(String inputString) {
+        byte[] byteArray = null;
+        try {
+            byteArray = inputString.getBytes(webServiceEncoding);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(DBDataDownloader.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ByteArrayInputStream stream = new ByteArrayInputStream(byteArray);
+
+        XMLDecoder d = new XMLDecoder(new BufferedInputStream(stream));
+
+        return (VisStruct) d.readObject();
     }
 
     private List<NameStruct> getDeserializedNameStruct(String inputString) {

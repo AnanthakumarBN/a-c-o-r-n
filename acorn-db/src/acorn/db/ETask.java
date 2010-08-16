@@ -11,6 +11,7 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -78,7 +79,7 @@ public class ETask implements Serializable {
     private EMethod method;
     
     @JoinColumn(name = "MODEL", referencedColumnName = "ID", nullable = false)
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     private EModel model;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "task")
@@ -227,11 +228,11 @@ public class ETask implements Serializable {
         this.info = info;
     }
 
-    public boolean getShared() {
+    public Boolean getShared() {
         return shared;
     }
 
-    public void setShared(boolean shared) {
+    public void setShared(Boolean shared) {
         this.shared = shared;
     }
 
@@ -302,4 +303,12 @@ public class ETask implements Serializable {
     public void setMethodData(EMethodData methodData) {
         this.methodData = methodData;
     }
-}
+    
+    //a hack to make owner user-aware delete button on web pages
+    public Integer getOwnerId() {
+        if (getModel().getOwner() == null) {
+            return null;
+        } else {
+            return getModel().getOwner().getId();
+        }
+    }}

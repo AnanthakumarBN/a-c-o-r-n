@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -30,18 +31,18 @@ import static javax.persistence.GenerationType.IDENTITY;
  */
 @Entity
 @Table(name = "EMODEL")
-@NamedQueries({@NamedQuery(name = "EModel.findById", query = "SELECT e FROM EModel e WHERE e.id = :id"), 
-@NamedQuery(name = "EModel.findByName", query = "SELECT e FROM EModel e WHERE e.name = :name"),
-@NamedQuery(name = "EModel.findByNameForLogin", query = "SELECT e FROM EModel e WHERE e.name = :name AND e.owner.login = :login"),
-@NamedQuery(name = "EModel.findByOwner", query = "SELECT e FROM EModel e WHERE e.owner = :owner"), 
-@NamedQuery(name = "EModel.findByDate", query = "SELECT e FROM EModel e WHERE e.date = :date"), 
-@NamedQuery(name = "EModel.findByLastChange", query = "SELECT e FROM EModel e WHERE e.lastChange = :lastChange"), 
-@NamedQuery(name = "EModel.findByReadOnly", query = "SELECT e FROM EModel e WHERE e.readOnly = :readOnly"),
-@NamedQuery(name = "EModel.getChildrenByName", query = "SELECT e.eModelCollection FROM EModel e where e.name = :name"),
-@NamedQuery(name = "EModel.getChildrenByModel", query = "SELECT e.eModelCollection FROM EModel e where e = :model"),
-@NamedQuery(name = "EModel.getMethodData", query ="SELECT t.methodData from EModel e , ETask t WHERE t.model = e.id and e = :model"),
-@NamedQuery(name = "EModel.isFba", query = "SELECT f from EFbaData f, EMethodData m where m.id = f.id and m = :method"),
-@NamedQuery(name = "EModel.getTask", query = "SELECT m.task from EModel m where m = :model")})
+@NamedQueries({@NamedQuery(name = "EModel.findById", query = "SELECT e FROM EModel e WHERE e.id = :id"),
+    @NamedQuery(name = "EModel.findByName", query = "SELECT e FROM EModel e WHERE e.name = :name"),
+    @NamedQuery(name = "EModel.findByNameForLogin", query = "SELECT e FROM EModel e WHERE e.name = :name AND e.owner.login = :login"),
+    @NamedQuery(name = "EModel.findByOwner", query = "SELECT e FROM EModel e WHERE e.owner = :owner"),
+    @NamedQuery(name = "EModel.findByDate", query = "SELECT e FROM EModel e WHERE e.date = :date"),
+    @NamedQuery(name = "EModel.findByLastChange", query = "SELECT e FROM EModel e WHERE e.lastChange = :lastChange"),
+    @NamedQuery(name = "EModel.findByReadOnly", query = "SELECT e FROM EModel e WHERE e.readOnly = :readOnly"),
+    @NamedQuery(name = "EModel.getChildrenByName", query = "SELECT e.eModelCollection FROM EModel e where e.name = :name"),
+    @NamedQuery(name = "EModel.getChildrenByModel", query = "SELECT e.eModelCollection FROM EModel e where e = :model"),
+    @NamedQuery(name = "EModel.getMethodData", query = "SELECT t.methodData from EModel e , ETask t WHERE t.model = e.id and e = :model"),
+    @NamedQuery(name = "EModel.isFba", query = "SELECT f from EFbaData f, EMethodData m where m.id = f.id and m = :method"),
+    @NamedQuery(name = "EModel.getTask", query = "SELECT m.task from EModel m where m = :model")})
 public class EModel implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -49,48 +50,36 @@ public class EModel implements Serializable {
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
-    
     @Column(name = "NAME", nullable = false)
     private String name;
-    
     @Column(name = "DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
-    
     @Column(name = "LAST_CHANGE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastChange;
-    
     @Column(name = "READ_ONLY", nullable = false)
     private boolean readOnly;
-    
     @Column(name = "SHARED", nullable = false)
     private boolean shared;
-    
     @JoinColumn(name = "PARENT", referencedColumnName = "ID")
     @ManyToOne
     private EModel parent;
-    
     @JoinColumn(name = "METABOLISM", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private EMetabolism metabolism;
-    
     @JoinColumn(name = "OWNER", referencedColumnName = "ID", nullable = true)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private EUser owner;
-    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
     private Collection<EModel> eModelCollection;
-    
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "model")
     private ETask task;
-    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "model")
     private Collection<EBounds> eBoundsCollection;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "model")
     private Collection<EVisualization> eVisualizations;
-    
+
     public EModel() {
     }
 
@@ -217,15 +206,15 @@ public class EModel implements Serializable {
     public void setEBoundsCollection(Collection<EBounds> eBoundsCollection) {
         this.eBoundsCollection = eBoundsCollection;
     }
-    
-    public LinkedList<String> getGenesList(){
+
+    public LinkedList<String> getGenesList() {
         LinkedList<String> result = new LinkedList<String>();
         Collection<EReaction> reactions = this.metabolism.getEReactionCollection();
         LinkedList<String> genes;
-        for (EReaction reaction : reactions){
+        for (EReaction reaction : reactions) {
             genes = reaction.getGenesList();
-            for (String gene : genes){
-                if (!(result.contains(gene))){
+            for (String gene : genes) {
+                if (!(result.contains(gene))) {
                     result.add(gene);
                 }
             }
@@ -248,7 +237,6 @@ public class EModel implements Serializable {
     public void setEVisualizations(Collection<EVisualization> eVisualizations) {
         this.eVisualizations = eVisualizations;
     }
-    
     public static final char MODEL_NAME_SEPARATOR = '.';
 
     public String getQualifiedName() {

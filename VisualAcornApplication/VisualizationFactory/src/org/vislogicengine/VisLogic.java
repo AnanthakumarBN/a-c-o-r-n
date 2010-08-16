@@ -55,14 +55,14 @@ public class VisLogic {
         graphProvider.clearVisualization();
     }
 
-    public void eraseOldSaveNewVisualization(String visName) throws BadKeyInBufferStruct, VisValidationException, RepeatedVisualizationNameException_Exception, VisValidationException_Exception {
+    public void eraseOldSaveNewVisualization(String visName, boolean shared) throws BadKeyInBufferStruct, VisValidationException, RepeatedVisualizationNameException_Exception, VisValidationException_Exception {
         String newName = isVisualizationNameProper(visName);
         this.validateVisualization();
         List<VisTransition> transitions = graphProvider.getTransitionsFromScene();
         List<VisPlace> places = graphProvider.getPlacesFromScene();
         List<VisEdge> edges = graphProvider.getEdgesFromScene();
 
-        dbsupp.eraseOldSaveNewVisualization(newName, transitions, places, edges);
+        dbsupp.eraseOldSaveNewVisualization(newName, transitions, places, edges, shared);
 
         graphProvider.nodesLocationAndControlPointsChanged();
     }
@@ -141,7 +141,7 @@ public class VisLogic {
         graphProvider.addComputationsToTransitionsLabel(addComp);
     }
 
-    public void saveNewVisualization(String visName) throws VisValidationException, RepeatedVisualizationNameException_Exception, BadKeyInBufferStruct, BadKeyInBufferStruct, VisValidationException_Exception {
+    public void saveNewVisualization(String visName, boolean shared) throws VisValidationException, RepeatedVisualizationNameException_Exception, BadKeyInBufferStruct, BadKeyInBufferStruct, VisValidationException_Exception {
         String newName = isVisualizationNameProper(visName);
 
         this.validateVisualization();
@@ -149,7 +149,7 @@ public class VisLogic {
         List<VisPlace> places = graphProvider.getPlacesFromScene();
         List<VisEdge> edges = graphProvider.getEdgesFromScene();
 
-        dbsupp.saveNewVisualization(newName, transitions, places, edges);
+        dbsupp.saveNewVisualization(newName, transitions, places, edges, shared);
 
         graphProvider.nodesLocationAndControlPointsChanged();
     }
@@ -293,5 +293,13 @@ public class VisLogic {
         if (node.isTransition()) {
             ((VisTransition) node).setFlux(dbsupp.getFlux(node.getSid()));
         }
+    }
+
+    public boolean getIsCurrentVisShared() {
+        return dbsupp.getIsCurrentVisShared();
+    }
+
+    public boolean getCanCurrentVisBeModified() {
+        return dbsupp.getCanCurrentVisBeModified();
     }
 }

@@ -4,6 +4,7 @@
  */
 package org.visualizationfactory;
 
+import acorn.data.buffer.DBSupporter;
 import org.graphscene.GraphModelScene;
 import acorn.webservice.RepeatedVisualizationNameException_Exception;
 import acorn.webservice.VisValidationException_Exception;
@@ -58,12 +59,13 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     SelectBorder selectBorder = new SelectBorder();
     NoSelectBorder noselBorder = new NoSelectBorder();
     private VisLogic logic;
+    String user;
 
     private VisualizationFactoryTopComponent() {
         try {
 
-            String user = NbPreferences.forModule(UserManagementPanel.class).get("user", "");
-            String MD5pass = NbPreferences.forModule(UserManagementPanel.class).get("pass","");
+            user = NbPreferences.forModule(UserManagementPanel.class).get("user", "");
+            String MD5pass = NbPreferences.forModule(UserManagementPanel.class).get("pass", "");
             logic = new VisLogic();
             logic.setTchepler(new TopComponentHelper());
 
@@ -160,7 +162,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 
             logic.setGraphProvider(scene.getLoadSaveListener());
             scene.setLogic(logic);
-            
+
             visCompResult = Utilities.actionsGlobalContext().lookupResult(ComputationsVis.class);
             logic.setVisCompResult(visCompResult);
             visCompResult.addLookupListener(
@@ -227,6 +229,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         loadVisualizationButton = new javax.swing.JButton();
         visualizationNamesLabel = new javax.swing.JLabel();
         visualizationNamesComboBox = new javax.swing.JComboBox();
+        jSharedCheckbox = new javax.swing.JCheckBox();
         visualizationPanel = new javax.swing.JPanel();
         nodeNameLabel = new javax.swing.JLabel();
         namesComboBox = new javax.swing.JComboBox();
@@ -288,7 +291,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                 .addComponent(modelsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(1075, Short.MAX_VALUE))
+                .addContainerGap(1067, Short.MAX_VALUE))
         );
         programPanelLayout.setVerticalGroup(
             programPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -377,6 +380,14 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         visualizationNamesComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[0]));
         visualizationNamesComboBox.setEnabled(false);
 
+        org.openide.awt.Mnemonics.setLocalizedText(jSharedCheckbox, org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.jSharedCheckbox.text")); // NOI18N
+        jSharedCheckbox.setEnabled(false);
+        jSharedCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jSharedChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout validSavePanelLayout = new javax.swing.GroupLayout(validSavePanel);
         validSavePanel.setLayout(validSavePanelLayout);
         validSavePanelLayout.setHorizontalGroup(
@@ -387,7 +398,9 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                     .addGroup(validSavePanelLayout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(visualizationNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(visualizationNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSharedCheckbox))
                         .addGap(12, 12, 12)
                         .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(saveVisToDBButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -406,7 +419,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                     .addComponent(visualizationNamesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(visualizationNamesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(476, Short.MAX_VALUE))
+                .addContainerGap(468, Short.MAX_VALUE))
         );
         validSavePanelLayout.setVerticalGroup(
             validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -424,10 +437,12 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                                     .addComponent(saveVisToDBButton)
                                     .addComponent(validateButton))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(eraseAndSaveButton)
-                            .addComponent(clearVisualizationButton))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(validSavePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(eraseAndSaveButton)
+                                .addComponent(clearVisualizationButton))
+                            .addComponent(jSharedCheckbox))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(SaveErrorsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, validSavePanelLayout.createSequentialGroup()
                         .addContainerGap()
@@ -513,7 +528,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                 .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(remCompRadioButton)
                     .addComponent(addCompRadioButton))
-                .addContainerGap(640, Short.MAX_VALUE))
+                .addContainerGap(632, Short.MAX_VALUE))
         );
         visualizationPanelLayout.setVerticalGroup(
             visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -535,7 +550,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                                 .addComponent(fullNameLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(fullName, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE))
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -574,7 +589,28 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         if (visName != null) {
             logic.getVisualization(visName);
         }
+        visualizationNameTextField.setText(DBSupporter.getShortName(visName));
+        boolean shared = logic.getIsCurrentVisShared();
+        jSharedCheckbox.setSelected(shared);
+        boolean canModify = logic.getCanCurrentVisBeModified();
+        if (canModify) {
+            updateViewCanModify();
+        } else {
+            updateViewCannotModify();
+        }
 }//GEN-LAST:event_loadVisualizationButtonActionPerformed
+
+    private void updateViewCannotModify() {
+        NotifyDescriptor nd = NDFactory.getCannotModifyNotifyDescriptor();
+        DialogDisplayer.getDefault().notify(nd);
+        jSharedCheckbox.setEnabled(false);
+    }
+
+    private void updateViewCanModify() {
+        if (!user.equals("")) {
+            jSharedCheckbox.setEnabled(false);
+        }
+    }
 
     private void deleteVisualizationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteVisualizationButtonActionPerformed
         clearFields();
@@ -597,8 +633,10 @@ public class VisualizationFactoryTopComponent extends TopComponent {
             SaveErrorsLabel.setText("set name for Visualization.");
             return;
         }
+        boolean shared = jSharedCheckbox.isSelected();
+
         try {
-            logic.eraseOldSaveNewVisualization(visName);
+            logic.eraseOldSaveNewVisualization(visName, shared);
         } catch (RepeatedVisualizationNameException_Exception ex) {
             SaveErrorsLabel.setText(ex.getMessage());
         } catch (BadKeyInBufferStruct ex) {
@@ -626,8 +664,9 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     private void saveVisToDBButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveVisToDBButtonActionPerformed
         clearFields();
         String visName = visualizationNameTextField.getText();
+        boolean shared = jSharedCheckbox.isSelected();
         try {
-            logic.saveNewVisualization(visName);
+            logic.saveNewVisualization(visName, shared);
         } catch (RepeatedVisualizationNameException_Exception ex) {
             SaveErrorsLabel.setText(ex.getMessage());
         } catch (BadKeyInBufferStruct ex) {
@@ -656,6 +695,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 //            content.add(dbsupp);
         }
         setModelButton.setEnabled(false);
+        jSharedCheckbox.setSelected(false);
 }//GEN-LAST:event_setModelButtonActionPerformed
 
     private void modelsComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modelsComboBoxActionPerformed
@@ -679,6 +719,10 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         }
     }//GEN-LAST:event_remCompRadioButtonActionPerformed
 
+    private void jSharedChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSharedChanged
+        
+    }//GEN-LAST:event_jSharedChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel ModelNameLabel;
     private javax.swing.JLabel SaveErrorsLabel;
@@ -695,6 +739,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JCheckBox jSharedCheckbox;
     private javax.swing.JButton loadVisualizationButton;
     private javax.swing.JComboBox modelsComboBox;
     private javax.swing.JComboBox namesComboBox;
@@ -743,6 +788,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         deleteVisualizationButton.setEnabled(true);
         eraseAndSaveButton.setEnabled(true);
         clearVisualizationButton.setEnabled(true);
+        jSharedCheckbox.setEnabled(true);
 
         if (logic.isDoneTask() && logic.isFbaTask()) {
             addCompRadioButton.setEnabled(true);
@@ -753,9 +799,10 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         }
     }
 
-    private void clearFields(){
-       SaveErrorsLabel.setText("");
+    private void clearFields() {
+        SaveErrorsLabel.setText("");
     }
+
     /**
      * Obtain the VisualizationFactoryTopComponent instance. Never call {@link #getDefault} directly!
      */

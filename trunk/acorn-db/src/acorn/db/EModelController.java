@@ -28,34 +28,6 @@ public class EModelController extends EntityController {
     }
 
     /**
-     * Returns list of all models from database that are descendants of a given root (transitive closure version).
-     * @return - list of all descendants of the root model (including the root).
-     */
-    public List<EModel> getDescModels(EModel root) {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            //List<EModel> allModels = (List<EModel>) em.createQuery("select m from EModel as m").getResultList();
-            LinkedList<EModel> toGo = new LinkedList<EModel>();
-            List<EModel> result = new LinkedList<EModel>();
-
-            //assume that the root model is really a model from the database
-            toGo.add(root);
-
-            //transitive closure
-            while (toGo.size() > 0) {
-                result.addAll(toGo);
-                result = getChildrenByModelList(toGo);
-            }
-
-            em.getTransaction().commit();
-            return result;
-        } finally {
-            em.close();
-        }
-    }
-
-    /**
      * Returns list of all models from database that are ancestors of a given model (transitive closure version).
      * @return - list of all ancestors of a given model (including that model).
      */

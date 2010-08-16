@@ -247,33 +247,10 @@
     <target name="server-web-undeploy" depends="get-server-auth">
         <sshexec
             trust="true"
-            password="${server-password}" 
+            password="${server-password}"
             username="${server-username}"
             host="${server-name}"
             command="${server-glassfish-asadmin} undeploy --user admin --passwordfile ${file-to-asadmin-pass} ${server-web-undeploy-name}"
-            failonerror=""
-        />
-    </target>
-    <target name="server-WS-deploy" description="Deploy acorn webservice on server" depends="get-server-auth">
-        <sshexec
-            trust="true"
-            password="${server-password}"
-            username="${server-username}"
-            host="${server-name}"
-            command="${server-glassfish-asadmin} deploy --user admin --passwordfile ${file-to-asadmin-pass} ${server-WS-file}"
-            failonerror=""
-        />
-    </target>
-    <target name="server-WS-deploy-all" depends="get-server-auth, server-web-compile, copy-WS-to-server" description="Do all to deploy acorn webservice on server">
-        <antcall target="server-WS-deploy" />
-    </target>
-    <target name="server-WS-undeploy" depends="get-server-auth">
-        <sshexec
-            trust="true"
-            password="${server-password}"
-            username="${server-username}"
-            host="${server-name}"
-            command="${server-glassfish-asadmin} undeploy --user admin --passwordfile ${file-to-asadmin-pass} ${server-WS-undeploy-name}"
             failonerror=""
         />
     </target>
@@ -428,17 +405,6 @@
             <fileset dir="${local-worker-ext-libs}" includes="*.jar"/>
         </scp>
     </target>
-    <target name="copy-WS-to-server" depends="get-server-auth">
-        <scp
-            trust="true"
-            host="${server-name}"
-            username="${server-username}"
-            password="${server-password}"
-            verbose="true"
-            file="${local-WS-file}"
-            todir="${server-username}:${server-password}@${server-name}:${server-WS-dir}"
-          />
-    </target>
     <target name="copy-db-to-server" depends="get-server-auth">
         <scp
             trust="true"
@@ -557,7 +523,7 @@
     <target name="vaapp-run">
         <ant antfile="${vaapp-dir}/build.xml" target="run" inheritall="false"/>
     </target>
-    <target name="vaapp-prepapare-and-install-server-distro" depends="get-server-auth">
+    <target name="vaapp-prepapare-and-install-server-distro" depends="get-server-auth, wsclient-copy-server-jar-to-module">
         <ant antfile="${vaapp-dir}/build.xml" target="clean" inheritall="false"/>
         <ant antfile="${vaapp-dir}/build.xml" target="build" inheritall="false"/>
         <ant antfile="${vaapp-dir}/build.xml" target="build-jnlp" inheritall="false"/>

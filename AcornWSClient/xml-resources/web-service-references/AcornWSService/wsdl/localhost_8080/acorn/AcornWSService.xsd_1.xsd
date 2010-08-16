@@ -18,17 +18,9 @@
 
 <xs:element name="getAllSpeciesByModelIdResponse" type="tns:getAllSpeciesByModelIdResponse"></xs:element>
 
-<xs:element name="getAllVisualizationNames" type="tns:getAllVisualizationNames"></xs:element>
-
-<xs:element name="getAllVisualizationNamesResponse" type="tns:getAllVisualizationNamesResponse"></xs:element>
-
 <xs:element name="getAncestorVisualizationNames" type="tns:getAncestorVisualizationNames"></xs:element>
 
 <xs:element name="getAncestorVisualizationNamesResponse" type="tns:getAncestorVisualizationNamesResponse"></xs:element>
-
-<xs:element name="getDescendantVisualizationNames" type="tns:getDescendantVisualizationNames"></xs:element>
-
-<xs:element name="getDescendantVisualizationNamesResponse" type="tns:getDescendantVisualizationNamesResponse"></xs:element>
 
 <xs:element name="getDetachedReactions" type="tns:getDetachedReactions"></xs:element>
 
@@ -63,6 +55,10 @@
 <xs:element name="getSpeciesForReactionResponse" type="tns:getSpeciesForReactionResponse"></xs:element>
 
 <xs:element name="getVisualization" type="tns:getVisualization"></xs:element>
+
+<xs:element name="getVisualizationObject" type="tns:getVisualizationObject"></xs:element>
+
+<xs:element name="getVisualizationObjectResponse" type="tns:getVisualizationObjectResponse"></xs:element>
 
 <xs:element name="getVisualizationResponse" type="tns:getVisualizationResponse"></xs:element>
 
@@ -102,6 +98,7 @@
 <xs:complexType name="getVisualization">
 <xs:sequence>
 <xs:element name="visName" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="ownerId" type="xs:string" minOccurs="0"></xs:element>
 <xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
 <xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
 </xs:sequence>
@@ -121,6 +118,7 @@
 <xs:element name="species" type="xs:string" minOccurs="0"></xs:element>
 <xs:element name="arcs" type="xs:string" minOccurs="0"></xs:element>
 <xs:element name="clientEncoding" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="shared" type="xs:boolean"></xs:element>
 <xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
 <xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
 </xs:sequence>
@@ -157,19 +155,6 @@
 <xs:complexType name="getReactionsForSpeciesResponse">
 <xs:sequence>
 <xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getAllVisualizationNames">
-<xs:sequence>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getAllVisualizationNamesResponse">
-<xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"></xs:element>
 </xs:sequence>
 </xs:complexType>
 
@@ -259,6 +244,21 @@
 </xs:sequence>
 </xs:complexType>
 
+<xs:complexType name="getVisualizationObject">
+<xs:sequence>
+<xs:element name="visName" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="ownerId" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getVisualizationObjectResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+</xs:sequence>
+</xs:complexType>
+
 <xs:complexType name="getEncoding">
 <xs:sequence>
 <xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
@@ -337,20 +337,6 @@
 </xs:complexType>
 
 <xs:complexType name="getAncestorVisualizationNamesResponse">
-<xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getDescendantVisualizationNames">
-<xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getDescendantVisualizationNamesResponse">
 <xs:sequence>
 <xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"></xs:element>
 </xs:sequence>

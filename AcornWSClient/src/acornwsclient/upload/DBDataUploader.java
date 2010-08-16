@@ -42,13 +42,13 @@ public class DBDataUploader {
     }
 
     public boolean saveVisualization(int modelId, String visualizationName,
-            List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges) throws RepeatedVisualizationNameException_Exception, VisValidationException_Exception, AuthenticationException_Exception {
+            List<VisTransition> transitions, List<VisPlace> places, List<VisEdge> edges, boolean shared) throws RepeatedVisualizationNameException_Exception, VisValidationException_Exception, AuthenticationException_Exception {
         String transitionsString = getXmlTransitionsSerialization(transitions);
         String placesString = getXmlPlacesSerialization(places);
         String edgesString = getXmlEdgesSerialization(edges);
 //        try {
         return port.saveVisualization(modelId, visualizationName, transitionsString,
-                placesString, edgesString, clientEncoding, this.user, this.MD5pass);
+                placesString, edgesString, clientEncoding, shared, this.user, this.MD5pass);
 //        } catch (RepeatedVisualizationNameException_Exception ex) {
 //            throw new RepeatedVisualizationNameException(ex.getMessage());
 //        }

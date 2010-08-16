@@ -61,23 +61,11 @@
 <message name="VisValidationException">
 <part name="fault" element="tns:VisValidationException"></part>
 </message>
-<message name="getAllVisualizationNames">
-<part name="parameters" element="tns:getAllVisualizationNames"></part>
-</message>
-<message name="getAllVisualizationNamesResponse">
-<part name="parameters" element="tns:getAllVisualizationNamesResponse"></part>
-</message>
 <message name="removeVisualization">
 <part name="parameters" element="tns:removeVisualization"></part>
 </message>
 <message name="removeVisualizationResponse">
 <part name="parameters" element="tns:removeVisualizationResponse"></part>
-</message>
-<message name="getDescendantVisualizationNames">
-<part name="parameters" element="tns:getDescendantVisualizationNames"></part>
-</message>
-<message name="getDescendantVisualizationNamesResponse">
-<part name="parameters" element="tns:getDescendantVisualizationNamesResponse"></part>
 </message>
 <message name="getAncestorVisualizationNames">
 <part name="parameters" element="tns:getAncestorVisualizationNames"></part>
@@ -102,6 +90,12 @@
 </message>
 <message name="getVisualizationResponse">
 <part name="parameters" element="tns:getVisualizationResponse"></part>
+</message>
+<message name="getVisualizationObject">
+<part name="parameters" element="tns:getVisualizationObject"></part>
+</message>
+<message name="getVisualizationObjectResponse">
+<part name="parameters" element="tns:getVisualizationObjectResponse"></part>
 </message>
 <message name="isTaskDone">
 <part name="parameters" element="tns:isTaskDone"></part>
@@ -164,18 +158,10 @@
 <fault message="tns:VisValidationException" name="VisValidationException"></fault>
 <fault message="tns:AuthenticationException" name="AuthenticationException"></fault>
 </operation>
-<operation name="getAllVisualizationNames">
-<input message="tns:getAllVisualizationNames"></input>
-<output message="tns:getAllVisualizationNamesResponse"></output>
-</operation>
 <operation name="removeVisualization">
 <input message="tns:removeVisualization"></input>
 <output message="tns:removeVisualizationResponse"></output>
 <fault message="tns:AuthenticationException" name="AuthenticationException"></fault>
-</operation>
-<operation name="getDescendantVisualizationNames">
-<input message="tns:getDescendantVisualizationNames"></input>
-<output message="tns:getDescendantVisualizationNamesResponse"></output>
 </operation>
 <operation name="getAncestorVisualizationNames">
 <input message="tns:getAncestorVisualizationNames"></input>
@@ -193,6 +179,10 @@
 <operation name="getVisualization">
 <input message="tns:getVisualization"></input>
 <output message="tns:getVisualizationResponse"></output>
+</operation>
+<operation name="getVisualizationObject">
+<input message="tns:getVisualizationObject"></input>
+<output message="tns:getVisualizationObjectResponse"></output>
 </operation>
 <operation name="isTaskDone">
 <input message="tns:isTaskDone"></input>
@@ -298,15 +288,6 @@
 <soap:fault name="AuthenticationException" use="literal"></soap:fault>
 </fault>
 </operation>
-<operation name="getAllVisualizationNames">
-<soap:operation soapAction=""></soap:operation>
-<input>
-<soap:body use="literal"></soap:body>
-</input>
-<output>
-<soap:body use="literal"></soap:body>
-</output>
-</operation>
 <operation name="removeVisualization">
 <soap:operation soapAction=""></soap:operation>
 <input>
@@ -318,15 +299,6 @@
 <fault name="AuthenticationException">
 <soap:fault name="AuthenticationException" use="literal"></soap:fault>
 </fault>
-</operation>
-<operation name="getDescendantVisualizationNames">
-<soap:operation soapAction=""></soap:operation>
-<input>
-<soap:body use="literal"></soap:body>
-</input>
-<output>
-<soap:body use="literal"></soap:body>
-</output>
 </operation>
 <operation name="getAncestorVisualizationNames">
 <soap:operation soapAction=""></soap:operation>
@@ -359,6 +331,15 @@
 </fault>
 </operation>
 <operation name="getVisualization">
+<soap:operation soapAction=""></soap:operation>
+<input>
+<soap:body use="literal"></soap:body>
+</input>
+<output>
+<soap:body use="literal"></soap:body>
+</output>
+</operation>
+<operation name="getVisualizationObject">
 <soap:operation soapAction=""></soap:operation>
 <input>
 <soap:body use="literal"></soap:body>

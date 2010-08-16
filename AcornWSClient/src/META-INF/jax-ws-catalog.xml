@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
-    <system systemId="http://sysbio3.fhms.surrey.ac.uk:8080/AcornWSService?WSDL" uri="wsdl/sysbio3.fhms.surrey.ac.uk_8080/AcornWSService.wsdl"/>
-    <system systemId="http://sysbio3.fhms.surrey.ac.uk:8080/AcornWSService?xsd=1" uri="wsdl/sysbio3.fhms.surrey.ac.uk_8080/AcornWSService.xsd_1.xsd"/>
-    <system systemId="http://localhost:8080/AcornWSService?WSDL" uri="wsdl/localhost_8080/AcornWSService.wsdl"/>
-    <system systemId="http://localhost:8080/AcornWSService?xsd=1" uri="wsdl/localhost_8080/AcornWSService.xsd_1.xsd"/>
     <system systemId="http://localhost:8080/acorn/AcornWSService?WSDL" uri="wsdl/localhost_8080/acorn/AcornWSService.wsdl"/>
     <system systemId="http://localhost:8080/acorn/AcornWSService?xsd=1" uri="wsdl/localhost_8080/acorn/AcornWSService.xsd_1.xsd"/>
     <system systemId="http://sysbio3.fhms.surrey.ac.uk:8080/acorn/AcornWSService?wsdl" uri="wsdl/sysbio3.fhms.surrey.ac.uk_8080/acorn/AcornWSService.wsdl"/>
     <system systemId="http://sysbio3.fhms.surrey.ac.uk:8080/acorn/AcornWSService?xsd=1" uri="wsdl/sysbio3.fhms.surrey.ac.uk_8080/acorn/AcornWSService.xsd_1.xsd"/>
 </catalog>
+
 
 
 

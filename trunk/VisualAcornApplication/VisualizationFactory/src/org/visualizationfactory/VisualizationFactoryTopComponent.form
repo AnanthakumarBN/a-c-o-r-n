@@ -92,7 +92,7 @@
                       <Component id="modelsComboBox" min="-2" pref="227" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jSeparator1" min="-2" pref="15" max="-2" attributes="0"/>
-                      <EmptySpace pref="1075" max="32767" attributes="0"/>
+                      <EmptySpace pref="1067" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -193,7 +193,10 @@
                           <Group type="102" attributes="0">
                               <Component id="jLabel2" min="-2" pref="130" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="visualizationNameTextField" min="-2" pref="207" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="visualizationNameTextField" min="-2" pref="207" max="-2" attributes="0"/>
+                                  <Component id="jSharedCheckbox" min="-2" max="-2" attributes="0"/>
+                              </Group>
                               <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="saveVisToDBButton" alignment="0" max="32767" attributes="1"/>
@@ -217,7 +220,7 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="visualizationNamesComboBox" min="-2" pref="200" max="-2" attributes="0"/>
-                      <EmptySpace pref="476" max="32767" attributes="0"/>
+                      <EmptySpace pref="468" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -240,11 +243,14 @@
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="eraseAndSaveButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="clearVisualizationButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="eraseAndSaveButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="clearVisualizationButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="jSharedCheckbox" alignment="1" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="SaveErrorsLabel" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
@@ -376,6 +382,17 @@
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
+            <Component class="javax.swing.JCheckBox" name="jSharedCheckbox">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="org/visualizationfactory/Bundle.properties" key="VisualizationFactoryTopComponent.jSharedCheckbox.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                </Property>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jSharedChanged"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="visualizationPanel">
@@ -417,7 +434,7 @@
                           <Component id="remCompRadioButton" min="-2" max="-2" attributes="0"/>
                           <Component id="addCompRadioButton" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="640" max="32767" attributes="0"/>
+                      <EmptySpace pref="632" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -447,7 +464,7 @@
                                   </Group>
                               </Group>
                           </Group>
-                          <Component id="jSeparator2" alignment="0" pref="107" max="32767" attributes="0"/>
+                          <Component id="jSeparator2" alignment="0" pref="95" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>

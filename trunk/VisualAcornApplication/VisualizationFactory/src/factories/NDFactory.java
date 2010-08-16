@@ -12,14 +12,26 @@ import javax.swing.JButton;
 import org.openide.LifecycleManager;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
-import org.vislogicengine.BareBonesBrowserLaunch;
-import org.vislogicengine.SimpleBrowserLaunch;
 
 /**
  *
  * @author markos
  */
 public class NDFactory {
+
+    public static NotifyDescriptor getCannotModifyNotifyDescriptor() {
+        String msg = "You have opened a shared visualization of another user. You cannot override the original, but you can save it as your own. WARNING: Pay attention to not to override your own visualization that has the same name if such exists.";
+        NotifyDescriptor nd = new NotifyDescriptor.Message(msg, NotifyDescriptor.INFORMATION_MESSAGE);
+        nd.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (NotifyDescriptor.CLOSED_OPTION.equals(evt.getNewValue())) {
+                    LifecycleManager.getDefault().exit();
+                }
+            }
+        });
+        return nd;
+    }
 
     private static NotifyDescriptor getErrorNotifyDescriptor(String msg) {
         NotifyDescriptor nd = new NotifyDescriptor.Message(msg, NotifyDescriptor.ERROR_MESSAGE);

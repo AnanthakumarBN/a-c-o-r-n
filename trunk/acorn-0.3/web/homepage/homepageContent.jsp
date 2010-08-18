@@ -15,7 +15,7 @@
        simulations choose one of the models and follow instructions.
     </p>
     <p>
-        For a quick tutorial containing Flash presentations of software usage click here.
+        For a quick tutorial containing Flash presentation of Acorn click <a href="acorn_web.htm">here</a>.
     </p>
     <p>
         You can create pathway maps and visualize numerical results of the
@@ -29,4 +29,7 @@
         <li>Download a Windows/Linux distribution from <a href="http://sysbio3.fhms.surrey.ac.uk:8080/visualacornapplication/visualacornapplication.zip">here</a>. You will need to unzip it and execute the runnable in <code>bin</code> directory.</li>
         <li>Download a Mac distribution from here <a href="http://sysbio3.fhms.surrey.ac.uk:8080/visualacornapplication/visualacornapplication.app.zip">here</a>.</li>
     </ul>
+    <p>
+        For a quick tutorial containing Flash presentation of the visualization editor click <a href="acorn_editor.htm">here</a>.
+    </p>
 </div>

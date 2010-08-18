@@ -37,11 +37,10 @@
     <property name="local-db-persistence" value="local-db-persistence.xml" />
     <property name="local-worker-persistence" value="local-worker-persistence.xml" />
     <property name="local-worker-properties" value="local-worker-project.properties" />
-    <property name="local-worker-jars-dir" value="localWorkerJars" />
     <property name="local-acornConfig" value="local-acornConfig.xml" />
     <property name="server-db-persistence" value="server-db-persistence.xml" />
     <property name="server-worker-persistence" value="server-worker-persistence.xml" />
-    <property name="server-worker-jars-dir" value="serverWorkerJars" />
+    <property name="server-worker-jars-dir" value="../acorn-worker/external-libs/serverWorkerJars" />
     <!--property name="server-name" value="sysbio1.sbs.surrey.ac.uk" /-->
     <!--<propetry name="server-adminpassfile" value=".adminpassfile" /> -->
     <property name="server-root-name" value="acorn" />
@@ -333,14 +332,14 @@
     </target>
     <target name="swap-to-local-worker">
         <copy overwrite="true" file="${local-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
-        <copy overwrite="true" file="${local-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
+        <!--<copy overwrite="true" file="${local-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>-->
     </target>
     <target name="swap-to-server-db">
         <copy overwrite="true" file="${server-db-persistence}" tofile="${local-db-dir}/src/META-INF/persistence.xml"/>
     </target>
     <target name="swap-to-server-worker">
         <copy overwrite="true" file="${server-worker-properties}" tofile="${local-worker-dir}/nbproject/project.properties"/>
-        <copy overwrite="true" file="${server-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>
+        <!--<copy overwrite="true" file="${server-worker-persistence}" tofile="${local-worker-dir}/src/META-INF/persistence.xml"/>-->
     </target>
     <target name="server-worker-compile" depends="local-worker-clean">
         <antcall target="swap-to-server-worker" />
@@ -351,6 +350,9 @@
         <ant antfile="${local-db-dir}/build.xml" target="jar" inheritall="false" />
     </target>
     <target name="local-worker-run-nb" depends="local-worker-compile">
+        <ant antfile="${local-worker-dir}/build.xml" target="run" inheritall="false" />
+    </target>
+    <target name="server-worker-run-nb" depends="server-worker-compile">
         <ant antfile="${local-worker-dir}/build.xml" target="run" inheritall="false" />
     </target>
     <target name="remove-web-from-server" depends="get-server-auth">
@@ -382,7 +384,7 @@
                 command="rm -f ${server-worker-file}"
                 verbose="true"/>
     </target>
-    <target name="copy-worker-to-server" depends="get-server-auth">
+    <target name="copy-worker-to-server" depends="get-server-auth, copy-libs-to-server, copy-db-to-server">
         <scp
             trust="true"
             host="${server-name}"
@@ -402,7 +404,7 @@
             verbose="true"
             todir="${server-username}:${server-password}@${server-name}:${server-worker-dir}/lib/"
           >
-            <fileset dir="${local-worker-ext-libs}" includes="*.jar"/>
+            <fileset dir="${server-worker-jars-dir}" includes="*.jar"/>
         </scp>
     </target>
     <target name="copy-db-to-server" depends="get-server-auth">

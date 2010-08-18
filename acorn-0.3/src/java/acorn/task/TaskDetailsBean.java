@@ -143,7 +143,7 @@ public class TaskDetailsBean {
             EVisualizationController vc = new EVisualizationController();
             List<EVisualization> res;
             if (UserManager.getIsGuestS()) {
-                res=vc.getAncestorVisualizationsShared(m.getId());
+                res=vc.getAncestorVisualizationsForUser(m.getId(),"");
             } else if (UserManager.getIsAdminS()) {
                 res=vc.getAncestorVisualizationsAll(m.getId());
             } else {//normal user

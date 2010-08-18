@@ -29,11 +29,7 @@
     <class>acorn.db.EVisArcpath</class>
     <class>acorn.db.EVisArc</class>
     <class>acorn.db.EVisNode</class>
-    <properties>
-      <property name="toplink.jdbc.user" value="acorn"/>
-      <property name="toplink.jdbc.password" value="acorn"/>
-      <property name="toplink.jdbc.url" value="jdbc:derby://localhost:1527/acorn-db"/>
-      <property name="toplink.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
-    </properties>
+    <!--<properties>
+    </properties>-->
   </persistence-unit>
 </persistence>

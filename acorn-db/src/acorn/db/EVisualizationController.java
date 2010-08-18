@@ -7,7 +7,9 @@ package acorn.db;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import org.visualapi.VisEdge;
@@ -273,29 +275,26 @@ public class EVisualizationController extends EntityController {
         EModelController mc = new EModelController();
         EUserController uc = new EUserController();
         EModel startModel = null;
-        EUser user = null;
-        List<EVisualization> visualizations = new ArrayList<EVisualization>();
+        Set<EVisualization> visualizations = new HashSet<EVisualization>();
 
         EntityManager em = getEntityManager();
         try {
-            user = uc.findUserByLogin(login);
             startModel = mc.getModel(modelId);
             List<EModel> models = mc.getAncestorsModels(startModel);
 
             em.getTransaction().begin();
             for (EModel mod : models) {
-                //temporary solution (to not to change the db schema)
-                //better add user field to visualisation
-                //visualizations.addAll(em.createNamedQuery("EVisualization.getUserVisualizationsByModel").setParameter("model", mod).setParameter("name",  EVisualizationController.visNameForUser("%", login)).getResultList());
                 if (login.equals("")) { //guest
                     visualizations.addAll(em.createNamedQuery("EVisualization.getByModelForGuest").setParameter("model", mod).getResultList());
-                } else {
+                    visualizations.addAll(em.createNamedQuery("EVisualization.getByModelShared").setParameter("model", mod).getResultList());
+                } else {//normal user
                     visualizations.addAll(em.createNamedQuery("EVisualization.getByModelForLogin").setParameter("model", mod).setParameter("login", login).getResultList());
+                    visualizations.addAll(em.createNamedQuery("EVisualization.getByModelShared").setParameter("model", mod).getResultList());
                 }
 
             }
             em.getTransaction().commit();
-            return visualizations;
+            return new ArrayList<EVisualization>(visualizations);
         } finally {
             //em.close();
         }

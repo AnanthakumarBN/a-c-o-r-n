@@ -34,6 +34,6 @@ public class PersistenceManager {
   }
   
   protected void createEntityManagerFactory() {
-    this.emf = Persistence.createEntityManagerFactory("acorn-workerPU");
+    this.emf = Persistence.createEntityManagerFactory("acorn-dbPU");
   }
 }

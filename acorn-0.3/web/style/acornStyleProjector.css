@@ -309,6 +309,16 @@ div.tableBox table .name {
     text-align          :       left;
 }
 
+div.tableBox table .nameShort {
+    width               :       15%;
+    text-align          :       center;
+}
+
+div.tableBox table .formulaOneLine {
+    width               :       75%;
+    text-align          :       left;
+}
+
 /* Task Details: */
 
 div.taskInfo {

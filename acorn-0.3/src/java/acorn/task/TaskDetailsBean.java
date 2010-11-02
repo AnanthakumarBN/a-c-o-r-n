@@ -291,10 +291,10 @@ public class TaskDetailsBean {
                     "Task is not done. You can't visualize it.", null);
             context.addMessage(null, message);
             return null;
-        } else if (!EMethod.fba.equals(task.getMethod().getIdent())) {
+        } else if (!EMethod.fba.equals(task.getMethod().getIdent()) && !EMethod.fva.equals(task.getMethod().getIdent())) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_FATAL,
-                    "Task should be FBA task. You can't visualize it.", null);
+                    "Task should be FBA or FVA task. You can't visualize it.", null);
             context.addMessage(null, message);
             return null;
         }

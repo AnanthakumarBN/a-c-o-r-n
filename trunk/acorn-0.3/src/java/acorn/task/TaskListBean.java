@@ -80,7 +80,7 @@ public class TaskListBean {
             others = true;
         } else if (UserManager.getUserStatus().equals(EUser.statusNormal)) {
             mine = true;
-            shared = false;
+            shared = true;
             others = false;
         } else {
             mine = false;
@@ -97,7 +97,8 @@ public class TaskListBean {
         
         try {
             ETaskController et = new ETaskController();
-            
+//!!!!!!!
+//sprawdzić czy nie jest używane gdzieś indziej
             if (UserManager.getIsGuestS()) {
                 taskList.addAll(et.getSharedTasks());
             } else if (UserManager.getIsAdminS()) {

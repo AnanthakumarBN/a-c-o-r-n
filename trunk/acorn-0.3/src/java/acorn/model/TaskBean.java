@@ -531,6 +531,7 @@ public class TaskBean {
 
                 EReaction reaction = b.getReaction();
                 String reactionFormula = reaction.getDivedReactionFormula();
+                String undividedReactionFormula = reaction.getUndividedReactionFormula();
                 String geneFormula = reaction.getGeneFormula();
 
                 /*  because of structure of a database joints
@@ -541,7 +542,7 @@ public class TaskBean {
                 reaction.setEReactantCollection(null);
                  */
 
-                list.add(new Condition(bounds_map, b.getId(), reaction, reaction.getId(), reactionFormula, geneFormula));
+                list.add(new Condition(bounds_map, b.getId(), reaction, reaction.getId(), reactionFormula, undividedReactionFormula, geneFormula));
                 bounds_map.put(b.getId(), b);
             }
 

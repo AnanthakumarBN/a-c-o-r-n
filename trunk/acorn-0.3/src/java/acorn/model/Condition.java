@@ -28,13 +28,14 @@ public class Condition implements Comparable {
     private Integer lastBoundsId;
     private String index;
     private String reactionFormula;
+    private String oneLineReactionFormula;
     private String geneFormula;
     private Semaphore boundsMutex;
     private Semaphore validatorMutex;
     private Double lower;
     private Double upper;
     
-    Condition (Map<Integer,EBounds> boundsMap, Integer defaultBoundsId, EReaction reaction, int index, String reactionFormula, String geneFormula)
+    Condition (Map<Integer,EBounds> boundsMap, Integer defaultBoundsId, EReaction reaction, int index, String reactionFormula, String oneLineReactionFormula, String geneFormula)
     {
         super();
         this.reaction = reaction;
@@ -43,6 +44,7 @@ public class Condition implements Comparable {
         this.lastBoundsId = defaultBoundsId;
         this.index = Integer.toString(index);
         this.reactionFormula = reactionFormula;
+        this.oneLineReactionFormula = oneLineReactionFormula;
         this.geneFormula = geneFormula;
         this.boundsMutex = new Semaphore(1);
         this.validatorMutex = new Semaphore(1);
@@ -59,7 +61,11 @@ public class Condition implements Comparable {
     public String getReactionFormula() {
         return reactionFormula;
     }
-    
+
+    public String getReactionFormulaOneLine() {
+        return oneLineReactionFormula;
+    }
+
     public EReaction getReaction() {
         return reaction;
     }
@@ -142,7 +148,7 @@ public class Condition implements Comparable {
     
     
     public Condition copy(Map<Integer, EBounds> bounds_copy) {
-        return new Condition(bounds_copy, defaultBoundsId, reaction, Integer.parseInt(index), reactionFormula, geneFormula);
+        return new Condition(bounds_copy, defaultBoundsId, reaction, Integer.parseInt(index), reactionFormula, oneLineReactionFormula, geneFormula);
     }
     
     public void lowerHiddenPreValidator(FacesContext context, UIComponent toValidate, Object value)

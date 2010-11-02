@@ -70,6 +70,9 @@ public class VisualizationFactoryTopComponent extends TopComponent {
             logic.setTchepler(new TopComponentHelper());
 
             initComponents();
+            //adds filtering and autocomplete
+            new AutoComboBox(namesComboBox);
+
             setName(NbBundle.getMessage(VisualizationFactoryTopComponent.class, "CTL_VisualizationFactoryTopComponent"));
             setToolTipText(NbBundle.getMessage(VisualizationFactoryTopComponent.class, "HINT_VisualizationFactoryTopComponent"));
 //        setIcon(Utilities.loadImage(ICON_PATH, true));

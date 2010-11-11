@@ -303,6 +303,29 @@ public class EReaction implements Serializable {
         return formula;
     }
     
+    public String getUndividedReactionFormula()
+    {
+        String formula = new String("");
+        Boolean first;
+
+        first = true;
+        for (EReactant reactant : this.getEReactantCollection()) {
+            formula += "<span title=\"header=[Sbml Id] body=[" + reactant.getSpecies().getSid() + "]\">"
+                    + (first ? "" : " + " ) + getCoefficientAsString(reactant.getStoichiometry()) + " " + reactant.getSpecies().getName() + " "
+                    + "</span>";
+            first = false;
+        }
+        formula += " &rarr; ";
+        first = true;
+        for (EProduct product : this.getEProductCollection()) {
+            formula += "<span title=\"header=[Sbml Id] body=[" + product.getSpecies().getSid() + "]\">"
+                    + (first ? "" : " + " ) + getCoefficientAsString(product.getStoichiometry()) + " " + product.getSpecies().getName()
+                    + "</span>";
+            first = false;
+        }
+        return formula;
+    }
+
     public String getGeneFormula() {
         if (metabolism.getGeneLink() == null) return genes;
         

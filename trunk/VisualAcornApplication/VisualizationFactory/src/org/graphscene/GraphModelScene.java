@@ -16,6 +16,8 @@ import java.util.Map;
 import org.dbStructs.NameStruct;
 import org.exceptions.VisValidationException;
 import org.interfaces.LoadSaveInterface;
+import org.netbeans.api.visual.action.WidgetAction.State;
+import org.netbeans.api.visual.action.WidgetAction.WidgetKeyEvent;
 import org.providers.ModelSceneMenu;
 import org.netbeans.api.visual.action.ActionFactory;
 import org.netbeans.api.visual.action.MoveProvider;
@@ -51,9 +53,13 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
 
     public interface SelectionNodeListener {
 
-        public void nodeSelected(NodeWidget w);
+        public void nodeClicked(NodeWidget w, boolean isWithCtrl);
 
-        public void unselect();
+        public void selectNode(NodeWidget w, boolean isWithCtrl);
+
+        public void unselectNode(NodeWidget w);
+
+        public void unselectAll();
     }
     private static final Image PLACE_IMG = ImageUtilities.loadImage("org/graphics/place.png");
     private static final Image TRANSITION_IMG = ImageUtilities.loadImage("org/graphics/transition_small2.gif");
@@ -101,15 +107,14 @@ public class GraphModelScene extends GraphScene<VisNode, VisEdge> {
             public State mouseClicked(Widget wid, WidgetMouseEvent me) {
 
                 if (wid.equals(GraphModelScene.this)) {
-                    selectionNodeListener.unselect();
+                    selectionNodeListener.unselectAll();
                     return State.CONSUMED;
                 } else if (wid instanceof NodeWidget) {
-                    selectionNodeListener.nodeSelected((NodeWidget) wid);
+                    selectionNodeListener.nodeClicked((NodeWidget) wid, me.isControlDown());
                     return State.CONSUMED;
                 }
                 return State.REJECTED;
             }
-            ;
         };
         this.getActions().addAction(mouseClick);
         loadSaveListener = new LoadSaveListener();

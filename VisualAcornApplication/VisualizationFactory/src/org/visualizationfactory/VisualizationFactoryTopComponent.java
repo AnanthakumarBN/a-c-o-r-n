@@ -13,8 +13,11 @@ import org.exceptions.BadKeyInBufferStruct;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Point;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
@@ -42,6 +45,7 @@ import org.view.NoSelectBorder;
 import org.view.NodeWidget;
 import org.view.SelectBorder;
 import org.vislogicengine.VisLogic;
+import org.visualapi.VisEdge;
 import org.visualapi.VisNode;
 import org.visualapi.VisPlace;
 import org.visualapi.VisTransition;
@@ -55,11 +59,19 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     private JComponent graphView;
     private static VisualizationFactoryTopComponent instance;
     private static final String PREFERRED_ID = "VisualizationFactoryTopComponent";
-    private NodeWidget selectedWidget = null;
+    //private NodeWidget selectedWidget = null;
+    private LinkedList<NodeWidget> selectedWidgets = new LinkedList<NodeWidget>();
     SelectBorder selectBorder = new SelectBorder();
     NoSelectBorder noselBorder = new NoSelectBorder();
     private VisLogic logic;
     String user;
+    GraphModelScene scene;
+
+    private void markUnselected(NodeWidget w) {
+        w.getLabelWidget().setForeground(Color.BLACK);
+        w.setBorder(noselBorder);
+        content.remove(w.getVisNode());
+    }
 
     private VisualizationFactoryTopComponent() {
         try {
@@ -79,61 +91,109 @@ public class VisualizationFactoryTopComponent extends TopComponent {
             content = new InstanceContent();
             associateLookup(new AbstractLookup(content));
 
-            GraphModelScene scene = new GraphModelScene(new GraphModelScene.SelectionNodeListener() {
+            scene = new GraphModelScene(new GraphModelScene.SelectionNodeListener() {
 
-                public void nodeSelected(NodeWidget w) {
+                private void markSelected(NodeWidget w) {
+                    VisNode node = w.getVisNode();
+                    //Adds node to lookup associated with VisualFactoryTopComponent
+                    content.add(node);
+                    w.setBorder(selectBorder);
+                    w.getLabelWidget().setForeground(Color.BLUE);
+                    List<NameStruct> structNames = null;
+                    if (w.isPlaceWidget()) {
+                        nodeNameLabel.setText("Name of place: ");
+                        structNames = logic.getSuitableSpecies((VisPlace) node);
+
+                    } else if (w.isTransitionWidget()) {
+                        nodeNameLabel.setText("Name of transition: ");
+                        structNames = logic.getSuitableReactions((VisTransition) node);
+                    }
+                    structNames = node.removeUsedNodes(structNames);
+                    namesComboBox.removeAllItems();
+                    if (structNames.size() == 0) {
+                        setNameButton.setEnabled(false);
+                        namesComboBox.setEnabled(false);
+                    } else {
+                        for (NameStruct name : structNames) {
+                            namesComboBox.addItem(name);
+                        }
+                    }
+                    namesComboBox.setEnabled(true);
+                    if (structNames.size() == 0) {
+                        setNameButton.setEnabled(false);
+                    } else {
+                        setNameButton.setEnabled(true);
+                    }
+                }
+
+                public void selectNode(NodeWidget w, boolean isWithCtrl) {
                     if (logic.isModelSet()) {
                         clearFields();
-                        if (selectedWidget != null) {
-                            selectedWidget.getLabelWidget().setForeground(Color.BLACK);
-                            selectedWidget.setBorder(noselBorder);
-                            content.remove(selectedWidget.getVisNode());
-                        }
-                        selectedWidget = w;
-                        VisNode node = w.getVisNode();
-                        //Adds node to lookup associated with VisualFactoryTopComponent
-                        content.add(node);
-                        List<NameStruct> structNames = null;
-                        if (w.isPlaceWidget()) {
-                            nodeNameLabel.setText("Name of place: ");
-                            structNames = logic.getSuitableSpecies((VisPlace) node);
 
-                        } else if (w.isTransitionWidget()) {
-                            nodeNameLabel.setText("Name of transition: ");
-                            structNames = logic.getSuitableReactions((VisTransition) node);
-                        }
-                        structNames = node.removeUsedNodes(structNames);
-                        namesComboBox.removeAllItems();
-                        if (structNames.size() == 0) {
-                            setNameButton.setEnabled(false);
-                            namesComboBox.setEnabled(false);
+                        if (selectedWidgets.isEmpty()) {
+                            selectedWidgets.add(w);
+                            markSelected(w);
+                            //mergeButton.setEnabled(false);
+                            //System.out.println("zaznaczone nowy");
                         } else {
-                            for (NameStruct name : structNames) {
-                                namesComboBox.addItem(name);
+                            if (isWithCtrl) {
+                                NodeWidget previous = selectedWidgets.peek();
+                                String pSid = previous.getSid();
+                                String wSid = w.getSid();
+                                if ((pSid == wSid) || ((pSid != null) && pSid.equals(wSid))) {
+                                    selectedWidgets.add(w);
+                                    markSelected(w);
+                                    mergeButton.setEnabled(true);
+                                    //System.out.println("zaznaczone oba");
+                                } else {
+                                    //System.out.println("niepasuje");
+                                }
+                            } else {
+                                for (NodeWidget previous : selectedWidgets) {
+                                    markUnselected(previous);
+                                }
+                                selectedWidgets.clear();
+                                selectedWidgets.add(w);
+                                mergeButton.setEnabled(false);
+                                markSelected(w);
+                                //System.out.println("zanaczone w zamian");
                             }
-                        }
-                        w.setBorder(selectBorder);
-                        w.getLabelWidget().setForeground(Color.BLUE);
-                        namesComboBox.setEnabled(true);
-                        if (structNames.size() == 0) {
-                            setNameButton.setEnabled(false);
-                        } else {
-                            setNameButton.setEnabled(true);
                         }
                     }
                 }
 
-                public void unselect() {
-                    clearFields();
-                    if (selectedWidget != null) {
-                        selectedWidget.getLabelWidget().setForeground(Color.BLACK);
-                        selectedWidget.setBorder(noselBorder);
-                        content.remove(selectedWidget.getVisNode());
+                public void unselectNode(NodeWidget w) {
+                    if (selectedWidgets.size() < 2) {
+                        mergeButton.setEnabled(false);
+                        clearFields();
+                        namesComboBox.setEnabled(false);
+                        setNameButton.setEnabled(false);
+                        nodeNameLabel.setText("Select place or transition");
                     }
-                    selectedWidget = null;
+
+                    markUnselected(w);
+                    selectedWidgets.remove(w);
+                }
+
+                public void unselectAll() {
+                    mergeButton.setEnabled(false);
+                    clearFields();
                     namesComboBox.setEnabled(false);
                     setNameButton.setEnabled(false);
                     nodeNameLabel.setText("Select place or transition");
+
+                    for (NodeWidget w : selectedWidgets) {
+                        markUnselected(w);
+                    }
+                    selectedWidgets.clear();
+                }
+
+                public void nodeClicked(NodeWidget w, boolean isWithCtrl) {
+                    if (selectedWidgets.contains(w)) {
+                        unselectNode(w);
+                    } else {
+                        selectNode(w, isWithCtrl);
+                    }
                 }
             });
             graphView = scene.createView();
@@ -242,6 +302,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
         addCompRadioButton = new javax.swing.JRadioButton();
         remCompRadioButton = new javax.swing.JRadioButton();
         jSeparator2 = new javax.swing.JSeparator();
+        mergeButton = new javax.swing.JButton();
 
         visualizationNamesComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[0]));
         visualizationNamesComboBox1.setEnabled(false);
@@ -507,12 +568,20 @@ public class VisualizationFactoryTopComponent extends TopComponent {
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
+        org.openide.awt.Mnemonics.setLocalizedText(mergeButton, org.openide.util.NbBundle.getMessage(VisualizationFactoryTopComponent.class, "VisualizationFactoryTopComponent.mergeButton.text")); // NOI18N
+        mergeButton.setEnabled(false);
+        mergeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mergeButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout visualizationPanelLayout = new javax.swing.GroupLayout(visualizationPanel);
         visualizationPanel.setLayout(visualizationPanelLayout);
         visualizationPanelLayout.setHorizontalGroup(
             visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(visualizationPanelLayout.createSequentialGroup()
-                .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(visualizationPanelLayout.createSequentialGroup()
                         .addGap(25, 25, 25)
                         .addComponent(nodeNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -524,7 +593,10 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                         .addGap(38, 38, 38)
                         .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(fullName, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(fullNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(visualizationPanelLayout.createSequentialGroup()
+                                .addComponent(fullNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(156, 156, 156)
+                                .addComponent(mergeButton, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)))))
                 .addGap(30, 30, 30)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -533,6 +605,9 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                     .addComponent(addCompRadioButton))
                 .addContainerGap(632, Short.MAX_VALUE))
         );
+
+        visualizationPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {mergeButton, setNameButton});
+
         visualizationPanelLayout.setVerticalGroup(
             visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(visualizationPanelLayout.createSequentialGroup()
@@ -550,7 +625,9 @@ public class VisualizationFactoryTopComponent extends TopComponent {
                                 .addComponent(remCompRadioButton)
                                 .addGap(27, 27, 27))
                             .addGroup(visualizationPanelLayout.createSequentialGroup()
-                                .addComponent(fullNameLabel)
+                                .addGroup(visualizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(fullNameLabel)
+                                    .addComponent(mergeButton))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(fullName, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
@@ -563,22 +640,24 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     }// </editor-fold>//GEN-END:initComponents
 
     private void setNameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setNameButtonActionPerformed
-        if (selectedWidget instanceof NodeWidget) {
-            NameStruct selectedStruct = (NameStruct) namesComboBox.getSelectedItem();
-            VisNode node = selectedWidget.getVisNode();
+        for (NodeWidget selectedWidget : selectedWidgets) {
+            if (selectedWidget instanceof NodeWidget) {
+                NameStruct selectedStruct = (NameStruct) namesComboBox.getSelectedItem();
+                VisNode node = selectedWidget.getVisNode();
 
-            logic.nameVisNode(node, selectedStruct);
-            selectedWidget.setLabel(selectedStruct.getSid());
+                logic.nameVisNode(node, selectedStruct);
+                selectedWidget.setLabel(selectedStruct.getSid());
 
-            if (selectedWidget.isTransitionWidget()) {
-                logic.setSpeciesForReaction(selectedStruct);
-                Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
-                if (!c.isEmpty()) {
-                    selectedWidget.setLabel(selectedStruct.getSid() + " " + Float.toString(((VisTransition) node).getFlux()));
+                if (selectedWidget.isTransitionWidget()) {
+                    logic.setSpeciesForReaction(selectedStruct);
+                    Collection<ComputationsVis> c = (Collection<ComputationsVis>) visCompResult.allInstances();
+                    if (!c.isEmpty()) {
+                        selectedWidget.setLabel(selectedStruct.getSid() + " " + Float.toString(((VisTransition) node).getFlux()));
+                    }
                 }
+                content.remove(selectedWidget.getVisNode());
+                content.add(selectedWidget.getVisNode());
             }
-            content.remove(selectedWidget.getVisNode());
-            content.add(selectedWidget.getVisNode());
         }
 }//GEN-LAST:event_setNameButtonActionPerformed
 
@@ -723,9 +802,58 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     }//GEN-LAST:event_remCompRadioButtonActionPerformed
 
     private void jSharedChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSharedChanged
-        
     }//GEN-LAST:event_jSharedChanged
 
+    private boolean noEdgeExists(VisNode source, VisNode target) {
+        return scene.findEdgesBetween(source, target).isEmpty();
+    }
+
+    private void mergeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mergeButtonActionPerformed
+        int newX = 0;
+        int newY = 0;
+        int size = selectedWidgets.size();
+        NodeWidget selectedW = selectedWidgets.peek();
+        VisNode selectedV = selectedW.getVisNode();
+
+        for (NodeWidget w : selectedWidgets) {
+            newX += w.getLocation().getX();
+            newY += w.getLocation().getY();
+            VisNode v = w.getVisNode();
+            for (VisEdge e : scene.findNodeEdges(v, false, true)) {//input edges
+                System.out.println("e.source=" + e.getSource());
+                if (noEdgeExists(e.getSource(), selectedV)) {//reconnect the edge to v
+                    VisEdge edge = new VisEdge(e.getSource(), selectedV);
+                    scene.addEdge(edge);
+                    scene.setEdgeSource(edge, edge.getSource());
+                    scene.setEdgeTarget(edge, edge.getTarget());
+                } else if (!e.getTarget().equals(v)) {//don't want to remove the original edge
+                    scene.removeEdge(e);
+                }
+            }
+            for (VisEdge e : scene.findNodeEdges(v, true, false)) {//output edges
+                if (noEdgeExists(selectedV, e.getSource())) {//reconnect the edge to v
+                    VisEdge edge = new VisEdge(selectedV, e.getTarget());
+                    scene.addEdge(edge);
+                    scene.setEdgeSource(edge, edge.getSource());
+                    scene.setEdgeTarget(edge, edge.getTarget());
+                } else if (!e.getSource().equals(v)) {//don't want to remove the original edge
+                    scene.removeEdge(e);
+                }
+            }
+        }
+        selectedWidgets.pop();//remove the node we have previously peeked
+        markUnselected(selectedW);
+        for (NodeWidget w : selectedWidgets) {
+            VisNode v = w.getVisNode();
+            v.removeAllConnections();
+            scene.removeNodeWithEdges(v);
+        }
+        //move the survaving node
+        newX /= size;
+        newY /= size;
+        selectedW.setPreferredLocation(new Point(newX, newY));
+        scene.validate();
+    }//GEN-LAST:event_mergeButtonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel ModelNameLabel;
     private javax.swing.JLabel SaveErrorsLabel;
@@ -744,6 +872,7 @@ public class VisualizationFactoryTopComponent extends TopComponent {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JCheckBox jSharedCheckbox;
     private javax.swing.JButton loadVisualizationButton;
+    private javax.swing.JButton mergeButton;
     private javax.swing.JComboBox modelsComboBox;
     private javax.swing.JComboBox namesComboBox;
     private javax.swing.JLabel nodeNameLabel;

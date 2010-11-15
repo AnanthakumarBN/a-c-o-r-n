@@ -48,6 +48,8 @@ public class TaskDetailsBean {
             return false;
         } else if (user.getStatus().equals(EUser.statusAdmin)) {
             return true;
+        } else if (m.getOwner() == null) {
+            return false; // TODO is this allright?
         } else {
             return m.getOwner().getId().equals(user.getId());
         }

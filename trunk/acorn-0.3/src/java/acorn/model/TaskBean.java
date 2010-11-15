@@ -47,6 +47,8 @@ public class TaskBean {
             return false;
         } else if (user.getStatus().equals(EUser.statusAdmin)) {
             return true;
+        } else if (m.getOwner() == null) {
+            return false; // TODO is this allright?
         } else {
             return m.getOwner().getId().equals(user.getId());
         }
@@ -501,7 +503,13 @@ public class TaskBean {
         if (user.getStatus().equals(EUser.statusAdmin)) {
             return true;
         }
-        return data.get(getModelID()).model.getOwner().getId() == user.getId();
+        
+        EUser owner = data.get(getModelID()).getModel().getOwner();
+        if (owner == null) {
+            return false;
+        } else {
+            return owner.getId().equals(user.getId());
+        }
     }
 
     /** 

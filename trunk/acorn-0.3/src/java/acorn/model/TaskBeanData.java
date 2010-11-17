@@ -39,11 +39,17 @@ public class TaskBeanData {
     private String selectedSpecies;
     private String selectedVisualization;    
     private String selectedGene;
-    public String taskName;
+    public String taskName = "Enter new task name";
     public String method;
     public Date lastUse;
     private Semaphore mutex;
     public String errorMessage;
+
+    /**
+     * True iff a user chooses to download data necessary to perform simulation
+     * rather than run the simulation on the server.
+     */
+    private boolean performLocally = false;
 
     TaskBeanData(EModel m) {
         super();
@@ -117,5 +123,13 @@ public class TaskBeanData {
     public void setSelectedGene(String selectedGene) {
         this.selectedGene = selectedGene;
         parameters.setGene(selectedGene);
+    }
+
+    public boolean getPerformLocally() {
+      return performLocally;
+    }
+
+    public void setPerformLocally(boolean value) {
+      performLocally = value;
     }
 }

@@ -109,10 +109,10 @@
             </p>
 
             
-            <h:panelGrid columns="2">
-                New Task name:
-                <h:inputText disabled="#{!TaskBean.editable}" value="#{TaskBean.taskName}" />
-            </h:panelGrid><br/>
+            <h:inputText disabled="#{!TaskBean.editable}" onfocus="this.value=''" value="#{TaskBean.taskName}" /><br/>
+
+            <h:selectBooleanCheckbox disabled="#{!TaskBean.editable}" value="#{TaskBean.performLocally}" />
+            Download data necessary to perform simulation locally.<br/><br/>
 
             <h:commandLink action="#{TaskBean.taskFBA}"
                 value="Single Flux Balance Analysis" >

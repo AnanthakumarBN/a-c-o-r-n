@@ -59,7 +59,7 @@ public class ModelListBean {
                 List<EModel> resShared = emc.getModelsShared();
 
                 for (EModel m : resShared) {
-                    newSharedList.add(new ModelRow(m, false /*m.getOwner() == null*/)); // TODO what about guest deleting models?
+                    newSharedList.add(new ModelRow(m, m.getOwner() == null));
                 }
                 privateList = new LinkedList<ModelRow>();
                 sharedList = newSharedList;

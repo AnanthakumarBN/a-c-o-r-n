@@ -9,6 +9,7 @@ import acorn.db.*;
 import acorn.errorHandling.ErrorBean;
 import acorn.task.TaskQueue;
 import acorn.userManagement.UserManager;
+import javax.jms.JMSException;
 import javax.servlet.http.*;
 import java.util.Map;
 import java.util.List;
@@ -1093,7 +1094,11 @@ public class TaskBean {
             data.get(id).parameters = new FVAParams();
         }
         data.get(id).errorMessage = "";
-        return this.calcTask();
+        if (data.get(id).getPerformLocally()) {
+          return this.prepareParameters();
+        } else {
+          return this.calcTask();
+        }
     }
 
     public String taskRSCAN() {
@@ -1143,6 +1148,16 @@ public class TaskBean {
         Integer id = getModelID();
 
         return data.get(id).taskName;
+    }
+
+    public boolean getPerformLocally() {
+      Integer id = getModelID();
+      return data.get(id).getPerformLocally();
+    }
+
+    public void setPerformLocally(boolean value) {
+      Integer id = getModelID();
+      data.get(id).setPerformLocally(value);
     }
 
     public void setTaskName(String name) {
@@ -1417,79 +1432,85 @@ public class TaskBean {
         return data.get(id).errorMessage;
     }
 
+    private void createTaskAndModel(boolean enqueueTask) throws JMSException, Exception {
+      Integer id = getModelID();
+      
+      /* Set task name */
+      if (data.get(id).taskName.contentEquals("")
+              || data.get(id).taskName.contentEquals("Enter new task name")) {
+        data.get(id).taskName = "[" + data.get(id).model.getName() + " - TASK]";
+      }
+
+      /* Create new model */
+      EModel model = prepareNewModel(getCurrentModel());
+      model.setName(data.get(id).taskName + " task's model");
+
+      /* Create new task */
+      ETask task = new ETask();
+
+      task.setName(data.get(id).taskName);
+      task.setDate(new Date());
+      task.setLastChange(new Date());
+      task.setStatus(ETask.statusQueued);
+      if (UserManager.getIsGuestS()) {
+        task.setShared(true);
+        model.setShared(true);
+      } else {
+        task.setShared(false);
+        model.setShared(false);
+      }
+      task.setModel(model);
+      model.setTask(task);
+
+      EMethod method = null;
+
+      EMethodData methodData = new EMethodData();
+
+      if (data.get(id).parameters instanceof FBAParams) {
+        method = getFBAMethod();
+        methodData = getFBAMethodData(id);
+      } else if (data.get(id).parameters instanceof RSCANParams) {
+        method = getRSCANMethod();
+        methodData = getRSCANMethodData(id);
+      } else if (data.get(id).parameters instanceof KGENEParams) {
+        method = getKGENEMethod();
+        methodData = getKGENEMethodData(id);
+      } else if (data.get(id).parameters instanceof FVAParams) {
+        method = getFVAMethod();
+      }
+
+      /* IF YOU WANT TO ADD NEW METHOD -> put here another "else if" condition and piece of code similar to the above one */
+
+      task.setMethod(method);
+
+      if (!(data.get(id).parameters instanceof FVAParams)) {
+        /* IF YOU WANT TO ADD NEW METHOD (without parameters) -> put "& !(data.get(id).parameters instanceof MYMETHODParams) into conditon (where MYMETHOD is a name of method) */
+        task.setMethodData(methodData);
+        methodData.setTask(task);
+      }
+
+      /* Update database */
+
+      EModelController mc = new EModelController();
+
+      /* Extremly required! */
+      data.get(id).model = mc.getModel(id);
+
+      mc.addModel(model);
+
+      if (enqueueTask) {
+        TaskQueue.getInstance().enqueueTask(task);
+      }
+      
+      //discardChanges is necessary!!! - next time this model will be choosen original data appear in the table
+      discardChanges();
+    }
+
     /* Function is called when user presses "RUN" button */
     public String calcTask() {
         if (this.isTaskReady()) {
-            Integer id = getModelID();
-
             try {
-                /* Set task name */
-                if (data.get(id).taskName.contentEquals("")) {
-                    data.get(id).taskName = "[" + data.get(id).model.getName() + " - TASK]";
-                }
-
-                /* Create new model */
-                EModel model = prepareNewModel(getCurrentModel());
-                model.setName(data.get(id).taskName + " task's model");
-
-                /* Create new task */
-                ETask task = new ETask();
-
-                task.setName(data.get(id).taskName);
-                task.setDate(new Date());
-                task.setLastChange(new Date());
-                task.setStatus(ETask.statusQueued);
-                if (UserManager.getIsGuestS()) {
-                    task.setShared(true);
-                    model.setShared(true);
-                } else {
-                    task.setShared(false);
-                    model.setShared(false);
-                }
-                task.setModel(model);
-                model.setTask(task);
-
-                EMethod method = null;
-
-                EMethodData methodData = new EMethodData();
-
-                if (data.get(id).parameters instanceof FBAParams) {
-                    method = getFBAMethod();
-                    methodData = getFBAMethodData(id);
-                } else if (data.get(id).parameters instanceof RSCANParams) {
-                    method = getRSCANMethod();
-                    methodData = getRSCANMethodData(id);
-                } else if (data.get(id).parameters instanceof KGENEParams) {
-                    method = getKGENEMethod();
-                    methodData = getKGENEMethodData(id);
-                } else if (data.get(id).parameters instanceof FVAParams) {
-                    method = getFVAMethod();
-                }
-
-                /* IF YOU WANT TO ADD NEW METHOD -> put here another "else if" condition and piece of code similar to the above one */
-
-                task.setMethod(method);
-
-                if (!(data.get(id).parameters instanceof FVAParams)) {
-                    /* IF YOU WANT TO ADD NEW METHOD (without parameters) -> put "& !(data.get(id).parameters instanceof MYMETHODParams) into conditon (where MYMETHOD is a name of method) */
-                    task.setMethodData(methodData);
-                    methodData.setTask(task);
-                }
-
-                /* Update database */
-
-                EModelController mc = new EModelController();
-
-                /* Extremly required! */
-                data.get(id).model = mc.getModel(id);
-
-                mc.addModel(model);
-
-                TaskQueue.getInstance().enqueueTask(task);
-
-                //discardChanges is necessary!!! - next time this model will be choosen original data appear in the table
-                discardChanges();
-
+              createTaskAndModel(true);
             } catch (Exception e) {
                 ErrorBean.printStackTrace(e);
                 return null;
@@ -1498,5 +1519,20 @@ public class TaskBean {
         } else {
             return "TaskNotOK";
         }
+    }
+
+    /* Function is called when user presses "DOWNLOAD DATA" button. */
+    public String prepareParameters() {
+      if (isTaskReady()) {
+        try {
+          createTaskAndModel(false);
+        } catch (Exception e) {
+          ErrorBean.printStackTrace(e);
+          return null;
+        }
+        return "ParamsOK";
+      } else {
+        return "ParamsNotOK";
+      }
     }
 }

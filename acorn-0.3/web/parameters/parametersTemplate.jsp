@@ -20,11 +20,19 @@
     <h:panelGroup id="validModel" rendered="#{TaskBean.isModelValid}" >
         <h:form>
             <div class="RunButton">
-            
+
+            <h:panelGroup rendered="#{!TaskBean.performLocally}" >
             <h:commandLink action="#{TaskBean.calcTask}" value="Start the simulation" >
-                <f:param name="modelID" value="#{param['modelID']}"/>
+              <f:param name="modelID" value="#{param['modelID']}"/>
             </h:commandLink>
-            
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{TaskBean.performLocally}" >
+            <h:commandLink action="#{TaskBean.prepareParameters}" value="Download data" >
+              <f:param name="modelID" value="#{param['modelID']}"/>
+            </h:commandLink>
+            </h:panelGroup>
+
             <br/>
 
             <h:outputText value="#{TaskBean.errorMessage}" rendered="#{TaskBean.error}" styleClass="error"/>

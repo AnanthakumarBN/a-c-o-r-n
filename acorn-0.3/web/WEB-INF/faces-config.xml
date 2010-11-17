@@ -159,6 +159,14 @@
             <from-outcome>TaskNotOK</from-outcome>
             <to-view-id>/modelDetails.jsp</to-view-id>
         </navigation-case>
+        <navigation-case>
+            <from-outcome>ParamsOK</from-outcome>
+            <to-view-id>/downloadParameters.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>ParamsNotOK</from-outcome>
+            <to-view-id>/modelDetails.jsp</to-view-id>
+        </navigation-case>
     </navigation-rule>
     
     <navigation-rule>
@@ -169,6 +177,14 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>TaskNotOK</from-outcome>
+            <to-view-id>/fbaParameters.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>ParamsOK</from-outcome>
+            <to-view-id>/downloadParameters.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>ParamsNotOK</from-outcome>
             <to-view-id>/fbaParameters.jsp</to-view-id>
         </navigation-case>
         <navigation-case>
@@ -188,6 +204,14 @@
             <to-view-id>/rscanParameters.jsp</to-view-id>
         </navigation-case>
         <navigation-case>
+            <from-outcome>ParamsOK</from-outcome>
+            <to-view-id>/downloadParameters.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>ParamsNotOK</from-outcome>
+            <to-view-id>/rscanParameters.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
             <from-outcome>back</from-outcome>
             <to-view-id>/modelDetails.jsp</to-view-id>
         </navigation-case>
@@ -201,6 +225,14 @@
         </navigation-case>
         <navigation-case>
             <from-outcome>TaskNotOK</from-outcome>
+            <to-view-id>/kgeneParameters.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>ParamsOK</from-outcome>
+            <to-view-id>/downloadParameters.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>ParamsNotOK</from-outcome>
             <to-view-id>/kgeneParameters.jsp</to-view-id>
         </navigation-case>
         <navigation-case>

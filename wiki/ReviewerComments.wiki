@@ -1,6 +1,6 @@
-#summary Response to reviver comments.
+#summary Replays to reviewer comments.
 
-= Introduction =
+= Replays to reviewer comments =
 
  # _Comment_: The user can only see the reaction name or ID. No information regarding the reaction equation is given at this point. This is a big limitation in this tool because when the names of the reactions used in the model are intelligible, for example in the case of the M. tuberculosis model, there is no chance to know what conversion carried in that reaction. A possible solution is to improve the information shown in the window showing the reaction ID or simply the option to start a simulation directly from the "Model Details" menu.<br/>_Reply_: The information shown in the with reaction ID has been improved.
  # _Comment_: An error message appears right after clicking in the button "Start the simulation" even though the simulation is stored in the task list.<br/>_Replay_: 

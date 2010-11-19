@@ -4,11 +4,14 @@
  */
 package acorn.model;
 
+import java.io.IOException;
 import javax.faces.context.FacesContext;
 import acorn.db.*;
 import acorn.errorHandling.ErrorBean;
 import acorn.task.TaskQueue;
 import acorn.userManagement.UserManager;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import javax.jms.JMSException;
 import javax.servlet.http.*;
 import java.util.Map;
@@ -16,12 +19,15 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.Date;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Set;
+import javax.faces.context.ExternalContext;
+import javax.servlet.ServletOutputStream;
 
 /**
  *
@@ -1501,9 +1507,11 @@ public class TaskBean {
       if (enqueueTask) {
         TaskQueue.getInstance().enqueueTask(task);
       }
-      
+
       //discardChanges is necessary!!! - next time this model will be choosen original data appear in the table
       discardChanges();
+
+      data.get(id).setLastTaskModel(model);
     }
 
     /* Function is called when user presses "RUN" button */
@@ -1535,4 +1543,147 @@ public class TaskBean {
         return "ParamsNotOK";
       }
     }
+
+  private void export(String fileName, String content) throws IOException {
+    FacesContext fc = FacesContext.getCurrentInstance();
+    ExternalContext ec = fc.getExternalContext();
+    HttpServletResponse response = (HttpServletResponse) ec.getResponse();
+
+    response.setContentType("text/plain");
+    response.setHeader(
+            "Content-Disposition",
+            "attachment; filename=" + fileName);
+
+		InputStream in = new ByteArrayInputStream(content.getBytes("UTF-8"));
+		ServletOutputStream out = response.getOutputStream();
+    byte[] outputByte = new byte[4096];
+    int length;
+
+    // copy binary contect to output stream
+		while((length = in.read(outputByte, 0, 4096)) != -1)
+		{
+			out.write(outputByte, 0, length);
+		}
+
+		in.close();
+		out.flush();
+		out.close();
+    FacesContext.getCurrentInstance().responseComplete();
+  }
+
+  /**
+   * Based on acorn.worker.main.WorkerDeamon.java.
+   */
+  private Collection<EBounds> getBoundsForModel(EModel model) {
+
+    if (model.getParent() == null) {
+      return model.getEBoundsCollection();
+    } else {
+      Collection<EBounds> res1 = model.getEBoundsCollection();
+      Collection<EBounds> res2 = model.getParent().getEBoundsCollection();
+      res1.addAll(res2);
+      return res1;
+    }
+  }
+
+  private String createSimulationEntry(String objective,
+                                       String minimize,
+                                       String printFlux,
+                                       String disableReaction,
+                                       String disableGene) {
+   StringBuilder sb = new StringBuilder()
+              .append("  <simulation>\n")
+              .append("    <simulationParameters>\n")
+              .append("      <objective>" + objective + "</objective>\n")
+              .append("      <minimize>" + minimize + "</minimize>\n")
+              .append("      <printFlux>" + printFlux + "</printFlux>\n");
+   if (disableReaction != null) {
+            sb.append("      <disableReaction>" + disableReaction + "</disableReaction>\n");
+   }
+   if (disableGene != null) {
+            sb.append("      <disableGene>" + disableGene + "</disableGene>\n");
+   }
+            sb.append("    </simulationParameters>\n")
+              .append("  </simulation>\n");
+    return sb.toString();
+  }
+
+  private String createListOfSimulationsForTask(ETask task) {
+    String result = null;
+    if (task.getMethod().getIdent().equals(EMethod.fba)) {
+      EFbaData mdata = (EFbaData) task.getMethodData();
+      result = createSimulationEntry(mdata.getObjFunctionSid(), "false", "true", null, null);
+    } else if (task.getMethod().getIdent().equals(EMethod.fva)) {
+      StringBuilder sb = new StringBuilder();
+      for (EReaction r : task.getModel().getMetabolism().getEReactionCollection()) {
+        sb.append(createSimulationEntry(r.getSid(), "false", "false", null, null));
+        sb.append(createSimulationEntry(r.getSid(), "true", "false", null, null));
+      }
+      result = sb.toString();
+    } else if (task.getMethod().getIdent().equals(EMethod.rscan)) {
+      ERscanData mdata = (ERscanData) task.getMethodData();
+      StringBuilder sb = new StringBuilder();
+      for (EReaction r : task.getModel().getMetabolism().getEReactionCollection()) {
+        sb.append(createSimulationEntry(mdata.getObjFunctionSid(), "false", "false", r.getSid(), null));
+      }
+      result = sb.toString();
+    } else if (task.getMethod().getIdent().equals(EMethod.kgene)) {
+      EKgeneData mdata = (EKgeneData) task.getMethodData();
+      result = createSimulationEntry(mdata.getObjFunctionSid() , "false", "true", null, mdata.getGene());
+    }
+    return result;
+  }
+
+  private String generateTaskParameters() {
+    EModel model = data.get(getModelID()).getLastTaskModel();
+    ETask task = model.getTask();
+
+    StringBuilder sb = new StringBuilder()
+            .append("<fbaTask name=\"" + task.getName() + "\" ")
+            .append("modelName=\"" + model.getName() + "\" ")
+            .append("modelId=\"" + model.getMetabolism().getSid() + "\" ")
+            .append("method=\"" + task.getMethod().getName() + "\">\n");
+            
+    sb.append("<listOfBounds>\n");
+    for (EBounds bound : getBoundsForModel(model)) {
+            sb.append("  <bound ")
+              .append("reactionId=\"" + bound.getReaction().getSid() + "\" ")
+              .append("lowerBound=\"" + bound.getLowerBound() + "\" ")
+              .append("upperBound=\"" + bound.getUpperBound() + "\" ")
+              .append("/>\n");
+    }
+    sb.append("</listOfBounds>\n");
+
+    sb.append("<listOfSimulations>\n");
+    sb.append(createListOfSimulationsForTask(task));
+    sb.append("</listOfSimulations>\n");
+
+    sb.append("</fbaTask>\n");
+
+    return sb.toString();
+  }
+
+  public void downloadTaskParameters() {
+    try {
+      export("task_parameters.xml", generateTaskParameters());
+    }
+    catch (IOException e) {
+      ErrorBean.printStackTrace(e);
+    }
+  }
+
+  private String generateModelDescription() {
+    EModel model = data.get(getModelID()).getLastTaskModel();
+    // TODO(kuba): Generate XML description of the above model.
+    return "TODO(kuba): Generate XML description of the above model.";
+  }
+
+  public void downloadModelDescription() {
+    try {
+      export("model_description.xml", generateModelDescription());
+    }
+    catch (IOException e) {
+      ErrorBean.printStackTrace(e);
+    }
+  }
 }

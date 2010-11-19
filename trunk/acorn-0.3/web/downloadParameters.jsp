@@ -1,7 +1,7 @@
 <%-- 
-    Document   : RSCANParameters
-    Created on : 2008-04-18, 19:42:38
-    Author     : sg236027
+    Document   : DownloadParameters
+    Created on : 2011-11-17
+    Author     : lukasz
 --%>
 
 <%@taglib prefix="tiles" uri="WEB-INF/tiles-jsp.tld"%>

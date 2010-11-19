@@ -51,6 +51,8 @@ public class TaskBeanData {
      */
     private boolean performLocally = false;
 
+    private EModel lastTaskModel = null;
+
     TaskBeanData(EModel m) {
         super();
         reactionsStart = 0;
@@ -131,5 +133,13 @@ public class TaskBeanData {
 
     public void setPerformLocally(boolean value) {
       performLocally = value;
+    }
+
+    public EModel getLastTaskModel() {
+      return lastTaskModel;
+    }
+
+    public void setLastTaskModel(EModel value) {
+      lastTaskModel = value;
     }
 }

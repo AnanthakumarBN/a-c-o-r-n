@@ -6,9 +6,9 @@
         <Node id="addModel/addModelContent.jsp" x="400" y="750" zoom="true"/>
         <Node id="addVisualization.jsp" x="650" y="300" zoom="true"/>
         <Node id="addModel.jsp" x="1900" y="300" zoom="true"/>
-        <Node id="error.jsp" x="400" y="150" zoom="true"/>
         <Node id="taskDetails/rscan/rscanResults.jsp" x="922" y="76" zoom="true"/>
         <Node id="taskDetails/rscan/rscanTarget.jsp" x="234" y="4" zoom="true"/>
+        <Node id="error.jsp" x="400" y="150" zoom="true"/>
         <Node id="logo.jsp" x="400" y="300" zoom="true"/>
         <Node id="taskList/taskListContent.jsp" x="150" y="750" zoom="true"/>
         <Node id="register.jsp" x="650" y="900" zoom="true"/>
@@ -32,9 +32,9 @@
         <Node id="parameters/downloadParameters.jsp" x="1150" y="300" zoom="true"/>
         <Node id="homepage/acorn_web.htm" x="400" y="450" zoom="true"/>
         <Node id="taskDetails/kgene/kgeneTarget.jsp" x="650" y="1050" zoom="true"/>
-        <Node id="login/loginContent.jsp" x="150" y="1200" zoom="true"/>
         <Node id="parameters/paramsReactionTable.jsp" x="568" y="172" zoom="true"/>
         <Node id="parameters/parametersTemplate.jsp" x="984" y="171" zoom="true"/>
+        <Node id="login/loginContent.jsp" x="150" y="1200" zoom="true"/>
         <Node id="modelList/modelListContent.jsp" x="400" y="600" zoom="true"/>
         <Node id="userList.jsp" x="1515" y="519" zoom="true"/>
         <Node id="modelDetails.jsp" x="561" y="387" zoom="true"/>

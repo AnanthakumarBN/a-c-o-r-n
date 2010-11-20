@@ -80,7 +80,7 @@ public class TaskListBean {
             others = true;
         } else if (UserManager.getUserStatus().equals(EUser.statusNormal)) {
             mine = true;
-            shared = true;
+            shared = false; // this means that shared tasks checkbox will not be checked by default
             others = false;
         } else {
             mine = false;
@@ -97,15 +97,34 @@ public class TaskListBean {
         
         try {
             ETaskController et = new ETaskController();
+            
+            if (mine && !UserManager.getIsGuestS()) { // isGuest => mine=false
+                List<ETask> myTasks = et.getTasks(UserManager.getCurrentUser());
+                myTasks.removeAll(taskList); taskList.addAll(myTasks);
+            }
+            if (shared) {
+                List<ETask> sharedTasks = et.getSharedTasks();
+                sharedTasks.removeAll(taskList); taskList.addAll(sharedTasks);
+            }
+            if (others) {
+                List<ETask> allTasks = et.getTasks();
+                allTasks.removeAll(taskList); taskList.addAll(allTasks);
+            }
+
+
+//FIXME: co tu trzeba zrobic/sprawdzic? (Darek)
 //!!!!!!!
 //sprawdzić czy nie jest używane gdzieś indziej
-            if (UserManager.getIsGuestS()) {
+/* 
+ * ten kod zostal zakomentowany, gdyz powyzej bylo "sprawdzic"
+ if (UserManager.getIsGuestS()) {
                 taskList.addAll(et.getSharedTasks());
             } else if (UserManager.getIsAdminS()) {
                 taskList.addAll(et.getTasks());
             } else {//normal user
                 taskList.addAll(et.getTasks(UserManager.getCurrentUser()));
             }
+ */
         }
         catch (Exception e) {        
             ErrorBean.printStackTrace(e);

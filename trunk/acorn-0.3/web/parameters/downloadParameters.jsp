@@ -11,17 +11,19 @@
 
 <div id="content" class="content">
   <h:form id="taskDetailsInitForm">
-    Click
-    <h:commandLink action="#{TaskBean.downloadTaskParameters}" value="here" >
+    <h:commandLink action="#{TaskBean.downloadTaskParameters}" value="Download task parameters" >
       <f:param name="modelID" value="#{param['modelID']}"/>
     </h:commandLink>
-    to download task parameters.
     <br />
     <br />
-    Click
-    <h:commandLink action="#{TaskBean.downloadModelDescription}" value="here" >
+    <h:commandLink action="#{TaskBean.downloadModelDescription}" value="Download model description" >
       <f:param name="modelID" value="#{param['modelID']}"/>
     </h:commandLink>
-    to download a model description.
+    <br/>
+    You can use the above files for running simulations locally, using jwlfba command-line tool.
+    TODO: give a link to jwlfba
+    <pre>
+        # ./jwlfba --model &lt;model_descrption_file&gt; --xml-task &lt;task_parameters_file&gt;
+    </pre>
   </h:form>
 </div>

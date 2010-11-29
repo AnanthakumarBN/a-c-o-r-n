@@ -1673,9 +1673,9 @@ public class TaskBean {
   }
 
   private String generateModelDescription() {
-    EModel model = data.get(getModelID()).getLastTaskModel();
-    // TODO(kuba): Generate XML description of the above model.
-    return "TODO(kuba): Generate XML description of the above model.";
+    EModel model = data.get(getModelID()).getLastTaskModel().getParent();
+    ModelExporter mex = new ModelExporter();
+    return mex.export(model);
   }
 
   public void downloadModelDescription() {

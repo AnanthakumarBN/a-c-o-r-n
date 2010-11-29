@@ -10,6 +10,7 @@ import acorn.db.ETask;
 import acorn.worker.message.MultipleReactionsTaskMessage;
 import acorn.worker.message.TaskMessage;
 import java.util.Collection;
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
@@ -29,6 +30,10 @@ public class TaskQueue {
     private static QueueConnection qc;
     private static QueueSession qs;
     private static QueueSender sender;
+
+    private final int singleTaskPriority = 4;
+    private final int multipleTaskPriority = 6;
+
 
     public static TaskQueue getInstance() throws Exception {
 
@@ -58,8 +63,8 @@ public class TaskQueue {
         qs.close();
     }
 
-    private synchronized void sendTaskMessage(TaskMessage tm) throws JMSException {
-        sender.send(qs.createObjectMessage(tm));
+    private synchronized void sendTaskMessage(TaskMessage tm, int priority) throws JMSException {
+        sender.send(qs.createObjectMessage(tm), DeliveryMode.PERSISTENT, priority, 0);
     }
 
     
@@ -78,14 +83,14 @@ public class TaskQueue {
             mrtm.addReaction(r);
             /* at most 6 reactions are sent in a single message */
             if (mrtm.getReactionIds().size() >= 6) {
-                sendTaskMessage(mrtm);
+                sendTaskMessage(mrtm, multipleTaskPriority);
                 all += mrtm.getReactionIds().size();
                 mrtm = new MultipleReactionsTaskMessage(task.getId());
             }
         }
         all += mrtm.getReactionIds().size();
         if (mrtm.getReactionIds().size() > 0) {
-            sendTaskMessage(mrtm);
+            sendTaskMessage(mrtm, multipleTaskPriority);
         }
     }
 
@@ -96,7 +101,7 @@ public class TaskQueue {
      */
     private void enqueueSimpleTask(ETask task) throws JMSException {
         TaskMessage tm = new TaskMessage(task.getId());
-        sendTaskMessage(tm);
+        sendTaskMessage(tm, singleTaskPriority);
     }
 
     public void enqueueTask(ETask task) throws JMSException, Exception {

@@ -2,7 +2,9 @@
  * Copyright 2010 Jakub Łącki
  */
 
+#include<iostream>
 #include<string>
+#include"lib/pugixml.hpp"
 #include"TextInterface.h"
 using std::string;
 

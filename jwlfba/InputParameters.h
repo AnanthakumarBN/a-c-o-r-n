@@ -10,6 +10,7 @@
 #include<set>
 #include<string>
 #include<vector>
+#include"Bound.h"
 
 using std::map;
 using std::set;
@@ -43,9 +44,15 @@ class InputParameters {
     // Path to file describing bounds.
     string bounds_file_path_;
 
+    // Alternatively, a list of bounds
+    vector<Bound> bounds_;
+
     // True if we should run in interactive mode, in which comands are read
     // from standard input in a loop.
     bool interactive_mode_;
+
+    // The path to XML file containing description of the task
+    string xml_task_;
 
     // Determines if the flux through each reaction should be printed after
     // finding the solution.
@@ -78,10 +85,19 @@ class InputParameters {
     string model_path() const { return model_path_; }
     string amkfba_model_path() const { return amkfba_model_path_; }
     string bounds_file_path() const { return bounds_file_path_; }
+    vector<Bound> bounds() const { return bounds_; }
+    void set_bounds(const vector<Bound>& b) { bounds_ = b; }
+
     bool interactive_mode() const { return interactive_mode_; }
+    string xml_task() const { return xml_task_; }
     bool print_flux() const { return print_flux_; }
+    void set_print_flux(bool pf) { print_flux_ = pf; }
     const OptimisationParameters& optimisation_parameters() const {
         return optimisation_parameters_;
+    }
+
+    void set_optimisation_parameters(const OptimisationParameters& op) {
+        optimisation_parameters_ = op;
     }
 
     // Returns the vector of sytnax errors.

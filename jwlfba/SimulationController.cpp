@@ -155,8 +155,12 @@ bool SimulationController::RunSimulation(const InputParameters& params) {
 
     vector<Bound> bounds;
 
-    if (!LoadBounds(params.bounds_file_path(), &bounds))
+    if (!params.bounds().empty())
+        bounds = params.bounds();
+    else if (!LoadBounds(params.bounds_file_path(), &bounds)) {
+        Error("Error reading bounds file: " + params.bounds_file_path());
         return false;
+    }
 
     // Encode the bounds for amkfba models
     if (ModelBuilder::IsAmkfbaModel(model)) {
@@ -164,7 +168,6 @@ bool SimulationController::RunSimulation(const InputParameters& params) {
             bounds[i].reaction_id = ModelBuilder::CreateValidSBMLId(
                     bounds[i].reaction_id);
     }
-
     return RunSimulation(model, bounds, params.optimisation_parameters());
 }
 

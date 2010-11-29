@@ -10,6 +10,7 @@
 #include"Bound.h"
 #include"ReactionFlux.h"
 #include"SimulationController.h"
+#include"XMLTaskProcesser.h"
 
 using std::string;
 using std::vector;
@@ -31,15 +32,19 @@ void TextInterface::Run(const string& command_line) {
 
     if (parameters.interactive_mode())
         RunInteractive();
-    else
+    else if (!parameters.xml_task().empty()) {
+        XMLTaskProcesser xtp;
+        xtp.Run(parameters);
+    } else {
         RunBatch(parameters);
+    }
 }
 
 void TextInterface::ShowResults(const SimulationController& sc,
         bool print_flux) const {
     if (sc.GetOptimal())
         printf("OPTIMAL\n");
-    else if(sc.GetFeasible())
+    else if (sc.GetFeasible())
         printf("FEASIBLE\n");
     else
         printf("UNDEFINED\n");

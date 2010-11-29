@@ -395,11 +395,10 @@ bool MetabolicSimulation::RunSimulation() {
     parm.presolve = GLP_ON;
     is_feasible_ = false;
 
-    if ((err = glp_simplex(linear_problem_, &parm)) != 0)
-    {
-        if(err == GLP_ENOPFS || err == GLP_ENODFS)
+    if ((err = glp_simplex(linear_problem_, &parm)) != 0) {
+        if (err == GLP_ENOPFS || err == GLP_ENODFS)
             return true;
-        
+
         err = glp_exact(linear_problem_, NULL);
         return false;
     }

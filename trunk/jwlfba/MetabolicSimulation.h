@@ -170,7 +170,7 @@ class MetabolicSimulation {
 
     // Returns true if the computed result is an optimal solution.
     bool GetOptimal() const;
-    
+
     // Returns true if the computed result is a feasible optimal solution.
     bool GetFeasible() const;
 

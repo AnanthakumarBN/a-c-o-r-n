@@ -25,7 +25,8 @@ InputParameters::InputParameters() : interactive_mode_(false),
 
 const char* kValidParameters[] = {
     "--disable-genes", "--disable-reactions", "--objective", "--model",
-    "--amkfba-model", "--bounds-file", "--interactive", "--print-flux", "--min"
+    "--amkfba-model", "--bounds-file", "--interactive", "--print-flux",
+    "--min", "--xml-task"
 };
 
 const char* kOptionPrefix = "--";
@@ -135,7 +136,11 @@ bool InputParameters::LoadFromString(const string& input_parameters) {
         return true;
     }
 
-    if (!ValidateParametersMap(param_map))
+    if (param_map.find("--xml-task") != param_map.end()) {
+        xml_task_ = param_map["--xml-task"];
+    }
+
+    if (xml_task_.empty() && !ValidateParametersMap(param_map))
         return false;
 
     // Flag options

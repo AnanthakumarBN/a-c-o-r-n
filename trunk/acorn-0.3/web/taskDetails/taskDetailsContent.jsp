@@ -69,7 +69,7 @@
                 reRender="infoForm">
             <a4j:actionparam name="taskID" value="#{param['taskID']}" />
             </a4j:commandLink> &nbsp;
-            
+
             <a4j:commandLink 
                 action="#{TaskDetailsBean.discardChanges}" 
                 value="Discard Changes" 
@@ -80,6 +80,11 @@
             <a4j:commandLink 
                 action="#{TaskDetailsBean.deleteTask}"
                 value="Delete Task" /> &nbsp;
+
+            <h:outputLink value="addResults.jsf">
+              Add results
+              <f:param name="taskID" value="#{param['taskID']}" />
+            </h:outputLink>
         </h:panelGroup>
         <h:message for="infoForm:taskModifiers" style="color: red"/>
         </h:form>

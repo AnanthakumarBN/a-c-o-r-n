@@ -98,6 +98,10 @@
             <name>/userDetails.jsf</name>
             <securityLevel>normal</securityLevel>
         </page>
+        <page>
+            <name>/addResults.jsf</name>
+            <securityLevel>admin</securityLevel>
+        </page>
         
         <!-- Admin Pages -->
         <page>

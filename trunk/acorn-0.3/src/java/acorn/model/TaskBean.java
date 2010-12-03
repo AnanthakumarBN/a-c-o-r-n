@@ -1642,7 +1642,7 @@ public class TaskBean {
             .append("<fbaTask name=\"" + task.getName() + "\" ")
             .append("modelName=\"" + model.getName() + "\" ")
             .append("modelId=\"" + model.getMetabolism().getSid() + "\" ")
-            .append("method=\"" + task.getMethod().getName() + "\">\n");
+            .append("method=\"" + task.getMethod().getIdent() + "\">\n");
             
     sb.append("<listOfBounds>\n");
     for (EBounds bound : getBoundsForModel(model)) {

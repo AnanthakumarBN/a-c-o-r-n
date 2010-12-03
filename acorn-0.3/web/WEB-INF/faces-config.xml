@@ -46,7 +46,17 @@
         <managed-bean-class>acorn.sbmlParser.AddModelBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
-    
+
+    <managed-bean>
+        <managed-bean-name>AddResultsBean</managed-bean-name>
+        <managed-bean-class>acorn.model.AddResultsBean</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+          <property-name>taskID</property-name>
+          <value>#{param.taskID}</value>
+        </managed-property>
+    </managed-bean>
+
     <managed-bean>
         <managed-bean-name>ModelListBean</managed-bean-name>
         <managed-bean-class>acorn.model.ModelListBean</managed-bean-class>

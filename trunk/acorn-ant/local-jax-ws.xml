@@ -3,7 +3,7 @@
   <services/>
   <clients>
     <client name="AcornWSService">
-      <wsdl-url>http://localhost:8080/acorn/AcornWSService?WSDL</wsdl-url>
+      <wsdl-url>http://localhost:8080/acorn/AcornWSService?wsdl</wsdl-url>
       <local-wsdl-file>localhost_8080/acorn/AcornWSService.wsdl</local-wsdl-file>
       <package-name>acorn.webservice</package-name>
       <catalog-file>catalog.xml</catalog-file>
@@ -18,7 +18,7 @@
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>wsdlLocation</wsimport-option-name>
-          <wsimport-option-value>http://localhost:8080/acorn/AcornWSService?WSDL</wsimport-option-value>
+          <wsimport-option-value>http://localhost:8080/acorn/AcornWSService?wsdl</wsimport-option-value>
         </wsimport-option>
         <wsimport-option>
           <wsimport-option-name>xnocompile</wsimport-option-name>

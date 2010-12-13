@@ -147,16 +147,14 @@ public class ETaskController extends EntityController {
         Float flux = new Float(0);
         EntityManager em = getEntityManager();
 
-        try{
-        em.getTransaction().begin();
-        flux = (Float)em.createNamedQuery("ETask.getFlux")
-                .setParameter("reactionSid", reactionSid)
-                .setParameter("task", task).getSingleResult();
-        em.getTransaction().commit();
-        return flux;
-        }catch(NoResultException ex){
+        try {
+            em.getTransaction().begin();
+            flux = (Float) em.createNamedQuery("ETask.getFlux").setParameter("reactionSid", reactionSid).setParameter("task", task).getSingleResult();
+            em.getTransaction().commit();
             return flux;
-        }finally{
+        } catch (NoResultException ex) {
+            return flux;
+        } finally {
             em.close();
         }
 //        List<EfbaResultElement> fbaList = (List<EfbaResultElement>) task.getEfbaResultElementCollection();
@@ -174,16 +172,30 @@ public class ETaskController extends EntityController {
 //        return flux;
     }
 
-    public ETask getTask(EModel model){
+    public String getFluxFVA(ETask task, String reactionSid) {
+         EntityManager em = getEntityManager();
+
+        try {
+            em.getTransaction().begin();
+            Object[] res = (Object[]) em.createNamedQuery("ETask.getFluxFVA").setParameter("reactionSid", reactionSid).setParameter("task", task).getSingleResult();
+            em.getTransaction().commit();
+            return ("" + (Float) res[0] + ".." + (Float) res[1] + "");
+        } catch (NoResultException ex) {
+            return "0..0";
+        } finally {
+            em.close();
+        }
+    }
+
+    public ETask getTask(EModel model) {
         EntityManager em = getEntityManager();
 
-        try{
+        try {
             ETask task = (ETask) em.createNamedQuery("ETask.findByModel").setParameter("model", model).getSingleResult();
             return task;
-        }catch(NoResultException ex){
+        } catch (NoResultException ex) {
             return null;
-        }
-        finally{
+        } finally {
             em.close();
         }
     }

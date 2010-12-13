@@ -13,8 +13,8 @@
     </target>
     <target name="wsimport-client-AcornWSService" depends="wsimport-init">
         <mkdir dir="${build.generated.dir}/jax-wsCache/AcornWSService"/>
-        <property name="wsdl-AcornWSService" location="xml-resources/web-service-references/AcornWSService/wsdl/sysbio3.fhms.surrey.ac.uk_8080/acorn/AcornWSService.wsdl"/>
-        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/AcornWSService" destdir="${build.generated.dir}/jax-wsCache/AcornWSService" wsdl="${wsdl-AcornWSService}" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="http://sysbio3.fhms.surrey.ac.uk:8080/acorn/AcornWSService?wsdl" xnocompile="true">
+        <property name="wsdl-AcornWSService" location="xml-resources/web-service-references/AcornWSService/wsdl/localhost_8080/acorn/AcornWSService.wsdl"/>
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/AcornWSService" destdir="${build.generated.dir}/jax-wsCache/AcornWSService" wsdl="${wsdl-AcornWSService}" catalog="catalog.xml" extension="true" verbose="true" wsdlLocation="http://localhost:8080/acorn/AcornWSService?wsdl" xnocompile="true">
             <depends file="${wsdl-AcornWSService}"/>
             <produces dir="${build.generated.dir}/jax-wsCache/AcornWSService"/>
         </wsimport>

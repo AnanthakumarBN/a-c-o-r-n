@@ -553,10 +553,9 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${reference.acorn-db.jar}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.reference.acorn-db.jar" todir="${dist.ear.dir}"/>
         <copyfiles files="${reference.org_visualapi.module}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.reference.org_visualapi.module" todir="${dist.ear.dir}"/>
         <copyfiles files="${libs.MySQLDriver.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.MySQLDriver.classpath" todir="${dist.ear.dir}"/>
-        <copyfiles files="${libs.jaxws21.classpath}" iftldtodir="${build.web.dir}/WEB-INF" manifestproperty="manifest.libs.jaxws21.classpath" todir="${dist.ear.dir}"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${manifest.libs.toplink.classpath} ${manifest.file.reference.ajax4jsf-1.1.1.jar} ${manifest.file.reference.commons-beanutils.jar} ${manifest.file.reference.commons-collections-3.2.jar} ${manifest.file.reference.commons-configuration-1.5.jar} ${manifest.file.reference.commons-digester-1.8.jar} ${manifest.file.reference.commons-el.jar} ${manifest.file.reference.commons-fileupload-1.2.1.jar} ${manifest.file.reference.commons-io-1.3.2.jar} ${manifest.file.reference.commons-lang-2.3.jar} ${manifest.file.reference.commons-logging-1.1.1.jar} ${manifest.file.reference.jcaptcha-all-1.0-RC6.jar} ${manifest.file.reference.tiles-api-2.0.5.jar} ${manifest.file.reference.tiles-core-2.0.5.jar} ${manifest.file.reference.tiles-jsp-2.0.5.jar} ${manifest.file.reference.tomahawk-1.1.6.jar} ${manifest.reference.acorn-db.jar} ${manifest.reference.org_visualapi.module} ${manifest.libs.MySQLDriver.classpath} ${manifest.libs.jaxws21.classpath} "/>
+            <attribute name="Class-Path" value="${manifest.libs.toplink.classpath} ${manifest.file.reference.ajax4jsf-1.1.1.jar} ${manifest.file.reference.commons-beanutils.jar} ${manifest.file.reference.commons-collections-3.2.jar} ${manifest.file.reference.commons-configuration-1.5.jar} ${manifest.file.reference.commons-digester-1.8.jar} ${manifest.file.reference.commons-el.jar} ${manifest.file.reference.commons-fileupload-1.2.1.jar} ${manifest.file.reference.commons-io-1.3.2.jar} ${manifest.file.reference.commons-lang-2.3.jar} ${manifest.file.reference.commons-logging-1.1.1.jar} ${manifest.file.reference.jcaptcha-all-1.0-RC6.jar} ${manifest.file.reference.tiles-api-2.0.5.jar} ${manifest.file.reference.tiles-core-2.0.5.jar} ${manifest.file.reference.tiles-jsp-2.0.5.jar} ${manifest.file.reference.tomahawk-1.1.6.jar} ${manifest.reference.acorn-db.jar} ${manifest.reference.org_visualapi.module} ${manifest.libs.MySQLDriver.classpath} "/>
         </manifest>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
@@ -579,7 +578,6 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${reference.acorn-db.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${reference.org_visualapi.module}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.MySQLDriver.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${libs.jaxws21.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest" if="do.tmp.war.package" name="do-ear-dist">
         <dirname file="${dist.ear.war}" property="dist.jar.dir"/>

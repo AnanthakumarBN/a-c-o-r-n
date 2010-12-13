@@ -4,6 +4,7 @@
  */
 package acorn.drawing;
 
+import acorn.db.EMethod;
 import acorn.db.ETask;
 import acorn.db.ETaskController;
 import acorn.db.EVisArcProduct;
@@ -32,13 +33,10 @@ public class DrawingBean {
     private String dir;
     private EVisualization vis;
     private ETask task;
-
     private static final String placeWidth = "0.0";
     private static final String placeHeight = "0.0";
-
     private static final String transitionWidth = "0.1";
     private static final String transitionHeight = "0.1";
-
     private static final String drawingScale = "70";
 
     public DrawingBean() {
@@ -109,26 +107,35 @@ public class DrawingBean {
             for (EVisPlace place : lp) {
                 String firstName = place.getSpeciesSid();
                 //String firstName = place.getName();
-                out.write("\t" + firstName+"_"+place.getId() + " [label=\"" +firstName+"\", pos=\"" + place.getX() + "," + place.getY() + placeBack);
+                out.write("\t" + firstName + "_" + place.getId() + " [label=\"" + firstName + "\", pos=\"" + place.getX() + "," + place.getY() + placeBack);
             }
             out.write("\n");
-            for (EVisTransition trans : lt) {
-                String name = trans.getReactionSid();
-                String flux = Float.toString(tc.getFlux(task, name));
-                out.write("\t" + name+"_"+trans.getId() + " [label=\""+name+"\", pos=\"" + trans.getX() + "," + trans.getY() + "\",label=\"" + name + " " + flux + transitionBack);
+            if (EMethod.fba.equals(task.getMethod().getIdent())) {
+                for (EVisTransition trans : lt) {
+                    String name = trans.getReactionSid();
+                    String flux = Float.toString(tc.getFlux(task, name));
+                    out.write("\t" + name + "_" + trans.getId() + " [label=\"" + name + "\", pos=\"" + trans.getX() + "," + trans.getY() + "\",label=\"" + name + " " + flux + transitionBack);
+                }
+            } else if (EMethod.fva.equals(task.getMethod().getIdent())) {
+                for (EVisTransition trans : lt) {
+                    String name = trans.getReactionSid();
+                    String flux = tc.getFluxFVA(task, name);
+                    out.write("\t" + name + "_" + trans.getId() + " [label=\"" + name + "\", pos=\"" + trans.getX() + "," + trans.getY() + "\",label=\"" + name + " " + flux + transitionBack);
+                }
             }
+
             out.write("\n");
             for (EVisArcProduct product : lap) {
                 EVisPlace place = product.getTarget();
                 EVisTransition transition = product.getSource();
                 //  List<EVisArcpath> apl = (List<EVisArcpath>) product.getArcpathList();
-                String target = place.getSpeciesSid()+"_" + place.getId();
-                String source = transition.getReactionSid()+"_"+transition.getId();
+                String target = place.getSpeciesSid() + "_" + place.getId();
+                String source = transition.getReactionSid() + "_" + transition.getId();
 //                String corner1 = source;
 //                String corner2 = "ccc_"+corner_num;
 //
 //                if (apl.size() == 2){
-                out.write(source +"->" + target +";\n");
+                out.write(source + "->" + target + ";\n");
 //                } else{
 //                    for(EVisArcpath ap: apl.subList(1, apl.size()-2)){
 //                    /* TODO
@@ -149,8 +156,8 @@ public class DrawingBean {
             for (EVisArcReactant react : lar) {
                 EVisPlace place = react.getSource();
                 EVisTransition transition = react.getTarget();
-                String source = place.getSpeciesSid()+"_" + place.getId();
-                String target = transition.getReactionSid()+"_" + transition.getId();
+                String source = place.getSpeciesSid() + "_" + place.getId();
+                String target = transition.getReactionSid() + "_" + transition.getId();
                 out.write(source + "->" + target + ";\n");
             }
             out.write("\n");

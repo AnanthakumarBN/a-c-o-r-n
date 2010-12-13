@@ -24,9 +24,6 @@
         <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
         <param-value>client</param-value>
     </context-param>
-    <listener>
-        <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
-    </listener>
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -35,11 +32,6 @@
     <servlet>
         <servlet-name>PictureServletEmbedded</servlet-name>
         <servlet-class>acorn.drawing.PictureServletEmbedded</servlet-class>
-        </servlet>
-    <servlet>
-        <servlet-name>AcornWS</servlet-name>
-        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
         </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
@@ -66,10 +58,6 @@
     <servlet-mapping>
         <servlet-name>PictureServletEmbedded</servlet-name>
         <url-pattern>/picture/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AcornWS</servlet-name>
-        <url-pattern>/AcornWS</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

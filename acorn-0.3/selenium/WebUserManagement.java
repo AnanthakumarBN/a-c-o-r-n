@@ -1,3 +1,4 @@
+
 import com.thoughtworks.selenium.SeleneseTestCase;
 import com.thoughtworks.selenium.Selenium;
 
@@ -61,11 +62,18 @@ public class WebUserManagement {
         selenium.click("//div[@id='menu']/ul/li[5]/a/em");
         selenium.waitForPageToLoad("30000");
         selenium.click("//tr[.//a/text()='" + LOGIN + "']//a[./text()='delete']");
-        try { Thread.sleep(10000);} catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("przerwany wait");
+        labelFor:
+        for (int i = 0; i < 300; i++) {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("przerwany wait");
+            }
+            if (!selenium.isTextPresent(EMAIL)) {
+                break labelFor;
+            }
         }
-        selenium.click("//div[@id='menu']/ul/li[5]/a/em");
         testCase.verifyFalse(selenium.isTextPresent(EMAIL));
     }
 }

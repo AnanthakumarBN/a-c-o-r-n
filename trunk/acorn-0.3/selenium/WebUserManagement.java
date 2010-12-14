@@ -61,7 +61,11 @@ public class WebUserManagement {
         selenium.click("//div[@id='menu']/ul/li[5]/a/em");
         selenium.waitForPageToLoad("30000");
         selenium.click("//tr[.//a/text()='" + LOGIN + "']//a[./text()='delete']");
-        selenium.waitForPageToLoad("30000");
+        try { Thread.sleep(10000);} catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("przerwany wait");
+        }
+        selenium.click("//div[@id='menu']/ul/li[5]/a/em");
         testCase.verifyFalse(selenium.isTextPresent(EMAIL));
     }
 }

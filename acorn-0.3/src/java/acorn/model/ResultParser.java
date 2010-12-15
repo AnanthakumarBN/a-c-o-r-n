@@ -144,18 +144,6 @@ public class ResultParser extends DefaultHandler {
     }
 
     if (method.equals(EMethod.fba)) {
-      /*
-       * Poniższy kod niby, działa. Wykonuje się. Chyba coś miesza w bazie danych.
-       * Ale niestety jeszcze nie tak jakbyśmy chcieli. Po doddaniu za jego pomocą
-       * wyników symulacji strona danego taska przestaje się ładować. Wyświetla się
-       * jedynie niewiele mówiący komunikat, żeby skontaktować się z administratorem.
-       * Ale ważne jest, że nie jest to jakiś niezłapany wyjątek, ale diagnostyczna
-       * strona Acorna, napisana przez nas.
-       * Wątpliwości co do tego kodu:
-       * 1) dobrze reprezentujemy wyniki FBA?
-       * 2) Wystarczy wykonać merge na tasku? Mi się wydaje, że cały graf nowych obiektów
-       * podczepionych pod taska powinien się zapisać w bazie danych...
-       */
       SimulationResults res = listOfSimulations.get(0).results;
 
       ECommonResults commonResults = new ECommonResults();
@@ -172,8 +160,11 @@ public class ResultParser extends DefaultHandler {
         fbaResultElem.setFlux(f.fluxValue);
       }
     } else if (method.equals(EMethod.fva)) {
+      // TODO
     } else if (method.equals(EMethod.rscan)) {
+      // TODO
     } else if (method.equals(EMethod.kgene)) {
+      // TODO
     }
 
     endDocumentDebug();

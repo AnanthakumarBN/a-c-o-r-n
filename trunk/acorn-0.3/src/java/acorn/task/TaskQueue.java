@@ -31,8 +31,8 @@ public class TaskQueue {
     private static QueueSession qs;
     private static QueueSender sender;
 
-    private final int singleTaskPriority = 4;
-    private final int multipleTaskPriority = 6;
+    private final int singleTaskPriority = 7;
+    private final int multipleTaskPriority = 4;
 
 
     public static TaskQueue getInstance() throws Exception {

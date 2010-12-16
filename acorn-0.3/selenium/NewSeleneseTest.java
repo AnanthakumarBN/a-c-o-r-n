@@ -72,6 +72,9 @@ public class NewSeleneseTest extends SeleneseTestCase {
   }
 
   public void testRunFba() throws Exception {
+    String taskName = "M. tuberculosis GSMN-TB - oj-dana-dana-glupia-nazwa-taska";
+    String modelName = taskName + " task's model";
+
     selenium.open("/acorn/homepage.jsf");
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
     selenium.waitForPageToLoad("30000");
@@ -79,6 +82,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
     selenium.click("link=M. tuberculosis GSMN-TB");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Model details"));
+    selenium.type("content:modelDetails:j_id_id85pc4", taskName);
     selenium.click("link=Single Flux Balance Analysis");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Single Flux Balance Analysis Parameters"));
@@ -88,18 +92,13 @@ public class NewSeleneseTest extends SeleneseTestCase {
     selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
     selenium.click("link=Start the simulation");
     selenium.waitForPageToLoad("30000");
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK]"));
+    verifyTrue(selenium.isTextPresent(taskName));
     verifyTrue(selenium.isTextPresent("Task List"));
-  }
 
-  public void testDeleteFbaTask() throws Exception {
-    selenium.open("/acorn/homepage.jsf");
     selenium.click("//div[@id='menu']/ul/li[3]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK]"));
-    String taskName = "[M. tuberculosis GSMN-TB - TASK]";
-    String modelName = taskName + " task's model";
+    verifyTrue(selenium.isTextPresent(taskName));
     selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
     labelFor:
     for (int i = 0; i < 30; i++) {
@@ -114,6 +113,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
       }
     }
     verifyTrue(selenium.isTextPresent("Task List"));
+    verifyFalse(selenium.isTextPresent(taskName));
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Model List"));
@@ -124,6 +124,9 @@ public class NewSeleneseTest extends SeleneseTestCase {
   }
 
   public void testRunFva() throws Exception {
+    String taskName = "M. tuberculosis GSMN-TB - oj-dana-dana-glupia-nazwa-taska";
+    String modelName = taskName + " task's model";
+
     selenium.open("/acorn/homepage.jsf");
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
     selenium.waitForPageToLoad("30000");
@@ -132,30 +135,26 @@ public class NewSeleneseTest extends SeleneseTestCase {
     selenium.click("link=M. tuberculosis GSMN-TB");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Model details"));
+    selenium.type("content:modelDetails:j_id_id85pc4", taskName);
     selenium.click("link=Flux Variability Analysis");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK]"));
+    verifyTrue(selenium.isTextPresent(taskName));
     selenium.click("//div[@id='menu']/ul/li[1]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Welcome to Acorn"));
-  }
 
-  public void testDeleteFvaTask() throws Exception {
-    selenium.open("/acorn/homepage.jsf");
     selenium.click("//div[@id='menu']/ul/li[3]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK]"));
+    verifyTrue(selenium.isTextPresent(taskName));
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Model List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK] task's model"));
+    verifyTrue(selenium.isTextPresent(modelName));
     selenium.click("//div[@id='menu']/ul/li[3]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
-    String taskName = "[M. tuberculosis GSMN-TB - TASK]";
-    String modelName = taskName + " task's model";
     selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
     labelFor:
     for (int i = 0; i < 30; i++) {
@@ -169,6 +168,8 @@ public class NewSeleneseTest extends SeleneseTestCase {
         break labelFor;
       }
     }
+    verifyTrue(selenium.isTextPresent("Task List"));
+    verifyFalse(selenium.isTextPresent(taskName));
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Model List"));
@@ -179,6 +180,9 @@ public class NewSeleneseTest extends SeleneseTestCase {
   }
 
   public void testRunRscan() throws Exception {
+    String taskName = "M. tuberculosis GSMN-TB - oj-dana-dana-glupia-nazwa-taska";
+    String modelName = taskName + " task's model";
+
     selenium.open("/acorn/homepage.jsf");
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
     selenium.waitForPageToLoad("30000");
@@ -188,6 +192,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Model details"));
     verifyTrue(selenium.isTextPresent("Reaction Essentiality Scan"));
+    selenium.type("content:modelDetails:j_id_id85pc4", taskName);
     selenium.click("link=Reaction Essentiality Scan");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Reaction Essentiality Scan Parameters"));
@@ -201,24 +206,19 @@ public class NewSeleneseTest extends SeleneseTestCase {
     selenium.click("link=Start the simulation");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK]"));
+    verifyTrue(selenium.isTextPresent(taskName));
     selenium.click("//div[@id='menu']/ul/li[1]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Welcome to Acorn"));
-  }
 
-  public void testDeleteRscanTask() throws Exception {
-    selenium.open("/acorn/homepage.jsf");
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Model List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK] task's model"));
+    verifyTrue(selenium.isTextPresent(modelName));
     selenium.click("//div[@id='menu']/ul/li[3]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK]"));
-    String taskName = "[M. tuberculosis GSMN-TB - TASK]";
-    String modelName = taskName + " task's model";
+    verifyTrue(selenium.isTextPresent(taskName));
     selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
     labelFor:
     for (int i = 0; i < 30; i++) {
@@ -232,7 +232,6 @@ public class NewSeleneseTest extends SeleneseTestCase {
         break labelFor;
       }
     }
-    selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
     verifyFalse(selenium.isTextPresent(taskName));
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
@@ -245,6 +244,9 @@ public class NewSeleneseTest extends SeleneseTestCase {
   }
 
   public void testRunKgene() throws Exception {
+    String taskName = "M. tuberculosis GSMN-TB - oj-dana-dana-glupia-nazwa-taska";
+    String modelName = taskName + " task's model";
+
     selenium.open("/acorn/homepage.jsf");
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
     selenium.waitForPageToLoad("30000");
@@ -253,6 +255,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
     selenium.click("link=M. tuberculosis GSMN-TB");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Model details"));
+    selenium.type("content:modelDetails:j_id_id85pc4", taskName);
     verifyTrue(selenium.isTextPresent("Single Gene Knockout"));
     selenium.click("link=Single Gene Knockout");
     selenium.waitForPageToLoad("30000");
@@ -273,28 +276,24 @@ public class NewSeleneseTest extends SeleneseTestCase {
     selenium.click("link=Start the simulation");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK]"));
+    verifyTrue(selenium.isTextPresent(taskName));
     selenium.click("//div[@id='menu']/ul/li[1]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Welcome to Acorn"));
-  }
 
-  public void testDeleteKgeneTask() throws Exception {
     selenium.open("/acorn/homepage.jsf");
     selenium.click("//div[@id='menu']/ul/li[3]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK]"));
+    verifyTrue(selenium.isTextPresent(taskName));
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Model List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK] task's model"));
+    verifyTrue(selenium.isTextPresent(modelName));
     selenium.click("//div[@id='menu']/ul/li[3]/a/em");
     selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
-    verifyTrue(selenium.isTextPresent("[M. tuberculosis GSMN-TB - TASK]"));
-    String taskName = "[M. tuberculosis GSMN-TB - TASK]";
-    String modelName = taskName + " task's model";
+    verifyTrue(selenium.isTextPresent(taskName));
     selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
     labelFor:
     for (int i = 0; i < 30; i++) {
@@ -308,7 +307,6 @@ public class NewSeleneseTest extends SeleneseTestCase {
         break labelFor;
       }
     }
-    selenium.waitForPageToLoad("30000");
     verifyTrue(selenium.isTextPresent("Task List"));
     verifyFalse(selenium.isTextPresent(taskName));
     selenium.click("//div[@id='menu']/ul/li[2]/a/em");

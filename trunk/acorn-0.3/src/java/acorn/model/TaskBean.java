@@ -646,7 +646,7 @@ public class TaskBean {
             }
         }
 
-        return "";
+        return null;
     }
 
     public List<Species> getSpecies() {
@@ -678,7 +678,7 @@ public class TaskBean {
             }
         }
 
-        return "";
+        return null;
     }
 
     public List<String> getGenes() {

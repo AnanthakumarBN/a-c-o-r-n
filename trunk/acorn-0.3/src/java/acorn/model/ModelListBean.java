@@ -144,7 +144,7 @@ public class ModelListBean {
                 java.lang.Math.max(0, java.lang.Math.min(start + displayRowMax, getFilteredList().size())));
     }
 
-    public String filterList() {
+    public void filterList() {
         filteredList = new LinkedList();
         if (showOtherFilter) {
             for (ModelRow row : otherList) {
@@ -177,12 +177,11 @@ public class ModelListBean {
         }
 
         Collections.sort(filteredList, ModelRow.getComparator(sortComparator, sortUp));
-        return "";
     }
 
-    public String fetchAndFilterList() {
+    public void fetchAndFilterList() {
         fetchList();
-        return filterList();
+        filterList();
     }
 
     public String firstPage() {
@@ -276,7 +275,8 @@ public class ModelListBean {
 
         }
 
-        return fetchAndFilterList();
+        fetchAndFilterList();
+        return null;
     }
 
     public String sort() {

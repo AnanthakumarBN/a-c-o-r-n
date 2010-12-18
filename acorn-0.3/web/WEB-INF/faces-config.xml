@@ -16,13 +16,26 @@
             acorn.userManagement.AuthenticationPhaseListener
         </phase-listener>
     </lifecycle>
+
+
     
     <!-- Managed Beans -->
-    
+    <managed-bean>
+        <description>UsernName Bean</description>
+        <managed-bean-name>user</managed-bean-name>
+        <managed-bean-class>demo.user</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+            <property-name>name</property-name>
+            <property-class>java.lang.String</property-class>
+            <value/>
+        </managed-property>
+
+    </managed-bean>
     <managed-bean>
         <managed-bean-name>UserManager</managed-bean-name>
         <managed-bean-class>acorn.userManagement.UserManager</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>      
+        <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
     <managed-bean>
@@ -52,8 +65,8 @@
         <managed-bean-class>acorn.model.AddResultsBean</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
         <managed-property>
-          <property-name>taskID</property-name>
-          <value>#{param.taskID}</value>
+            <property-name>taskID</property-name>
+            <value>#{param.taskID}</value>
         </managed-property>
     </managed-bean>
 
@@ -137,6 +150,14 @@
         <navigation-case>
             <from-outcome>taskList</from-outcome>
             <to-view-id>/taskList.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>
+
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>userDeleted</from-outcome>
+            <to-view-id>/userList.jsp</to-view-id>
             <redirect/>
         </navigation-case>
     </navigation-rule>
@@ -283,7 +304,7 @@
             <component-family>CustomSelectOneRadio</component-family>
             <renderer-type>renderer.CustomSelectOneRadio</renderer-type>
             <renderer-class>com.srijeeb.jsf.renderers.HTMLCustomSelectOneRadioRenderer
-            </renderer-class>    
+            </renderer-class>
         </renderer>
     </render-kit>
 </faces-config>

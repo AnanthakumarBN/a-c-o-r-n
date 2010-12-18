@@ -3,7 +3,7 @@
     <context-param>
         <param-name>org.richfaces.SKIN</param-name>
         <param-value>blueSky</param-value>
-    </context-param>    
+    </context-param>
     <context-param>
         <param-name>displayRowMax</param-name>
         <param-value>100</param-value>
@@ -32,7 +32,7 @@
     <servlet>
         <servlet-name>PictureServletEmbedded</servlet-name>
         <servlet-class>acorn.drawing.PictureServletEmbedded</servlet-class>
-        </servlet>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.jsf</url-pattern>
@@ -46,6 +46,7 @@
         </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>
+    
     <servlet>
         <servlet-name>jcaptcha</servlet-name>
         <servlet-class>acorn.userManagement.ImageCaptchaServlet</servlet-class>
@@ -67,6 +68,20 @@
     <welcome-file-list>
         <welcome-file>homepage.jsp</welcome-file>
     </welcome-file-list>
+    <filter>
+        <display-name>RichFaces Filter</display-name>
+        <filter-name>richfaces</filter-name>
+        <filter-class>org.ajax4jsf.Filter</filter-class>
+    </filter>
+
+
+    <filter-mapping>
+        <filter-name>richfaces</filter-name>
+        <servlet-name>Faces Servlet</servlet-name>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+    </filter-mapping>
     
     <filter>
         <filter-name>MyFacesExtensionsFilter</filter-name>
@@ -88,20 +103,6 @@
     <filter-mapping>
         <filter-name>MyFacesExtensionsFilter</filter-name>
         <url-pattern>/faces/myFacesExtensionResource/*</url-pattern>
-    </filter-mapping>
-    
-    <filter> 
-        <display-name>Ajax4jsf Filter</display-name> 
-        <filter-name>ajax4jsf</filter-name> 
-        <filter-class>org.ajax4jsf.Filter</filter-class> 
-    </filter> 
-
-    <filter-mapping> 
-        <filter-name>ajax4jsf</filter-name> 
-        <servlet-name>Faces Servlet</servlet-name>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>FORWARD</dispatcher>
-        <dispatcher>INCLUDE</dispatcher>
     </filter-mapping>
     
     <jsp-config>

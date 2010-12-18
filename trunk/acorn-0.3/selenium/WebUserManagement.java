@@ -74,6 +74,7 @@ public class WebUserManagement {
                 break labelFor;
             }
         }
+        testCase.verifyTrue(selenium.isTextPresent("Users list"));
         testCase.verifyFalse(selenium.isTextPresent(EMAIL));
     }
 }

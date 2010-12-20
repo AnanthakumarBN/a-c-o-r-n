@@ -11,7 +11,6 @@ import acorn.worker.message.MultipleReactionsTaskMessage;
 import acorn.worker.message.TaskMessage;
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -117,10 +116,7 @@ public class WorkerDaemon {
     }
 
     private void setupMessageListener() throws javax.jms.JMSException, javax.naming.NamingException, Exception {
-
-        Properties p = System.getProperties();
-
-        InitialContext ctx = new InitialContext(p);
+        InitialContext ctx = new InitialContext();
 
         QueueConnectionFactory factory =
                 (QueueConnectionFactory) ctx.lookup("jms/taskQueueFactory");

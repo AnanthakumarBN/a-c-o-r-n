@@ -1180,7 +1180,7 @@ public class TaskBean {
         EMethodController mc = new EMethodController();
         resultMethod = mc.findByIdent(EMethod.fba);
 
-        if (resultMethod.size() == 0) {
+        if (resultMethod.isEmpty()) {
             method.setName("Single Flux Balance Analisys");
             method.setIdent(EMethod.fba);
             method.setDescr("Single Flux Balance Analisys");
@@ -1207,7 +1207,7 @@ public class TaskBean {
         EMethodController mc = new EMethodController();
         resultMethod = mc.findByIdent(EMethod.rscan);
 
-        if (resultMethod.size() == 0) {
+        if (resultMethod.isEmpty()) {
             method.setName("Reaction Essentiality Scan");
             method.setIdent(EMethod.rscan);
             method.setDescr("Reaction Essentiality Scan");
@@ -1234,7 +1234,7 @@ public class TaskBean {
         EMethodController mc = new EMethodController();
         resultMethod = mc.findByIdent(EMethod.kgene);
 
-        if (resultMethod.size() == 0) {
+        if (resultMethod.isEmpty()) {
             method.setName("Single Gene Knockout");
             method.setIdent(EMethod.kgene);
             method.setDescr("Single Gene Knockout");
@@ -1261,7 +1261,7 @@ public class TaskBean {
         EMethodController mc = new EMethodController();
         resultMethod = mc.findByIdent(EMethod.fva);
 
-        if (resultMethod.size() == 0) {
+        if (resultMethod.isEmpty()) {
             method.setName("Flux Variability Analysis");
             method.setIdent(EMethod.fva);
             method.setDescr("Flux Variability Analysis");
@@ -1410,9 +1410,10 @@ public class TaskBean {
             return false;
         }
         for (int i = 0; i < data.get(id).conditions.size(); i++) {
-            lower = data.get(id).conditions.get(id).getBounds().getLowerBound();
-            upper = data.get(id).conditions.get(id).getBounds().getUpperBound();
-            if ((lower < -999999) || (upper > 999999) || (lower > upper)) {
+            lower = data.get(id).conditions.get(i).getBounds().getLowerBound();
+            upper = data.get(id).conditions.get(i).getBounds().getUpperBound();
+            if ((lower < -9999999) || (upper > 9999999) || (lower > upper)) {
+                System.out.println("problem " + lower + " " + upper);
                 data.get(id).errorMessage = "Conditions aren't correct";
                 return false;
             }
@@ -1440,7 +1441,7 @@ public class TaskBean {
 
     private void createTaskAndModel(boolean enqueueTask) throws JMSException, Exception {
       Integer id = getModelID();
-      
+
       /* Set task name */
       if (data.get(id).taskName.contentEquals("")
               || data.get(id).taskName.contentEquals("Enter new task name")) {

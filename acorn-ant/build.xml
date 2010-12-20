@@ -29,7 +29,6 @@
     <property name="local-worker-name" value="acorn-worker.jar" />
     <property name="local-WS-name" value="AcornWSApplication.jar" />
     <property name="local-worker-file" value="${local-worker-dir}/dist/${local-worker-name}" />
-    <property name="local-worker-ext-libs" value="${local-worker-dir}/external-libs/" />
     <property name="local-WS-file" value="${local-WS-dir}/dist/${local-WS-name}" />
     <property name="local-db-name" value="acorn-db.jar" />
     <property name="local-db-file" value="${local-db-dir}/dist/${local-db-name}" />
@@ -40,7 +39,7 @@
     <property name="local-acornConfig" value="local-acornConfig.xml" />
     <property name="server-db-persistence" value="server-db-persistence.xml" />
     <property name="server-worker-persistence" value="server-worker-persistence.xml" />
-    <property name="server-worker-jars-dir" value="../acorn-worker/external-libs/serverWorkerJars" />
+    <property name="server-worker-jars-dir" value="${local-worker-dir}/dist/lib" />
     <!--property name="server-name" value="sysbio1.sbs.surrey.ac.uk" /-->
     <!--<propetry name="server-adminpassfile" value=".adminpassfile" /> -->
     <property name="server-root-name" value="acorn" />
@@ -69,7 +68,7 @@
     <property name="server-glassfish-home" value="/usr/local/glassfish" />
     <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin" />
     <property name="server-domain-name" value="domain1" />
-    <property name="server-domain-dir" value="${server-glassfish-home}/domains/${server-domain-name}" />
+    <property name="server-domain-dir" value="${server-glassfish-home}/glassfish/domains/${server-domain-name}" />
     <property name="server-worker-log-file" value="${server-root-dir}/worker.log" />
     <property name="server-db-driver" value="com.mysql.jdbc.Driver" />
     <property name="server-db-url" value="jdbc:mysql://localhost:3306/acorn-db" />
@@ -106,7 +105,7 @@
    jezeli nie chcesz przechowywac danych o dostepie do bazy na dysku lokalnym
    wtedy przy kazdym uruchomieniu workera system zapyta Cie o te dane
    -->        
-   <!-- 
+   <!--
    <target name="get-server-auth" unless="server-password" >
         <input addproperty="server-username" message="Enter server username: " />
         <input addproperty="server-password" message="Enter server password: " />
@@ -155,7 +154,7 @@
         <ant antfile="${local-web-dir}/build.xml" target="run" inheritall="false" />
     </target>
     <target name="local-copy-acorn-config" >
-        <copy  overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/domains/${local-domain-name}/config/acornConfig.xml" />
+        <copy  overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/glassfish/domains/${local-domain-name}/acornConfig.xml" />
     </target>
     <target name="local-start-domain" >
         <exec command="${local-glassfish-asadmin} start-domain ${local-domain-name}" />
@@ -288,7 +287,8 @@
         />
     </target>
     <target name="local-worker-run" description="Run worker on localhost">
-        <java jar="${local-worker-file}"
+        <java classname="acorn.worker.main.Main"
+              classpath="${local-glassfish-home}/glassfish/modules/gf-client.jar:${local-worker-file}"
               jvmargs="-Dtoplink.jdbc.user=${local-db-username} 
                 -Dtoplink.jdbc.password=${local-db-password}
                 -Dacorn.worker.logfile=${local-worker-log-file}

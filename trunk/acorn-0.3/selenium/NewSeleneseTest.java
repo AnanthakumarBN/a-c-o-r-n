@@ -117,7 +117,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
                 e.printStackTrace();
                 throw new RuntimeException("przerwany wait");
             }
-            if (!selenium.isTextPresent("R_biomass_SC4_bal")) {
+            if (selenium.isTextPresent("R_biomass_SC4_bal")) {
                 break labelFor2;
             }
         }
@@ -239,7 +239,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
                 e.printStackTrace();
                 throw new RuntimeException("przerwany wait");
             }
-            if (!selenium.isTextPresent("0.041 P-L-GLX")) {
+            if (selenium.isTextPresent("0.041 P-L-GLX")) {
                 break labelFor2;
             }
         }
@@ -313,7 +313,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
                 e.printStackTrace();
                 throw new RuntimeException("przerwany wait");
             }
-            if (!selenium.isTextPresent("0.041 P-L-GLX")) {
+            if (selenium.isTextPresent("0.041 P-L-GLX")) {
                 break labelFor2;
             }
         }

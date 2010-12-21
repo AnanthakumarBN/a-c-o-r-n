@@ -65,7 +65,7 @@
     <property name="server-amkfba-run" value="${server-amkfba-dir}/amkfba" />
     <property name="server-jwlfba-dir" value="${server-root-dir}/jwlfba" />
     <property name="server-jwlfba-run" value="${server-jwlfba-dir}/jwlfba" />
-    <property name="server-glassfish-home" value="/usr/local/glassfish" />
+    <property name="server-glassfish-home" value="/usr/local/glassfishv3" />
     <property name="server-glassfish-asadmin" value="${server-glassfish-home}/bin/asadmin" />
     <property name="server-domain-name" value="domain1" />
     <property name="server-domain-dir" value="${server-glassfish-home}/glassfish/domains/${server-domain-name}" />
@@ -154,7 +154,8 @@
         <ant antfile="${local-web-dir}/build.xml" target="run" inheritall="false" />
     </target>
     <target name="local-copy-acorn-config" >
-        <copy  overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/glassfish/domains/${local-domain-name}/acornConfig.xml" />
+        <copy overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/glassfish/domains/${local-domain-name}/acornConfig.xml" />
+        <copy overwrite="true" file="${local-acornConfig}" tofile="${local-glassfish-home}/glassfish/domains/${local-domain-name}/config/acornConfig.xml" />
     </target>
     <target name="local-start-domain" >
         <exec command="${local-glassfish-asadmin} start-domain ${local-domain-name}" />

@@ -9,7 +9,8 @@
 -->
 <configuration>
     <database>
-        <url>jdbc:mysql://sysbio3.fhms.surrey.ac.uk:3306/acorn-db</url>
+        <!--url>jdbc:mysql://sysbio3.fhms.surrey.ac.uk:3306/acorn-db</url-->
+        <url>jdbc:mysql://localhost:3306/acorn-db?autocommit=false</url>
         <user>acorn</user>
         <password>acorn</password>
         <driver>com.mysql.jdbc.Driver</driver>

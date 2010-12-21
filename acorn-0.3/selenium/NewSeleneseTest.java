@@ -17,9 +17,9 @@ public class NewSeleneseTest extends SeleneseTestCase {
     public void setUp() throws Exception {
         //super.setUp("http://localhost:8080/");
         System.out.println("początek");
-        selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://localhost:8080/");
+        //selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://localhost:8080/");
         System.out.println("po DefaultSelenium");
-        //selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://sysbio3.fhms.surrey.ac.uk:8080/");
+        selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://sysbio3.fhms.surrey.ac.uk:8080/");
         selenium.start();
         System.out.println("po start");
         WebUserManagement.createUser(selenium, this);
@@ -29,7 +29,8 @@ public class NewSeleneseTest extends SeleneseTestCase {
         selenium.setSpeed("0");
     }
 
-   /* public void testLoop() throws Exception {
+/*
+    public void testLoop() throws Exception {
         while (1 == 1) {
             testIfPublishedModelsAreThere();
             testUploadingAndDeletingModels();
@@ -40,6 +41,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         }
     }
 */
+
     public void testIfPublishedModelsAreThere() throws Exception {
         System.out.println("test3");
         selenium.click("//div[@id='menu']/ul/li[2]/a/em");
@@ -107,8 +109,20 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Single Flux Balance Analysis Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
         selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
+        labelFor2:
+        for (int i = 0; i < 30; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("przerwany wait");
+            }
+            if (!selenium.isTextPresent("R_biomass_SC4_bal")) {
+                break labelFor2;
+            }
+        }
+        verifyTrue(selenium.isTextPresent("R_biomass_SC4_bal"));
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
-        selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
         selenium.click("link=Start the simulation");
         selenium.waitForPageToLoad("30000");
         verifyTrue(selenium.isTextPresent(taskName));
@@ -217,9 +231,19 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Reaction Essentiality Scan Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
-        selenium.click("content:j_id_id18pc4:j_id_id22pc5");
+        labelFor2:
+        for (int i = 0; i < 30; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("przerwany wait");
+            }
+            if (!selenium.isTextPresent("0.041 P-L-GLX")) {
+                break labelFor2;
+            }
+        }
         verifyTrue(selenium.isTextPresent("0.041 P-L-GLX"));
-        verifyTrue(selenium.isTextPresent("BIOMASS2"));
         selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
         verifyTrue(selenium.isTextPresent("Start the simulation"));
         selenium.click("link=Start the simulation");
@@ -281,8 +305,18 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Single Gene Knockout Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
-        selenium.click("content:j_id_id18pc4:j_id_id22pc5");
-        verifyTrue(selenium.isTextPresent("BIOMASS2"));
+        labelFor2:
+        for (int i = 0; i < 30; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("przerwany wait");
+            }
+            if (!selenium.isTextPresent("0.041 P-L-GLX")) {
+                break labelFor2;
+            }
+        }
         verifyTrue(selenium.isTextPresent("0.041 P-L-GLX"));
         selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
         verifyTrue(selenium.isTextPresent("Start the simulation"));

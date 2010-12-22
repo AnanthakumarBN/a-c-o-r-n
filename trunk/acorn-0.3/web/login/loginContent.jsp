@@ -27,6 +27,6 @@
                          action="#{UserManager.loginUser}"/>
     </h:form>
     <p>
-        You can use the system as a guest without loging in, but registering and loging in gives access to additional features.
+        You can use the system as a guest without logging in, but registering and logging in gives access to additional features.
     </p>
 </div>

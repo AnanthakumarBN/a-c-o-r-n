@@ -220,7 +220,7 @@ public class UserListBean {
             if (userLoginFilter == null || row.getLogin().toLowerCase().contains(userLoginFilter.toLowerCase()))
                 filteredUsers.add(row);
         
-        return "";
+        return null;
     }
     
     public String fetchAndFilterList()

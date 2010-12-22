@@ -198,7 +198,7 @@ public class TaskDetailsBean {
                 data.get(id).filteredVisualizations.add(row);
             }
         }
-        return "";
+        return null;
     }
 
     public List<Visualization> getVisualizations() {

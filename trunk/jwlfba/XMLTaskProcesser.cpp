@@ -20,6 +20,14 @@ void XMLTaskProcesser::Error(const string& err) {
     fprintf(stderr, "%s\n", err.c_str());
 }
 
+XMLTaskProcesser::~XMLTaskProcesser() {
+    delete simulation_controller_;
+}
+
+XMLTaskProcesser::XMLTaskProcesser() {
+    simulation_controller_ = new SimulationController();
+}
+
 void XMLTaskProcesser::GetBounds(vector<Bound>* bounds) {
     Bound b;
     for (xml_node bound = doc_.child("fbaTask").child("listOfBounds").
@@ -62,7 +70,6 @@ string XMLTaskProcesser::GetStatus(const SimulationController& sc) {
 
 void XMLTaskProcesser::RunSimulation(xml_node simulation,
         const InputParameters& ip) {
-    SimulationController sc;
     OptimisationParameters op;
     op = GetOptimisationParameters(simulation);
 
@@ -76,23 +83,24 @@ void XMLTaskProcesser::RunSimulation(xml_node simulation,
     simulation.remove_child("simulationResults");
     xml_node results = simulation.append_child("simulationResults");
 
-    if (sc.RunSimulation(parameters)) {
-        results.append_attribute("status") = GetStatus(sc).c_str();
+    if (simulation_controller_->RunSimulation(parameters)) {
+        results.append_attribute("status") =
+            GetStatus(*simulation_controller_).c_str();
         results.append_attribute("objectiveFunctionValue").
-            set_value(sc.GetObjective());
+            set_value(simulation_controller_->GetObjective());
+        
+        if (parameters.print_flux()) {
+            vector<ReactionFlux> flux;
+            simulation_controller_->GetFlux(&flux);
+            for (std::size_t i = 0; i < flux.size(); i++) {
+                xml_node flux_node = results.append_child("flux");
+                flux_node.append_attribute("reaction") = flux[i].reaction.c_str();
+                flux_node.append_attribute("value").set_value(flux[i].flux);
+            }
+        }
     } else {
         results.append_attribute("status") = "ERROR";
         results.append_attribute("objectiveFunctionValue").set_value(0.0);
-    }
-
-    if (parameters.print_flux()) {
-        vector<ReactionFlux> flux;
-        sc.GetFlux(&flux);
-        for (std::size_t i = 0; i < flux.size(); i++) {
-            xml_node flux_node = results.append_child("flux");
-            flux_node.append_attribute("reaction") = flux[i].reaction.c_str();
-            flux_node.append_attribute("value").set_value(flux[i].flux);
-        }
     }
 }
 

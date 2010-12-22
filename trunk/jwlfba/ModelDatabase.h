@@ -7,9 +7,12 @@
 #define JWLFBA_MODELDATABASE_H_
 
 #include<string>
+#include<map>
 
 using std::string;
+using std::map;
 class Model;
+class SBMLDocument;
 
 // Responsible for reading models from files.
 
@@ -20,6 +23,9 @@ class ModelDatabase {
     // list<string, Model*> models;
     // Description of an error encoutered.
     string error_description_;
+
+    // Maps paths of model files actual models
+    map<string, SBMLDocument*> models_;
 
     // Store an error.
     void Error(const string& err);

@@ -12,13 +12,25 @@
 using std::string;
 
 Model* ModelDatabase::GetModel(const string& path) {
-    SBMLDocument* document = readSBML(path.c_str());
-    if (document->getNumErrors() > 0) {
-        Error(document->getError(0)->getShortMessage());
-        return NULL;
+    SBMLDocument* document;
+    if (models_.find(path) == models_.end()) {
+        document = readSBML(path.c_str());
+        if (document->getNumErrors() > 0) {
+            Error(document->getError(0)->getShortMessage());
+            // FIXME: this shouldn't be commented out, but without that
+            // using badly formed SBML models (which is very often the case)
+            // does not work
+            // document = NULL;
+        }
+        models_[path] = document;
     }
+    else
+        document = models_[path];
 
-    return document->getModel();
+    if (document == NULL)
+        return NULL;
+    else
+        return document->getModel();
 }
 
 Model* ModelDatabase::GetAmkfbaModel(const string& path) {

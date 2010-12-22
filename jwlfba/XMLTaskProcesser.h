@@ -15,12 +15,16 @@
 using std::string;
 using std::vector;
 using pugi::xml_node;
+class SimulationController;
 
 // Class for handling tasks described by XML files
 
 class XMLTaskProcesser {
     pugi::xml_document doc_;
+    SimulationController* simulation_controller_;
  public:
+    XMLTaskProcesser();
+    ~XMLTaskProcesser();
     void Error(const string& err);
     void GetBounds(vector<Bound>* bounds);
     void Run(InputParameters parameters);

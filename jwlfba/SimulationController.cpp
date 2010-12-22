@@ -22,7 +22,8 @@ using std::vector;
 
 SimulationController::SimulationController() : simulation_(NULL),
     using_amkfba_model_(false) {
-    model_database_ = new ModelDatabase;
+    model_database_ = new ModelDatabase();
+    simulation_ = new MetabolicSimulation();
 }
 
 SimulationController::~SimulationController() {
@@ -58,7 +59,9 @@ bool SimulationController::DisableGenes(const set<string> genes) {
 bool SimulationController::RunSimulation(const Model* model,
         const vector<Bound>& bounds,
         const OptimisationParameters& optimisation_parameters) {
-    simulation_ = new MetabolicSimulation;
+
+    delete simulation_;
+    simulation_ = new MetabolicSimulation();
 
     if (!simulation_->LoadModel(model, bounds)) {
         Error("Error Loading model: " + simulation_->GetErrors()[0]);

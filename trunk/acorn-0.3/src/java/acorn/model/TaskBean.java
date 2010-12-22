@@ -207,7 +207,7 @@ public class TaskBean {
         fetchAndFilterSpecies();
         fetchAndFilterGenes();
         }*/
-        return "";
+        return null;
     }
 
     /** Checkes if the modelID given in param is valid
@@ -397,7 +397,7 @@ public class TaskBean {
 
         EVisualizationController vc = new EVisualizationController();
         vc.removeDetachedReactions(model.getId());
-        return "";
+        return null;
     }
 
     /**
@@ -428,7 +428,7 @@ public class TaskBean {
             return "error";
         }
 
-        return "";
+        return null;
     }
 
     /** Unwated changes done in the info section 
@@ -442,7 +442,7 @@ public class TaskBean {
         Integer id = getModelID();
         data.remove(id);
         initData(id);
-        return "";
+        return null;
     }
 
     /**

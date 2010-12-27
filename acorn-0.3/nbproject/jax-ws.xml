@@ -6,5 +6,5 @@
     </service>
   </services>
   <clients/>
-  <jsr109>false</jsr109>
+  <jsr109>true</jsr109>
 </jax-ws>

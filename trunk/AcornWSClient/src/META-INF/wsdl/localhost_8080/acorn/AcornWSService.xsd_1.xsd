@@ -1,372 +1,358 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.1.3.3-hudson-757-SNAPSHOT. --><xs:schema xmlns:tns="http://webservice.acorn/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://webservice.acorn/">
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.2.1-hudson-28-. --><xs:schema xmlns:tns="http://webservice.acorn/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://webservice.acorn/">
 
-<xs:element name="AuthenticationException" type="tns:AuthenticationException"></xs:element>
+<xs:element name="AuthenticationException" type="tns:AuthenticationException" />
 
-<xs:element name="RepeatedVisualizationNameException" type="tns:RepeatedVisualizationNameException"></xs:element>
+<xs:element name="RepeatedVisualizationNameException" type="tns:RepeatedVisualizationNameException" />
 
-<xs:element name="VisValidationException" type="tns:VisValidationException"></xs:element>
+<xs:element name="VisValidationException" type="tns:VisValidationException" />
 
-<xs:element name="authenticate" type="tns:authenticate"></xs:element>
+<xs:element name="authenticate" type="tns:authenticate" />
 
-<xs:element name="authenticateResponse" type="tns:authenticateResponse"></xs:element>
+<xs:element name="authenticateResponse" type="tns:authenticateResponse" />
 
-<xs:element name="getAllReactionsByModelId" type="tns:getAllReactionsByModelId"></xs:element>
+<xs:element name="getAllReactionsByModelId" type="tns:getAllReactionsByModelId" />
 
-<xs:element name="getAllReactionsByModelIdResponse" type="tns:getAllReactionsByModelIdResponse"></xs:element>
+<xs:element name="getAllReactionsByModelIdResponse" type="tns:getAllReactionsByModelIdResponse" />
 
-<xs:element name="getAllSpeciesByModelId" type="tns:getAllSpeciesByModelId"></xs:element>
+<xs:element name="getAllSpeciesByModelId" type="tns:getAllSpeciesByModelId" />
 
-<xs:element name="getAllSpeciesByModelIdResponse" type="tns:getAllSpeciesByModelIdResponse"></xs:element>
+<xs:element name="getAllSpeciesByModelIdResponse" type="tns:getAllSpeciesByModelIdResponse" />
 
-<xs:element name="getAllVisualizationNames" type="tns:getAllVisualizationNames"></xs:element>
+<xs:element name="getAncestorVisualizationNames" type="tns:getAncestorVisualizationNames" />
 
-<xs:element name="getAllVisualizationNamesResponse" type="tns:getAllVisualizationNamesResponse"></xs:element>
+<xs:element name="getAncestorVisualizationNamesResponse" type="tns:getAncestorVisualizationNamesResponse" />
 
-<xs:element name="getAncestorVisualizationNames" type="tns:getAncestorVisualizationNames"></xs:element>
+<xs:element name="getDetachedReactions" type="tns:getDetachedReactions" />
 
-<xs:element name="getAncestorVisualizationNamesResponse" type="tns:getAncestorVisualizationNamesResponse"></xs:element>
+<xs:element name="getDetachedReactionsResponse" type="tns:getDetachedReactionsResponse" />
 
-<xs:element name="getDescendantVisualizationNames" type="tns:getDescendantVisualizationNames"></xs:element>
+<xs:element name="getEncoding" type="tns:getEncoding" />
 
-<xs:element name="getDescendantVisualizationNamesResponse" type="tns:getDescendantVisualizationNamesResponse"></xs:element>
+<xs:element name="getEncodingResponse" type="tns:getEncodingResponse" />
 
-<xs:element name="getDetachedReactions" type="tns:getDetachedReactions"></xs:element>
+<xs:element name="getFlux" type="tns:getFlux" />
 
-<xs:element name="getDetachedReactionsResponse" type="tns:getDetachedReactionsResponse"></xs:element>
+<xs:element name="getFluxResponse" type="tns:getFluxResponse" />
 
-<xs:element name="getEncoding" type="tns:getEncoding"></xs:element>
+<xs:element name="getMethodType" type="tns:getMethodType" />
 
-<xs:element name="getEncodingResponse" type="tns:getEncodingResponse"></xs:element>
+<xs:element name="getMethodTypeResponse" type="tns:getMethodTypeResponse" />
 
-<xs:element name="getFlux" type="tns:getFlux"></xs:element>
+<xs:element name="getModelModificationDate" type="tns:getModelModificationDate" />
 
-<xs:element name="getFluxResponse" type="tns:getFluxResponse"></xs:element>
+<xs:element name="getModelModificationDateResponse" type="tns:getModelModificationDateResponse" />
 
-<xs:element name="getMethodType" type="tns:getMethodType"></xs:element>
+<xs:element name="getModels" type="tns:getModels" />
 
-<xs:element name="getMethodTypeResponse" type="tns:getMethodTypeResponse"></xs:element>
+<xs:element name="getModelsResponse" type="tns:getModelsResponse" />
 
-<xs:element name="getModelModificationDate" type="tns:getModelModificationDate"></xs:element>
+<xs:element name="getReactionsForSpecies" type="tns:getReactionsForSpecies" />
 
-<xs:element name="getModelModificationDateResponse" type="tns:getModelModificationDateResponse"></xs:element>
+<xs:element name="getReactionsForSpeciesResponse" type="tns:getReactionsForSpeciesResponse" />
 
-<xs:element name="getModels" type="tns:getModels"></xs:element>
+<xs:element name="getSpeciesForReaction" type="tns:getSpeciesForReaction" />
 
-<xs:element name="getModelsResponse" type="tns:getModelsResponse"></xs:element>
+<xs:element name="getSpeciesForReactionResponse" type="tns:getSpeciesForReactionResponse" />
 
-<xs:element name="getReactionsForSpecies" type="tns:getReactionsForSpecies"></xs:element>
+<xs:element name="getVisualization" type="tns:getVisualization" />
 
-<xs:element name="getReactionsForSpeciesResponse" type="tns:getReactionsForSpeciesResponse"></xs:element>
+<xs:element name="getVisualizationObject" type="tns:getVisualizationObject" />
 
-<xs:element name="getSpeciesForReaction" type="tns:getSpeciesForReaction"></xs:element>
+<xs:element name="getVisualizationObjectResponse" type="tns:getVisualizationObjectResponse" />
 
-<xs:element name="getSpeciesForReactionResponse" type="tns:getSpeciesForReactionResponse"></xs:element>
+<xs:element name="getVisualizationResponse" type="tns:getVisualizationResponse" />
 
-<xs:element name="getVisualization" type="tns:getVisualization"></xs:element>
+<xs:element name="isFba" type="tns:isFba" />
 
-<xs:element name="getVisualizationResponse" type="tns:getVisualizationResponse"></xs:element>
+<xs:element name="isFbaResponse" type="tns:isFbaResponse" />
 
-<xs:element name="isFba" type="tns:isFba"></xs:element>
+<xs:element name="isTaskDone" type="tns:isTaskDone" />
 
-<xs:element name="isFbaResponse" type="tns:isFbaResponse"></xs:element>
+<xs:element name="isTaskDoneResponse" type="tns:isTaskDoneResponse" />
 
-<xs:element name="isTaskDone" type="tns:isTaskDone"></xs:element>
+<xs:element name="removeVisualization" type="tns:removeVisualization" />
 
-<xs:element name="isTaskDoneResponse" type="tns:isTaskDoneResponse"></xs:element>
+<xs:element name="removeVisualizationResponse" type="tns:removeVisualizationResponse" />
 
-<xs:element name="removeVisualization" type="tns:removeVisualization"></xs:element>
+<xs:element name="saveVisualization" type="tns:saveVisualization" />
 
-<xs:element name="removeVisualizationResponse" type="tns:removeVisualizationResponse"></xs:element>
-
-<xs:element name="saveVisualization" type="tns:saveVisualization"></xs:element>
-
-<xs:element name="saveVisualizationResponse" type="tns:saveVisualizationResponse"></xs:element>
+<xs:element name="saveVisualizationResponse" type="tns:saveVisualizationResponse" />
 
 <xs:complexType name="authenticate">
 <xs:sequence>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="authenticateResponse">
-<xs:sequence></xs:sequence>
+<xs:sequence />
 </xs:complexType>
 
 <xs:complexType name="AuthenticationException">
 <xs:sequence>
-<xs:element name="message" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="message" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getVisualization">
 <xs:sequence>
-<xs:element name="visName" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="visName" type="xs:string" minOccurs="0" />
+<xs:element name="ownerId" type="xs:string" minOccurs="0" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getVisualizationResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="saveVisualization">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="visualizationName" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="reactions" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="species" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="arcs" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="clientEncoding" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="visualizationName" type="xs:string" minOccurs="0" />
+<xs:element name="reactions" type="xs:string" minOccurs="0" />
+<xs:element name="species" type="xs:string" minOccurs="0" />
+<xs:element name="arcs" type="xs:string" minOccurs="0" />
+<xs:element name="clientEncoding" type="xs:string" minOccurs="0" />
+<xs:element name="shared" type="xs:boolean" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="saveVisualizationResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:boolean"></xs:element>
+<xs:element name="return" type="xs:boolean" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="RepeatedVisualizationNameException">
 <xs:sequence>
-<xs:element name="message" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="message" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="VisValidationException">
 <xs:sequence>
-<xs:element name="message" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="message" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getReactionsForSpecies">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="speciesSid" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="isSource" type="xs:boolean"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="speciesSid" type="xs:string" minOccurs="0" />
+<xs:element name="isSource" type="xs:boolean" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getReactionsForSpeciesResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getAllVisualizationNames">
-<xs:sequence>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getAllVisualizationNamesResponse">
-<xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getFlux">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="reactionSid" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="reactionSid" type="xs:string" minOccurs="0" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getFluxResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:float" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:float" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getMethodType">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getMethodTypeResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getModels">
 <xs:sequence>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getModelsResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getSpeciesForReaction">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="reactionSid" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="isSource" type="xs:boolean"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="reactionSid" type="xs:string" minOccurs="0" />
+<xs:element name="isSource" type="xs:boolean" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getSpeciesForReactionResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="removeVisualization">
 <xs:sequence>
-<xs:element name="visualizationName" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="visualizationName" type="xs:string" minOccurs="0" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="removeVisualizationResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:boolean"></xs:element>
+<xs:element name="return" type="xs:boolean" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getModelModificationDate">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getModelModificationDateResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getVisualizationObject">
+<xs:sequence>
+<xs:element name="visName" type="xs:string" minOccurs="0" />
+<xs:element name="ownerId" type="xs:string" minOccurs="0" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getVisualizationObjectResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getEncoding">
 <xs:sequence>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getEncodingResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getAllReactionsByModelId">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getAllReactionsByModelIdResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getAllSpeciesByModelId">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getAllSpeciesByModelIdResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="isTaskDone">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="isTaskDoneResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:boolean"></xs:element>
+<xs:element name="return" type="xs:boolean" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getDetachedReactions">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getDetachedReactionsResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getAncestorVisualizationNames">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="getAncestorVisualizationNamesResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getDescendantVisualizationNames">
-<xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="getDescendantVisualizationNamesResponse">
-<xs:sequence>
-<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"></xs:element>
+<xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="isFba">
 <xs:sequence>
-<xs:element name="modelId" type="xs:int"></xs:element>
-<xs:element name="login" type="xs:string" minOccurs="0"></xs:element>
-<xs:element name="pass" type="xs:string" minOccurs="0"></xs:element>
+<xs:element name="modelId" type="xs:int" />
+<xs:element name="login" type="xs:string" minOccurs="0" />
+<xs:element name="pass" type="xs:string" minOccurs="0" />
 </xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="isFbaResponse">
 <xs:sequence>
-<xs:element name="return" type="xs:boolean"></xs:element>
+<xs:element name="return" type="xs:boolean" />
 </xs:sequence>
 </xs:complexType>
 </xs:schema>

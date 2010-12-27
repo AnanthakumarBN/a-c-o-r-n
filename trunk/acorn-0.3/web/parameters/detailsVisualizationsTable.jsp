@@ -86,29 +86,28 @@
             headerClass="tableHeader"
             columnClasses="select, name"
             rowClasses="tableRow1, tableRow2">
-        <h:column>
-            <f:facet name="header">
-                <h:outputText value="Select visualization" />
-            </f:facet>
-            <customTags:radioButton id="reactionVisualizationsRadio"
-                                    name="reactionVisualizationsRadio"
-                                    overrideName="true"
-                                    value="#{TaskDetailsBean.selectedVisualizations}"
-                                    itemValue="#{visualizations.sid}" />
-        </h:column>
-        <h:column>
-            <f:facet name="header">
-                <h:outputText value="Name of visualization" />
-            </f:facet>
-            <h:outputText escape="false" value="#{visualizations.qualifiedName}"/>
-        </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Select visualization" />
+                </f:facet>
+                <customTags:radioButton id="reactionVisualizationsRadio"
+                                        name="reactionVisualizationsRadio"
+                                        overrideName="true"
+                                        value="#{TaskDetailsBean.selectedVisualizations}"
+                                        itemValue="#{visualizations.sid}" />
+            </h:column>
+            <h:column>
+                <f:facet name="header">
+                    <h:outputText value="Name of visualization" />
+                </f:facet>
+                <h:outputText escape="false" value="#{visualizations.qualifiedName}"/>
+            </h:column>
         </h:dataTable>
+        <% if (request.getSession().getAttribute("PICTURE_PATH") != null) {
+                        request.getSession().removeAttribute("PICTURE_PATH");
+        %>
+        <h:graphicImage value="#{TaskDetailsBean.pathForServlet}"/>
+        <%      }
+        %>
     </h:form>
 </div>
-
-<% if (request.getSession().getAttribute("PICTURE_PATH") != null) {
-            request.getSession().removeAttribute("PICTURE_PATH");
-%>
-<h:graphicImage value="#{TaskDetailsBean.pathForServlet}"/>
-<%      }
-%>

@@ -81,7 +81,7 @@
                 action="#{TaskDetailsBean.deleteTask}"
                 value="Delete Task" /> &nbsp;
 
-            <h:outputLink value="addResults.jsf">
+            <h:outputLink rendered="#{TaskDetailsBean.isAddingResultsAvailable}" value="addResults.jsf">
               Add results
               <f:param name="taskID" value="#{param['taskID']}" />
             </h:outputLink>

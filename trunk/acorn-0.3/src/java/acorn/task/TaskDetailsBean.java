@@ -588,4 +588,8 @@ public class TaskDetailsBean {
             return "Error";
         }
     }
+
+    public boolean getIsAddingResultsAvailable() {
+      return EMethod.fba.equals(task.getMethod().getIdent());
+    }
 }

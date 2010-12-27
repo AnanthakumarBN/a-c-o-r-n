@@ -186,23 +186,23 @@
     </target>
     <target name="local-create-resources" depends="local-create-apass-file">
         <exec executable="${local-glassfish-asadmin}" failonerror="">
+            <arg value="--passwordfile"/>
+            <arg value="${local-domain-passwordfile}"/>
+            <arg value="--user"/>
+            <arg value="admin"/>
             <arg value="create-jms-resource"/>
             <arg value="--restype"/>
             <arg value="javax.jms.QueueConnectionFactory"/>
-            <arg value="--user"/>
-            <arg value="admin"/>
-            <arg value="--passwordfile"/>
-            <arg value="${local-domain-passwordfile}"/>
             <arg value="--property"/>
             <arg value="imqConsumerFlowLimit=1"/>
             <arg value="jms/taskQueueFactory"/>
         </exec>
         <exec executable="${local-glassfish-asadmin}" failonerror="">
-            <arg value="create-jms-resource"/>
-            <arg value="--user"/>
-            <arg value="admin"/>
             <arg value="--passwordfile"/>
             <arg value="${local-domain-passwordfile}"/>
+            <arg value="--user"/>
+            <arg value="admin"/>
+            <arg value="create-jms-resource"/>
             <arg value="--restype"/>
             <arg value="javax.jms.Queue"/>
             <arg value="jms/taskQueue"/>
@@ -315,7 +315,7 @@
     
     <target name="local-create-apass-file">
         <touch file="${local-domain-dir}/.aspass" />
-        <concat destfile="${local-domain-dir}/.aspass">AS_ADMIN_PASSWORD=adminadmin
+        <concat destfile="${local-domain-dir}/.aspass">AS_ADMIN_PASSWORD=
         </concat>
     </target>
     <target name="local-worker-compile" depends="local-worker-clean">

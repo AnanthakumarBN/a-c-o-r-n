@@ -41,10 +41,14 @@ public class EVisualizationController extends EntityController {
 
         EntityManager em = getEntityManager();
         try {
+            em.getTransaction().begin();
             vis = getVisualizationByName(visName, ownerLogin);
+            em.getTransaction().commit();
         } catch (NoResultException ex) {
             ex.printStackTrace();
             return null;
+        } finally {
+            em.close();
         }
 
         List<EVisPlace> places = getPlaces(vis.getId());
@@ -57,6 +61,7 @@ public class EVisualizationController extends EntityController {
         EModel model = null;
         ETask task = null;
 
+        em = getEntityManager();
         try {
             em.getTransaction().begin();
             model = vis.getModel();

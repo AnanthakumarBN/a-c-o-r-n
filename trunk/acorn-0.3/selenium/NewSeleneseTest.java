@@ -12,49 +12,45 @@ public class NewSeleneseTest extends SeleneseTestCase {
         Random r = new Random();
         return Long.toString(Math.abs(r.nextLong()), 36);
     }
+    boolean createDummyModelOnLocalhost = false;
 
     @Override
     public void setUp() throws Exception {
-        //super.setUp("http://localhost:8080/");
-        System.out.println("początek");
-        //selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://localhost:8080/");
-        System.out.println("po DefaultSelenium");
-        selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://sysbio3.fhms.surrey.ac.uk:8080/");
+        selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://localhost:8080/");
+        createDummyModelOnLocalhost = true;
+
+        //selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://sysbio3.fhms.surrey.ac.uk:8080/");
+
         selenium.start();
-        System.out.println("po start");
+        //selenium.setSpeed("500");
         WebUserManagement.createUser(selenium, this);
-        System.out.println("po createUser");
         WebUserManagement.loginUser(selenium, this);
-        System.out.println("po loginUser");
-        selenium.setSpeed("0");
+        //selenium.setSpeed("500");
     }
 
-/*
-    public void testLoop() throws Exception {
-        while (1 == 1) {
-            testIfPublishedModelsAreThere();
-            testUploadingAndDeletingModels();
-            testRunFba();
-            testRunFva();
-            testRunKgene();
-            testRunRscan();
+    private void waitForAjax(String expectedText) {
+        labelFor:
+        for (int i = 0; i < 30; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("przerwany wait");
+            }
+            if (!selenium.isTextPresent(expectedText)) {
+                break labelFor;
+            }
         }
     }
-*/
 
-    public void testIfPublishedModelsAreThere() throws Exception {
-        System.out.println("test3");
-        selenium.click("//div[@id='menu']/ul/li[2]/a/em");
+    private void uploadModel(String filePath, String modelName, String organismName) throws Exception {
+        selenium.click("//div[@id='menu']/ul/li[4]/a/em");
         selenium.waitForPageToLoad("30000");
-        //verifyTrue(selenium.isTextPresent("S. cerevisiae iND750"));
-        //verifyTrue(selenium.isTextPresent("M. tuberculosis GSMN-TB"));
-        //verifyTrue(selenium.isTextPresent("E. coli iAF1260"));
-
-//        selenium.click("link=S. cerevisiae iND750");
-//        selenium.waitForPageToLoad("30000");
-//        selenium.click("//form[@id='menu:j_id_id189pc3']/a/em");
-//        selenium.waitForPageToLoad("30000");
-//        verifyTrue(selenium.isTextPresent("Login"));
+        selenium.type("content:add:file", filePath);
+        selenium.type("content:add:name", modelName);
+        selenium.type("content:add:organism", organismName);
+        selenium.click("content:add:submit");
+        selenium.waitForPageToLoad("50000");
     }
 
     public void testUploadingAndDeletingModels() throws Exception {
@@ -67,29 +63,48 @@ public class NewSeleneseTest extends SeleneseTestCase {
 
         WebUserManagement.logoutUser(selenium, this);
         WebUserManagement.loginAdmin(selenium, this);
-        selenium.click("//div[@id='menu']/ul/li[4]/a/em");
-        selenium.waitForPageToLoad("30000");
-        selenium.type("content:add:file", cwd + "/slow1.sbml");
-        selenium.type("content:add:name", temporaryModelName);
-        selenium.type("content:add:organism", "Tuberculosis");
-        selenium.click("content:add:submit");
-        selenium.waitForPageToLoad("30000");
+
+        uploadModel(cwd + "/slow1.sbml", temporaryModelName, "Tuberculosis");
+
         verifyTrue(selenium.isTextPresent("Model List"));
         selenium.click("//tr[.//a/text()='" + temporaryModelName + "']//a[./text()='delete']");
-        labelFor:
-        for (int i = 0; i < 30; i++) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("przerwany wait");
-            }
-            if (!selenium.isTextPresent(temporaryModelName)) {
-                break labelFor;
-            }
-        }
+        waitForAjax(temporaryModelName);
         verifyFalse(selenium.isTextPresent(temporaryModelName));
         verifyTrue(selenium.isTextPresent("Model List"));
+
+        WebUserManagement.logoutAdmin(selenium, this);
+        WebUserManagement.loginUser(selenium, this);
+    }
+
+    //if tested on localhost and the model are absent they will be uploaded (all from the slow1.sbml)
+    public void testIfPublishedModelsAreThere() throws Exception {
+        if (createDummyModelOnLocalhost) {
+            WebUserManagement.logoutUser(selenium, this);
+            WebUserManagement.loginAdmin(selenium, this);
+            selenium.click("//div[@id='menu']/ul/li[2]/a/em");
+            selenium.waitForPageToLoad("30000");
+            String cwd = null;
+            try {
+                cwd = new java.io.File(".").getCanonicalPath();
+            } catch (java.io.IOException e) {
+            }
+            if (!selenium.isTextPresent("S. cerevisiae iND750")) {
+                uploadModel(cwd + "/slow1.sbml", "S. cerevisiae iND750", "S. cerevisiae iND750");
+            }
+            if (!selenium.isTextPresent("M. tuberculosis GSMN-TB")) {
+                uploadModel(cwd + "/slow1.sbml", "M. tuberculosis GSMN-TB", "M. tuberculosis GSMN-TB");
+            }
+            if (!selenium.isTextPresent("E. coli iAF1260")) {
+                uploadModel(cwd + "/slow1.sbml", "E. coli iAF1260", "E. coli iAF1260");
+            }
+            WebUserManagement.logoutAdmin(selenium, this);
+            WebUserManagement.loginUser(selenium, this);
+        }
+        selenium.click("//div[@id='menu']/ul/li[2]/a/em");
+        selenium.waitForPageToLoad("30000");
+        verifyTrue(selenium.isTextPresent("S. cerevisiae iND750"));
+        verifyTrue(selenium.isTextPresent("M. tuberculosis GSMN-TB"));
+        verifyTrue(selenium.isTextPresent("E. coli iAF1260"));
     }
 
     public void testRunFba() throws Exception {
@@ -109,18 +124,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Single Flux Balance Analysis Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
         selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
-        labelFor2:
-        for (int i = 0; i < 30; i++) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("przerwany wait");
-            }
-            if (selenium.isTextPresent("R_biomass_SC4_bal")) {
-                break labelFor2;
-            }
-        }
+        waitForAjax("R_biomass_SC4_bal");
         verifyTrue(selenium.isTextPresent("R_biomass_SC4_bal"));
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
         selenium.click("link=Start the simulation");
@@ -133,18 +137,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyTrue(selenium.isTextPresent(taskName));
         selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
-        labelFor:
-        for (int i = 0; i < 30; i++) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("przerwany wait");
-            }
-            if (!selenium.isTextPresent(taskName)) {
-                break labelFor;
-            }
-        }
+        waitForAjax(taskName);
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyFalse(selenium.isTextPresent(taskName));
         selenium.click("//div[@id='menu']/ul/li[2]/a/em");
@@ -189,18 +182,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         verifyTrue(selenium.isTextPresent("Task List"));
         selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
-        labelFor:
-        for (int i = 0; i < 30; i++) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("przerwany wait");
-            }
-            if (!selenium.isTextPresent(taskName)) {
-                break labelFor;
-            }
-        }
+        waitForAjax(taskName);
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyFalse(selenium.isTextPresent(taskName));
         selenium.click("//div[@id='menu']/ul/li[2]/a/em");
@@ -231,18 +213,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Reaction Essentiality Scan Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
-        labelFor2:
-        for (int i = 0; i < 30; i++) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("przerwany wait");
-            }
-            if (selenium.isTextPresent("0.041 P-L-GLX")) {
-                break labelFor2;
-            }
-        }
+        waitForAjax("0.041 P-L-GLX");
         verifyTrue(selenium.isTextPresent("0.041 P-L-GLX"));
         selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
         verifyTrue(selenium.isTextPresent("Start the simulation"));
@@ -263,18 +234,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyTrue(selenium.isTextPresent(taskName));
         selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
-        labelFor:
-        for (int i = 0; i < 30; i++) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("przerwany wait");
-            }
-            if (!selenium.isTextPresent(taskName)) {
-                break labelFor;
-            }
-        }
+        waitForAjax(taskName);
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyFalse(selenium.isTextPresent(taskName));
         selenium.click("//div[@id='menu']/ul/li[2]/a/em");
@@ -305,18 +265,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Single Gene Knockout Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
-        labelFor2:
-        for (int i = 0; i < 30; i++) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("przerwany wait");
-            }
-            if (selenium.isTextPresent("0.041 P-L-GLX")) {
-                break labelFor2;
-            }
-        }
+        waitForAjax("0.041 P-L-GLX");
         verifyTrue(selenium.isTextPresent("0.041 P-L-GLX"));
         selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
         verifyTrue(selenium.isTextPresent("Start the simulation"));
@@ -348,18 +297,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyTrue(selenium.isTextPresent(taskName));
         selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
-        labelFor:
-        for (int i = 0; i < 30; i++) {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("przerwany wait");
-            }
-            if (!selenium.isTextPresent(taskName)) {
-                break labelFor;
-            }
-        }
+        waitForAjax(taskName);
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyFalse(selenium.isTextPresent(taskName));
         selenium.click("//div[@id='menu']/ul/li[2]/a/em");

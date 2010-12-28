@@ -61,7 +61,9 @@ public class DrawingBean {
 
     public String draw() throws DotFileException {
         String pathFile = createEmptyFile();
+        //System.err.println("start draw");
         writeTotFile(pathFile);
+        //System.err.println("end draw");
         String pathGraphFile = runNeato(pathFile);
 
         return pathGraphFile;

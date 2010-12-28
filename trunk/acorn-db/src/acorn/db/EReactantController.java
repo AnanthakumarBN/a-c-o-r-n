@@ -19,14 +19,14 @@ public class EReactantController extends EntityController {
         try {
             em.getTransaction().begin();
             List<EReactant> reactants = (List<EReactant>) em.createQuery("SELECT r FROM EReactant r WHERE r.reaction = :reaction").
-                        setParameter("reaction", reaction).getResultList();
+                    setParameter("reaction", reaction).getResultList();
             em.getTransaction().commit();
             return reactants;
         } finally {
             em.close();
         }
     }
-    
+
     /**
      * Adds @reactant.
      */
@@ -38,51 +38,52 @@ public class EReactantController extends EntityController {
             em.getTransaction().commit();
         } finally {
             em.close();
-        }  
+        }
     }
 
-    public List<EReaction> getReactions(ESpecies spec, int modelId){
+    public List<EReaction> getReactions(ESpecies spec, int modelId) {
         EntityManager em = getEntityManager();
 
         EModelController mc = new EModelController();
         ESpeciesController sc = new ESpeciesController();
 
-        try{
+        List<EReaction> reactions = null;
+        try {
             em.getTransaction().begin();
-            List<EReaction> reactions = em.createNamedQuery("EReactant.getReactionBySpecies").
+            reactions = em.createNamedQuery("EReactant.getReactionBySpecies").
                     setParameter("spec1", spec).getResultList();
             em.getTransaction().commit();
 
-            Collection<EReaction> detachedReactions = mc.getDetachedReactions(modelId);
-            reactions.removeAll(detachedReactions);
-            return reactions;
-        }finally{
+        } finally {
             em.close();
         }
+        Collection<EReaction> detachedReactions = mc.getDetachedReactions(modelId);
+        reactions.removeAll(detachedReactions);
+        return reactions;
     }
 
-    public List<EReaction> getReactions(ESpecies spec1, ESpecies spec2){
+    public List<EReaction> getReactions(ESpecies spec1, ESpecies spec2) {
         EntityManager em = getEntityManager();
-        try{
+        try {
             em.getTransaction().begin();
-            List<EReaction> reactions =em.createNamedQuery("EReactant.getReactionBy2Species").
-                    setParameter("spec1", spec1).setParameter("spec2",spec2).getResultList();
+            List<EReaction> reactions = em.createNamedQuery("EReactant.getReactionBy2Species").
+                    setParameter("spec1", spec1).setParameter("spec2", spec2).getResultList();
             em.getTransaction().commit();
             return reactions;
-        }finally{
+        } finally {
             em.close();
         }
     }
 
-    public List<ESpecies> getSpecies(EReaction reaction){
+    public List<ESpecies> getSpecies(EReaction reaction) {
         EntityManager em = getEntityManager();
-        try{
+        try {
             em.getTransaction().begin();
-            List<ESpecies> species =em.createNamedQuery("EReactant.getSpeciesByReaction").
+            List<ESpecies> species = em.createNamedQuery("EReactant.getSpeciesByReaction").
                     setParameter("reaction", reaction).getResultList();
             em.getTransaction().commit();
             return species;
-        }finally{
+        } finally {
             em.close();
         }
     }

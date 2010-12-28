@@ -17,7 +17,10 @@ public class ETaskController extends EntityController {
     public List<ETask> getTasks() {
         EntityManager em = getEntityManager();
         try {
-            return (List<ETask>) em.createQuery("SELECT t FROM ETask AS t").getResultList();
+            em.getTransaction().begin();
+            List<ETask> res = (List<ETask>) em.createQuery("SELECT t FROM ETask AS t").getResultList();
+            em.getTransaction().commit();
+            return res;
         } finally {
             em.close();
         }
@@ -30,10 +33,13 @@ public class ETaskController extends EntityController {
     public List<ETask> getTasks(EUser user) {
         EntityManager em = getEntityManager();
         try {
-            return (List<ETask>) em.createNamedQuery("ETask.findByUserID").
+            em.getTransaction().begin();
+            List<ETask> res = (List<ETask>) em.createNamedQuery("ETask.findByUserID").
                     setParameter("id", user).
                     setHint("toplink.refresh", true).
                     getResultList();
+            em.getTransaction().commit();
+            return res;
         } finally {
             em.close();
         }
@@ -46,10 +52,13 @@ public class ETaskController extends EntityController {
     public List<ETask> getSharedTasks() {
         EntityManager em = getEntityManager();
         try {
-            return (List<ETask>) em.createQuery("SELECT e FROM ETask e WHERE e.shared = :shared").
+            em.getTransaction().begin();
+            List<ETask> res = (List<ETask>) em.createQuery("SELECT e FROM ETask e WHERE e.shared = :shared").
                     setParameter("shared", true).
                     setHint("toplink.refresh", true).
                     getResultList();
+            em.getTransaction().commit();
+            return res;
         } finally {
             em.close();
         }
@@ -173,7 +182,7 @@ public class ETaskController extends EntityController {
     }
 
     public String getFluxFVA(ETask task, String reactionSid) {
-         EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager();
 
         try {
             em.getTransaction().begin();

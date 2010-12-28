@@ -21,7 +21,10 @@ public class EModelController extends EntityController {
     public List<EModel> getModels() {
         EntityManager em = getEntityManager();
         try {
-            return (List<EModel>) em.createQuery("select m from EModel as m").getResultList();
+            em.getTransaction().begin();
+            List<EModel> res = (List<EModel>) em.createQuery("select m from EModel as m").getResultList();
+            em.getTransaction().commit();
+            return res;
         } finally {
             em.close();
         }
@@ -45,7 +48,7 @@ public class EModelController extends EntityController {
             //transitive closure
             while (model.getParent() != null) {
                 result.add(model.getParent());
-                model=model.getParent();
+                model = model.getParent();
             }
 
             em.getTransaction().commit();
@@ -62,10 +65,13 @@ public class EModelController extends EntityController {
     public List<EModel> getModels(EUser user) {
         EntityManager em = getEntityManager();
         try {
-            return (List<EModel>) em.createNamedQuery("EModel.findByOwner").
+            em.getTransaction().begin();
+            List<EModel> res = (List<EModel>) em.createNamedQuery("EModel.findByOwner").
                     setParameter("owner", user).
                     setHint("toplink.refresh", true).
                     getResultList();
+            em.getTransaction().commit();
+            return res;
         } finally {
             em.close();
         }
@@ -78,10 +84,13 @@ public class EModelController extends EntityController {
     public List<EModel> getModelsShared() {
         EntityManager em = getEntityManager();
         try {
-            return (List<EModel>) em.createQuery("SELECT e FROM EModel e WHERE e.shared = :shared").
+            em.getTransaction().begin();
+            List<EModel> res = (List<EModel>) em.createQuery("SELECT e FROM EModel e WHERE e.shared = :shared").
                     setParameter("shared", true).
                     setHint("toplink.refresh", true).
                     getResultList();
+            em.getTransaction().commit();
+            return res;
         } finally {
             em.close();
         }
@@ -433,13 +442,11 @@ public class EModelController extends EntityController {
      * @return creactions
      */
     public Collection<EReaction> getDetachedReactions(int modelId) {
-        EntityManager em = getEntityManager();
         ArrayList<EReaction> detachedReactions = new ArrayList<EReaction>(0);
+        EModel model = getModel(modelId);
+        EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-            EModel model = getModel(modelId);
-
-
             Collection<EBounds> eboundColl = model.getEBoundsCollection();
             for (EBounds bounds : eboundColl) {
                 if (bounds.getLowerBound() == 0 && bounds.getUpperBound() == 0) {

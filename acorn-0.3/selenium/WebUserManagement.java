@@ -40,10 +40,23 @@ public class WebUserManagement {
     }
 
     public static void logoutUser(Selenium selenium, SeleneseTestCase testCase) {
+        selenium.open("/acorn/homepage.jsf");
         testCase.verifyTrue(selenium.isTextPresent("Log Out"));
-        selenium.click("//div[@id='menu']/ul/li[4]/a/em");
-        selenium.waitForPageToLoad("30000");
-        selenium.open("/acorn/register.jsf");
+        selenium.click("//form[@id='menu:j_id_id189pc3']/a/em");
+        labelFor:
+        for (int i = 0; i < 30; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("przerwany wait");
+            }
+            if (!selenium.isTextPresent("Log Out")) {
+                break labelFor;
+            }
+        }
+        testCase.verifyTrue(selenium.isTextPresent("You can use the system as a guest without logging in, but registering and logging in gives access to additional features."));
+        //selenium.open("/acorn/register.jsf");
     }
 
     public static void loginAdmin(Selenium selenium, SeleneseTestCase testCase) {
@@ -55,6 +68,26 @@ public class WebUserManagement {
         selenium.waitForPageToLoad("30000");
         testCase.verifyFalse(selenium.isTextPresent("Login Failed!"));
         testCase.verifyTrue(selenium.isTextPresent("Task List"));
+    }
+
+    public static void logoutAdmin(Selenium selenium, SeleneseTestCase testCase) {
+        selenium.open("/acorn/homepage.jsf");
+        testCase.verifyTrue(selenium.isTextPresent("Log Out"));
+        selenium.click("//form[@id='menu:j_id_id351pc3']/a/em");
+        labelFor:
+        for (int i = 0; i < 30; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("przerwany wait");
+            }
+            if (!selenium.isTextPresent("Log Out")) {
+                break labelFor;
+            }
+        }
+        testCase.verifyTrue(selenium.isTextPresent("You can use the system as a guest without logging in, but registering and logging in gives access to additional features."));
+        //selenium.open("/acorn/register.jsf");
     }
 
     public static void deleteUser(Selenium selenium, SeleneseTestCase testCase) {
@@ -76,5 +109,6 @@ public class WebUserManagement {
         }
         testCase.verifyTrue(selenium.isTextPresent("Users list"));
         testCase.verifyFalse(selenium.isTextPresent(EMAIL));
+        logoutAdmin(selenium, testCase);
     }
 }

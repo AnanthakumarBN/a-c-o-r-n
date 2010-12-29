@@ -36,7 +36,7 @@ public class ETaskController extends EntityController {
             em.getTransaction().begin();
             List<ETask> res = (List<ETask>) em.createNamedQuery("ETask.findByUserID").
                     setParameter("id", user).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getResultList();
             em.getTransaction().commit();
             return res;
@@ -55,7 +55,7 @@ public class ETaskController extends EntityController {
             em.getTransaction().begin();
             List<ETask> res = (List<ETask>) em.createQuery("SELECT e FROM ETask e WHERE e.shared = :shared").
                     setParameter("shared", true).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getResultList();
             em.getTransaction().commit();
             return res;
@@ -74,7 +74,7 @@ public class ETaskController extends EntityController {
             em.getTransaction().begin();
             ETask taskx = (ETask) em.createNamedQuery("ETask.findById").
                     setParameter("id", task.getId()).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getSingleResult();
             em.getTransaction().commit();
             return taskx;
@@ -93,7 +93,7 @@ public class ETaskController extends EntityController {
             em.getTransaction().begin();
             ETask taskx = (ETask) em.createNamedQuery("ETask.findById").
                     setParameter("id", taskId).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getSingleResult();
             em.getTransaction().commit();
             return taskx;

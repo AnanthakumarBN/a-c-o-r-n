@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
   <persistence-unit name="acorn-dbPU" transaction-type="RESOURCE_LOCAL">
-    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <class>acorn.db.EVisualization</class>
     <class>acorn.db.EBounds</class>
     <class>acorn.db.ECommonResults</class>
@@ -30,10 +29,12 @@
     <class>acorn.db.EVisArc</class>
     <class>acorn.db.EVisNode</class>
     <properties>
-      <property name="toplink.jdbc.user" value="acorn"/>
-      <property name="toplink.jdbc.password" value="acorn"/>
-      <property name="toplink.jdbc.url" value="jdbc:derby://localhost:1527/acorn-db"/>
-      <property name="toplink.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="javax.persistence.jdbc.user" value="acorn"/>
+      <property name="javax.persistence.jdbc.password" value="acorn"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/acorn-db"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="eclipselink.ddl-generation" value="create"/>
+      <property name="" value="acorn"/>
     </properties>
   </persistence-unit>
 </persistence>

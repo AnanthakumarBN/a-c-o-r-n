@@ -68,7 +68,7 @@ public class EModelController extends EntityController {
             em.getTransaction().begin();
             List<EModel> res = (List<EModel>) em.createNamedQuery("EModel.findByOwner").
                     setParameter("owner", user).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getResultList();
             em.getTransaction().commit();
             return res;
@@ -87,7 +87,7 @@ public class EModelController extends EntityController {
             em.getTransaction().begin();
             List<EModel> res = (List<EModel>) em.createQuery("SELECT e FROM EModel e WHERE e.shared = :shared").
                     setParameter("shared", true).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getResultList();
             em.getTransaction().commit();
             return res;
@@ -106,7 +106,7 @@ public class EModelController extends EntityController {
             em.getTransaction().begin();
             List<EModel> sharedModels = (List<EModel>) em.createQuery("SELECT e FROM EModel e WHERE e.shared = :shared").
                     setParameter("shared", true).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getResultList();
             LinkedList<EModel> toGo = new LinkedList<EModel>();
             List<EModel> result = new LinkedList<EModel>();
@@ -145,7 +145,7 @@ public class EModelController extends EntityController {
             em.getTransaction().begin();
             EModel modelx = (EModel) em.createNamedQuery("EModel.findById").
                     setParameter("id", model.getId()).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getSingleResult();
             em.getTransaction().commit();
             return modelx;
@@ -164,7 +164,7 @@ public class EModelController extends EntityController {
             em.getTransaction().begin();
             EModel modelx = (EModel) em.createNamedQuery("EModel.findById").
                     setParameter("id", modelId).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getSingleResult();
             em.getTransaction().commit();
             return modelx;
@@ -179,7 +179,7 @@ public class EModelController extends EntityController {
             em.getTransaction().begin();
             EModel modelx = (EModel) em.createNamedQuery("EModel.findByName").
                     setParameter("name", name).
-                    setHint("toplink.refresh", true).
+                    setHint("eclipselink.refresh", true).
                     getSingleResult();
             em.getTransaction().commit();
             return modelx;

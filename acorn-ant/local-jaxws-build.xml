@@ -8,7 +8,7 @@
     <target name="wsimport-init" depends="init">
         <mkdir dir="${build.generated.sources.dir}/jax-ws"/>
         <taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
-            <classpath path="${libs.jaxws21.classpath}"/>
+            <classpath path="/home/kuba/Downloads/jaxws-ri/lib"/>
         </taskdef>
     </target>
     <target name="wsimport-client-AcornWSService" depends="wsimport-init">

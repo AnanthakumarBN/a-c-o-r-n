@@ -162,7 +162,7 @@
                 </h:inputText>
             </h:panelGrid>
             
-            <a4j:commandButton value="Discard changes in table"
+            <a4j:commandButton value="Update reaction name filter"
                 reRender="reactions" 
                 action="#{TaskBean.fetchAndFilterConditions}" >
                 <a4j:actionparam name="modelID" value="#{param['modelID']}" />

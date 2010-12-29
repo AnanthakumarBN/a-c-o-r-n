@@ -29,18 +29,9 @@ public class LoopSeleneseTest extends SeleneseTestCase {
         //selenium.setSpeed("500");
     }
 
-    /*
-    public void testLoop() throws Exception {
-    while (1 == 1) {
-    testIfPublishedModelsAreThere();
-    testUploadingAndDeletingModels();
-    testRunFba();
-    testRunFva();
-    testRunKgene();
-    testRunRscan();
-    }
-    }
-     */
+    
+   
+     
     public void testVisLoop() throws Exception {
         //selenium.setSpeed("5000");
         WebUserManagement.logoutUser(selenium, this);

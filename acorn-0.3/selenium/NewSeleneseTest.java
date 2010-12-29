@@ -28,7 +28,18 @@ public class NewSeleneseTest extends SeleneseTestCase {
         //selenium.setSpeed("500");
     }
 
-    private void waitForAjax(String expectedText) {
+    /*public void testLoop() throws Exception {
+        while (1 == 1) {
+            testIfPublishedModelsAreThere();
+            testUploadingAndDeletingModels();
+            testRunFba();
+            testRunFva();
+            testRunKgene();
+            testRunRscan();
+        }
+    }*/
+
+    private void waitForAjax(String expectedText, boolean isPresent) {
         labelFor:
         for (int i = 0; i < 30; i++) {
             try {
@@ -37,7 +48,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
                 e.printStackTrace();
                 throw new RuntimeException("przerwany wait");
             }
-            if (!selenium.isTextPresent(expectedText)) {
+            if (selenium.isTextPresent(expectedText) == isPresent) {
                 break labelFor;
             }
         }
@@ -68,7 +79,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
 
         verifyTrue(selenium.isTextPresent("Model List"));
         selenium.click("//tr[.//a/text()='" + temporaryModelName + "']//a[./text()='delete']");
-        waitForAjax(temporaryModelName);
+        waitForAjax(temporaryModelName, false);
         verifyFalse(selenium.isTextPresent(temporaryModelName));
         verifyTrue(selenium.isTextPresent("Model List"));
 
@@ -91,9 +102,11 @@ public class NewSeleneseTest extends SeleneseTestCase {
             if (!selenium.isTextPresent("S. cerevisiae iND750")) {
                 uploadModel(cwd + "/slow1.sbml", "S. cerevisiae iND750", "S. cerevisiae iND750");
             }
+
+            /* FIXME: to nie działa, bo w modelu nie ma reakcji R_biomass_SC4_bal
             if (!selenium.isTextPresent("M. tuberculosis GSMN-TB")) {
                 uploadModel(cwd + "/slow1.sbml", "M. tuberculosis GSMN-TB", "M. tuberculosis GSMN-TB");
-            }
+            } */
             if (!selenium.isTextPresent("E. coli iAF1260")) {
                 uploadModel(cwd + "/slow1.sbml", "E. coli iAF1260", "E. coli iAF1260");
             }
@@ -124,7 +137,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Single Flux Balance Analysis Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
         selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
-        waitForAjax("R_biomass_SC4_bal");
+        waitForAjax("R_biomass_SC4_bal", true);
         verifyTrue(selenium.isTextPresent("R_biomass_SC4_bal"));
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
         selenium.click("link=Start the simulation");
@@ -137,7 +150,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyTrue(selenium.isTextPresent(taskName));
         selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
-        waitForAjax(taskName);
+        waitForAjax(taskName, false);
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyFalse(selenium.isTextPresent(taskName));
         selenium.click("//div[@id='menu']/ul/li[2]/a/em");
@@ -182,7 +195,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         verifyTrue(selenium.isTextPresent("Task List"));
         selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
-        waitForAjax(taskName);
+        waitForAjax(taskName, false);
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyFalse(selenium.isTextPresent(taskName));
         selenium.click("//div[@id='menu']/ul/li[2]/a/em");
@@ -213,7 +226,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Reaction Essentiality Scan Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
-        waitForAjax("0.041 P-L-GLX");
+        waitForAjax("0.041 P-L-GLX", true);
         verifyTrue(selenium.isTextPresent("0.041 P-L-GLX"));
         selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
         verifyTrue(selenium.isTextPresent("Start the simulation"));
@@ -234,7 +247,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyTrue(selenium.isTextPresent(taskName));
         selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
-        waitForAjax(taskName);
+        waitForAjax(taskName, false);
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyFalse(selenium.isTextPresent(taskName));
         selenium.click("//div[@id='menu']/ul/li[2]/a/em");
@@ -265,7 +278,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Single Gene Knockout Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
-        waitForAjax("0.041 P-L-GLX");
+        waitForAjax("0.041 P-L-GLX", true);
         verifyTrue(selenium.isTextPresent("0.041 P-L-GLX"));
         selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
         verifyTrue(selenium.isTextPresent("Start the simulation"));
@@ -297,7 +310,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyTrue(selenium.isTextPresent(taskName));
         selenium.click("//tr[.//a/text()='" + taskName + "']//a[./text()='delete']");
-        waitForAjax(taskName);
+        waitForAjax(taskName, false);
         verifyTrue(selenium.isTextPresent("Task List"));
         verifyFalse(selenium.isTextPresent(taskName));
         selenium.click("//div[@id='menu']/ul/li[2]/a/em");

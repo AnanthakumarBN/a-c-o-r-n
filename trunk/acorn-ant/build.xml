@@ -250,7 +250,6 @@
             username="${server-username}"
             host="${server-name}"
             command="${server-glassfish-asadmin} undeploy --user admin --passwordfile ${file-to-asadmin-pass} ${server-web-undeploy-name}"
-            failonerror=""
         />
     </target>
     <target name="server-create-resources" depends="get-server-auth">
@@ -557,7 +556,7 @@
             password="${server-password}"
             verbose="true"
             file="${vaapp-dir}/dist/visualacornapplication.zip"
-            todir="${server-username}:${server-password}@${server-name}:${server-domain-dir}/applications/j2ee-modules/visualacornapplication"
+            todir="${server-username}:${server-password}@${server-name}:${server-domain-dir}/applications/visualacornapplication"
           />
         <scp
             trust="true"
@@ -566,7 +565,7 @@
             password="${server-password}"
             verbose="true"
             file="${vaapp-dir}/dist/visualacornapplication.app.zip"
-            todir="${server-username}:${server-password}@${server-name}:${server-domain-dir}/applications/j2ee-modules/visualacornapplication"
+            todir="${server-username}:${server-password}@${server-name}:${server-domain-dir}/applications/visualacornapplication"
           />
     </target>
 </project>

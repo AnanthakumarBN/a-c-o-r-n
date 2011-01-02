@@ -39,7 +39,7 @@ public class AcornConfiguration {
                 driver = instance.getString("database.driver");
                 if (driver != null) {
                     Class.forName(driver);
-                    System.setProperty("eclipselink.jdbc.driver", driver);
+                    System.setProperty("javax.persistence.jdbc.driver", driver);
                 //Class.forName(driver, true, ClassLoader.getSystemClassLoader());
                 //Class.forName(driver, false, ClassLoader.getSystemClassLoader());
                 } else {

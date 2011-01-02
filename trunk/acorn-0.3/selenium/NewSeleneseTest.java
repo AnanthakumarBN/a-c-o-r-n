@@ -16,10 +16,10 @@ public class NewSeleneseTest extends SeleneseTestCase {
 
     @Override
     public void setUp() throws Exception {
-        selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://localhost:8080/");
+        //selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://localhost:8080/");
         createDummyModelOnLocalhost = true;
 
-        //selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://sysbio3.fhms.surrey.ac.uk:8080/");
+        selenium = new DefaultSelenium("localhost", 4444, "*firefox", "http://sysbio3.fhms.surrey.ac.uk:8080/");
 
         selenium.start();
         //selenium.setSpeed("500");
@@ -28,7 +28,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
         //selenium.setSpeed("500");
     }
 
-    /*public void testLoop() throws Exception {
+    public void testLoop() throws Exception {
         while (1 == 1) {
             testIfPublishedModelsAreThere();
             testUploadingAndDeletingModels();
@@ -37,7 +37,7 @@ public class NewSeleneseTest extends SeleneseTestCase {
             testRunKgene();
             testRunRscan();
         }
-    }*/
+    }
 
     private void waitForAjax(String expectedText, boolean isPresent) {
         labelFor:
@@ -136,10 +136,10 @@ public class NewSeleneseTest extends SeleneseTestCase {
         selenium.waitForPageToLoad("30000");
         verifyTrue(selenium.isTextPresent("Single Flux Balance Analysis Parameters"));
         selenium.type("content:j_id_id18pc4:j_id_id12pc5", "biom");
-        selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
-        waitForAjax("R_biomass_SC4_bal", true);
-        verifyTrue(selenium.isTextPresent("R_biomass_SC4_bal"));
         selenium.click("content:j_id_id18pc4:j_id_id22pc5");
+        waitForAjax("BIOMASS2", true);
+        verifyTrue(selenium.isTextPresent("BIOMASS2"));
+        selenium.click("content:j_id_id18pc4:reactionTable:0:reactionSpeciesRadio");
         selenium.click("link=Start the simulation");
         selenium.waitForPageToLoad("30000");
         verifyTrue(selenium.isTextPresent(taskName));

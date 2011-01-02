@@ -39,6 +39,7 @@ public class AcornConfiguration {
                 driver = instance.getString("database.driver");
                 if (driver != null) {
                     Class.forName(driver);
+                    System.setProperty("eclipselink.jdbc.driver", driver);
                 //Class.forName(driver, true, ClassLoader.getSystemClassLoader());
                 //Class.forName(driver, false, ClassLoader.getSystemClassLoader());
                 } else {
@@ -69,30 +70,30 @@ public class AcornConfiguration {
             String st = instance.getString("database.url");
             if (st != null) {
                 try {
-                    System.clearProperty("toplink.jdbc.url");
-                    System.setProperty("toplink.jdbc.url", st);
+                    System.clearProperty("javax.persistence.jdbc.url");
+                    System.setProperty("javax.persistence.jdbc.url", st);
                 } catch (IllegalArgumentException ex) {
-                    System.setProperty("toplink.jdbc.url", st);
+                    System.setProperty("javax.persistence.jdbc.url", st);
                 }
             }
 
             st = instance.getString("database.user");
             if (st != null) {
                 try {
-                    System.clearProperty("toplink.jdbc.user");
-                    System.setProperty("toplink.jdbc.user", st);
+                    System.clearProperty("javax.persistence.jdbc.user");
+                    System.setProperty("javax.persistence.jdbc.user", st);
                 } catch (IllegalArgumentException ex) {
-                    System.setProperty("toplink.jdbc.user", st);
+                    System.setProperty("javax.persistence.jdbc.user", st);
                 }
             }
 
             st = instance.getString("database.password");
             if (st != null) {
                 try{
-                    System.clearProperty("toplink.jdbc.password");
-                 System.setProperty("toplink.jdbc.password", st);
+                    System.clearProperty("javax.persistence.jdbc.password");
+                 System.setProperty("javax.persistence.jdbc.password", st);
                 }catch (IllegalArgumentException ex) {
-                    System.setProperty("toplink.jdbc.password", st);
+                    System.setProperty("javax.persistence.jdbc.password", st);
                 }
             }
 

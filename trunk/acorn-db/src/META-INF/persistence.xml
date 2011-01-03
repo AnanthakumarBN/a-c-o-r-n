@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+  <persistence-unit name="acorn-dbPU" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>jdbc/mysqlResource</jta-data-source>
+    <class>acorn.db.EVisualization</class>
+    <class>acorn.db.EBounds</class>
+    <class>acorn.db.ECommonResults</class>
+    <class>acorn.db.ECompartment</class>
+    <class>acorn.db.EFbaData</class>
+    <class>acorn.db.EKgeneData</class>
+    <class>acorn.db.EMetabolism</class>
+    <class>acorn.db.EMethod</class>
+    <class>acorn.db.EMethodData</class>
+    <class>acorn.db.EModel</class>
+    <class>acorn.db.EProduct</class>
+    <class>acorn.db.EReactant</class>
+    <class>acorn.db.EReaction</class>
+    <class>acorn.db.ERscanData</class>
+    <class>acorn.db.ESpecies</class>
+    <class>acorn.db.ETask</class>
+    <class>acorn.db.EUser</class>
+    <class>acorn.db.EfbaResultElement</class>
+    <class>acorn.db.EfvaResultElement</class>
+    <class>acorn.db.ErscanResultElement</class>
+    <class>acorn.db.EVisArcProduct</class>
+    <class>acorn.db.EVisTransition</class>
+    <class>acorn.db.EVisPlace</class>
+    <class>acorn.db.EVisArcReactant</class>
+    <class>acorn.db.EVisArcpath</class>
+    <class>acorn.db.EVisArc</class>
+    <class>acorn.db.EVisNode</class>
+    <properties>
+      <property name="eclipselink.ddl-generation" value="none"/>
+    </properties>
+  </persistence-unit>
+</persistence>

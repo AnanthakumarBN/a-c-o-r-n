@@ -1,6 +1,5 @@
 #! /bin/sh
-gf_dir='/usr/local/glassfish'
-acorn_jdbc_url='jdbc:mysql://localhost:3306/acorn'
+gf_dir='/usr/local/glassfishv3/glassfish'
 kill -9 `ps -ef | grep localhost:3306 | grep -v grep | awk '{print $2}'`
 $gf_dir/bin/asadmin stop-domain domain1
 ./backup_bazy.sh

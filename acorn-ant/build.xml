@@ -236,11 +236,11 @@
             failonerror=""
         />
     </target>
-    <target name="server-web-deploy-all" depends="get-server-auth, server-web-compile, server-web-undeploy, server-stop-domain, server-start-domain, copy-web-to-server" description="Do all to deploy acorn on server">
+    <target name="server-web-deploy-all" depends="get-server-auth, server-copy-acorn-config, server-web-compile, server-web-undeploy, server-stop-domain, server-start-domain, copy-web-to-server" description="Do all to deploy acorn on server">
         <antcall target="server-web-deploy" />
         <antcall target="vaapp-prepapare-and-install-server-distro" />
     </target>
-    <target name="server-web-deploy-all-withoutVAAP" depends="get-server-auth, server-web-compile, server-web-undeploy, server-stop-domain, server-start-domain, copy-web-to-server" description="Do all to deploy acorn on server">
+    <target name="server-web-deploy-all-withoutVAAP" depends="get-server-auth, server-copy-acorn-config, server-web-compile, server-web-undeploy, server-stop-domain, server-start-domain, copy-web-to-server" description="Do all to deploy acorn on server">
         <antcall target="server-web-deploy" />
     </target>
     <target name="server-web-undeploy" depends="get-server-auth">
@@ -483,7 +483,7 @@
                 password="${server-password}" 
                 username="${server-username}"
                 host="${server-name}"
-                command="kill -9 `ps -ef | grep Dtoplink.jdbc.url=jdbc:mysql://localhost:3306/acorn | grep -v grep | awk '{print $2}'`"
+                command="kill -9 `ps -ef | grep localhost:3306 | grep -v grep | awk '{print $2}'`"
                 verbose="true">
         </sshexec>
     </target>

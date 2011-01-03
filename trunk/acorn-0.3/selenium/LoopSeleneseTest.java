@@ -45,27 +45,28 @@ public class LoopSeleneseTest extends SeleneseTestCase {
             selenium.click("content:visualizations:visualizationsTable:1:reactionVisualizationsRadio");
             selenium.click("link=Generate drawing.");
             selenium.waitForPageToLoad("30000");
-            verifyTrue(selenium.isTextPresent("Can't create graphic file. "));
-//            verifyTrue(selenium.isElementPresent("//div[@id='content']/img"));
-
-//            selenium.click("//div[@id='menu']/ul/li[3]/a/em");
-//            selenium.waitForPageToLoad("30000");
-//            selenium.click("link=f1");
-//            selenium.waitForPageToLoad("30000");
-//            selenium.click("content:visualizations:visualizationsTable:0:reactionVisualizationsRadio");
-//            selenium.click("link=Generate drawing.");
-//            selenium.waitForPageToLoad("30000");
 //            verifyTrue(selenium.isTextPresent("Can't create graphic file. "));
-//            verifyTrue(selenium.isElementPresent("//div[@id='content']/img"));
+            verifyTrue(selenium.isElementPresent("//div[@id='content']/img"));
+
+            selenium.click("//div[@id='menu']/ul/li[3]/a/em");
+            selenium.waitForPageToLoad("30000");
+            selenium.click("link=f1");
+            selenium.waitForPageToLoad("30000");
+            selenium.click("content:visualizations:visualizationsTable:0:reactionVisualizationsRadio");
+            selenium.click("link=Generate drawing.");
+            selenium.waitForPageToLoad("30000");
+//            verifyTrue(selenium.isTextPresent("Can't create graphic file. "));
+            verifyTrue(selenium.isElementPresent("//div[@id='content']/img"));
 
             selenium.click("//div[@id='menu']/ul/li[3]/a/em");
             selenium.waitForPageToLoad("30000");
             selenium.click("link=fva");
             selenium.waitForPageToLoad("30000");
-//            selenium.click("content:visualizations:visualizationsTable:2:reactionVisualizationsRadio");
-//            selenium.click("link=Generate drawing.");
-//            selenium.waitForPageToLoad("30000");
-//            verifyTrue(selenium.isElementPresent("//div[@id='content']/img"));
+            selenium.click("content:visualizations:visualizationsTable:2:reactionVisualizationsRadio");
+            selenium.click("link=Generate drawing.");
+            selenium.waitForPageToLoad("30000");
+//            verifyTrue(selenium.isTextPresent("Can't create graphic file. "));
+            verifyTrue(selenium.isElementPresent("//div[@id='content']/img"));
         }
     }
 

@@ -34,77 +34,77 @@ public class AcornConfiguration {
                 securityLevel.put(page, secLevel);
             }
 
-            String driver = null;
-            try {
-                driver = instance.getString("database.driver");
-                if (driver != null) {
-                    Class.forName(driver);
-                    System.setProperty("javax.persistence.jdbc.driver", driver);
-                //Class.forName(driver, true, ClassLoader.getSystemClassLoader());
-                //Class.forName(driver, false, ClassLoader.getSystemClassLoader());
-                } else {
-                    System.err.println("property database.driver is not set!");
-                }
-            } catch (Exception e1) {
-                if (driver == null) {
-                    System.err.println("can't find database.driver property!");
-                    e1.printStackTrace(System.err);
-                } else {
-                    System.err.println("Class.forName(\"" + driver + "\") failed!");
-                    e1.printStackTrace(System.err);
-                    try {
-                        Class.forName(driver, true, ClassLoader.getSystemClassLoader());
-                    } catch (Exception e2) {
-                        System.err.println("Class.forName(\"" + driver + "\", true) failed!");
-                        e2.printStackTrace(System.err);
-                        try {
-                            Class.forName(driver, false, ClassLoader.getSystemClassLoader());
-                        } catch (Exception e3) {
-                            System.err.println("Class.forName(\"" + driver + "\", false) failed!");
-                            e3.printStackTrace(System.err);
-                        }
-                    }
-                }
-            }
+//            String driver = null;
+//            try {
+//                driver = instance.getString("database.driver");
+//                if (driver != null) {
+//                    Class.forName(driver);
+//                    System.setProperty("eclipselink.jdbc.driver", driver);
+//                    //Class.forName(driver, true, ClassLoader.getSystemClassLoader());
+//                    //Class.forName(driver, false, ClassLoader.getSystemClassLoader());
+//                } else {
+//                    System.err.println("property database.driver is not set!");
+//                }
+//            } catch (Exception e1) {
+//                if (driver == null) {
+//                    System.err.println("can't find database.driver property!");
+//                    e1.printStackTrace(System.err);
+//                } else {
+//                    System.err.println("Class.forName(\"" + driver + "\") failed!");
+//                    e1.printStackTrace(System.err);
+//                    try {
+//                        Class.forName(driver, true, ClassLoader.getSystemClassLoader());
+//                    } catch (Exception e2) {
+//                        System.err.println("Class.forName(\"" + driver + "\", true) failed!");
+//                        e2.printStackTrace(System.err);
+//                        try {
+//                            Class.forName(driver, false, ClassLoader.getSystemClassLoader());
+//                        } catch (Exception e3) {
+//                            System.err.println("Class.forName(\"" + driver + "\", false) failed!");
+//                            e3.printStackTrace(System.err);
+//                        }
+//                    }
+//                }
+//            }
 
-            String st = instance.getString("database.url");
-            if (st != null) {
-                try {
-                    System.clearProperty("javax.persistence.jdbc.url");
-                    System.setProperty("javax.persistence.jdbc.url", st);
-                } catch (IllegalArgumentException ex) {
-                    System.setProperty("javax.persistence.jdbc.url", st);
-                }
-            }
+//            String st = instance.getString("database.url");
+//            if (st != null) {
+//                try {
+//                    System.clearProperty("javax.persistence.jdbc.url");
+//                    System.setProperty("javax.persistence.jdbc.url", st);
+//                } catch (IllegalArgumentException ex) {
+//                    System.setProperty("javax.persistence.jdbc.url", st);
+//                }
+//            }
 
-            st = instance.getString("database.user");
-            if (st != null) {
-                try {
-                    System.clearProperty("javax.persistence.jdbc.user");
-                    System.setProperty("javax.persistence.jdbc.user", st);
-                } catch (IllegalArgumentException ex) {
-                    System.setProperty("javax.persistence.jdbc.user", st);
-                }
-            }
+//            st = instance.getString("database.user");
+//            if (st != null) {
+//                try {
+//                    System.clearProperty("javax.persistence.jdbc.user");
+//                    System.setProperty("javax.persistence.jdbc.user", st);
+//                } catch (IllegalArgumentException ex) {
+//                    System.setProperty("javax.persistence.jdbc.user", st);
+//                }
+//            }
 
-            st = instance.getString("database.password");
-            if (st != null) {
-                try{
-                    System.clearProperty("javax.persistence.jdbc.password");
-                 System.setProperty("javax.persistence.jdbc.password", st);
-                }catch (IllegalArgumentException ex) {
-                    System.setProperty("javax.persistence.jdbc.password", st);
-                }
-            }
+//            st = instance.getString("database.password");
+//            if (st != null) {
+//                try{
+//                    System.clearProperty("javax.persistence.jdbc.password");
+//                 System.setProperty("javax.persistence.jdbc.password", st);
+//                }catch (IllegalArgumentException ex) {
+//                    System.setProperty("javax.persistence.jdbc.password", st);
+//                }
+//            }
 
         } catch (ConfigurationException e) {
             e.printStackTrace(System.out);
-        /* we leave instance = null. what else can we do? */
+            /* we leave instance = null. what else can we do? */
         }
     }
 
     /**
-     * 
+     *
      * @return security level required to browse 'page'
      */
     public static String getSecurityLevel(String page) {

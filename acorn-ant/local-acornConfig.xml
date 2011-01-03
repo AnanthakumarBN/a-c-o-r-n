@@ -8,12 +8,13 @@
         Purpose of the document follows.
 -->
 <configuration>
-    <database>
+<!--    <database>
         <url>jdbc:derby://localhost:1527/acorn-db</url>
         <user>acorn</user>
         <password>acorn</password>
         <driver>org.apache.derby.jdbc.ClientDriver</driver>
     </database>
+-->
     <pages>
         <!-- Guest Pages -->
         <page>

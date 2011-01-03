@@ -8,13 +8,13 @@
         Purpose of the document follows.
 -->
 <configuration>
-    <database>
-        <!--url>jdbc:mysql://sysbio3.fhms.surrey.ac.uk:3306/acorn-db</url-->
+<!--    <database>
         <url>jdbc:mysql://localhost:3306/acorn-db?autoReconnectForPools=false</url>
         <user>acorn</user>
         <password>acorn</password>
         <driver>com.mysql.jdbc.Driver</driver>
     </database>
+    -->
     <pages>
         <!-- Guest Pages -->
         <page>

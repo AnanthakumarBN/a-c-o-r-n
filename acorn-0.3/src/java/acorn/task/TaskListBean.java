@@ -184,8 +184,7 @@ public class TaskListBean {
             ETaskController tc = new ETaskController();
             tc.removeTask(Integer.parseInt(taskId));
         } catch (Exception e) {
-            ErrorBean.printStackTrace(e);
-            return "null";
+            e.printStackTrace(System.err);
         }
         
         return "taskList";

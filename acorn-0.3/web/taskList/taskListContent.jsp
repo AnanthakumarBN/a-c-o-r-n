@@ -311,10 +311,16 @@
                         </a4j:commandLink>
                     </h:panelGroup>
                 </f:facet>
-            
-                <a4j:commandLink rendered="#{(task.ownerId == TaskListBean.currentUserId) || TaskListBean.deleteAllUser}" id="delete" action="#{TaskListBean.deleteTask}" reRender="tableForm"  value="delete">
-                    <a4j:actionparam name="taskID" value="#{task.id}" />
-                </a4j:commandLink>
+
+    <h:commandLink id="delete" action="#{TaskListBean.deleteTask}" rendered="#{(task.ownerId == TaskListBean.currentUserId) || TaskListBean.deleteAllUser}">
+        <f:param name="taskID" value="#{task.id}"/>
+        <h:outputText value="delete"/>
+    </h:commandLink>
+<%--
+    <a4j:commandLink rendered="#{(task.ownerId == TaskListBean.currentUserId) || TaskListBean.deleteAllUser}" id="delete" action="#{TaskListBean.deleteTask}" reRender="tableForm"  value="delete">
+      <a4j:actionparam name="taskID" value="#{task.id}" />
+    </a4j:commandLink>
+--%>
             </h:column>
         </h:dataTable>
     </h:form>
